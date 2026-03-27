@@ -1,0 +1,91 @@
+# OpenClaw P2P Service Configuration
+
+# Network
+host = "127.0.0.1"
+port = 8001
+
+# Models this peer provides
+models = ["qwen3:8b"]
+
+# Bootstrap peers (initial connections)
+# Add your other PCs here when deploying
+bootstrap_peers = [
+    "127.0.0.1:8001",  # Self (for local testing)
+    # Other peers (uncomment and add addresses):
+    # "192.168.1.100:8001",  # Your other PC
+    # "seed.openclaw-p2p.io:8001",  # Public seed (when available)
+]
+
+# Reputation System
+reputation_enabled = true
+min_reputation_threshold = 30.0  # Peers below this score are ignored
+
+# Cache
+cache_enabled = true
+cache_size_mb = 512
+cache_ttl_hours = 24
+
+# Security
+require_signatures = true
+allow_anonymous_peers = false
+
+# Network limits
+max_peers = 100
+gossip_interval_seconds = 30
+connection_timeout_seconds = 10
+
+# Resources Limits — Control CPU/RAM usage ⭐ NEW
+[resource_limits]
+cpu_limit_percent = 10            # Max CPU usage per peer (0-100) — ULTRA LIGHT
+ram_limit_percent = 10            # Max RAM usage per peer (0-100) — ULTRA LIGHT
+max_concurrent_requests = 1       # Number of simultaneous model queries — ULTRA LIGHT
+request_timeout_seconds = 90      # Max time per model response
+query_queue_max_size = 10         # Max queries in queue (rejects more)
+
+# Logs
+log_level = "INFO"  # DEBUG, INFO, WARNING, ERROR
+
+# Optional: Specific model mappings
+# [models]
+# qwen3:8b = { capabilities = ["coding", "technical", "python"] }
+# glm-4.7 = { capabilities = ["creative", "long-form", "french"] }
+# phi3-mini = { capabilities = ["fast", "translation", "simple"] }
+
+# Model Sharing — Distribute model files P2P (BitTorrent-style) ⭐ NEW
+[model_sharing]
+enabled = true
+storage_dir = "/tmp/unitybrain_models"  # ou /dev/shm pour RAM-only
+chunk_size_mb = 80
+max_parallel_downloads = 5
+download_timeout_seconds = 600  # 10 min pour 8 GB
+
+# Mode hybride pour early adopters ("auto", "direct", "p2p")
+mode = "auto"  # Auto-sélection selon le nombre de peers
+p2p_min_peers = 5  # Utiliser P2P quand ≥5 peers ont le modèle
+direct_timeout_seconds = 600  # Fallback timeout quand peu de sources
+
+# Models locaux à partager
+[[models_for_sharing]]
+model_id = "qwen3:8b"
+name = "Qwen 2.5 7B"
+file_path = "/home/user/.ollama/models/qwen3:8b.gguf"
+
+# Sharing Parity — Récompense de contribution 🔐
+[sharing_parity]
+enabled = true
+
+# Poids des facteurs (doivent summer à 1.0)
+weights_models = 0.40          # 40% pour modèles hostés
+weights_chunks = 0.30          # 30% pour chunks distribués
+weights_uptime = 0.20          # 20% pour uptime
+weights_reputation = 0.10      # 10% pour réputation
+
+# Quotas de queries (par minute)
+quota_min = 1                   # Minimum meme pour freeloaders
+quota_max = 200                 # Maximum pour gros contributeurs
+
+# Decay des chunks (pour empêcher exploitation)
+chunks_decay_hours = 168        # Chunks expirent après 7 jours
+
+# Uptime minimum pour être compté
+uptime_min_hours = 1           # Au moins 1h de uptime
