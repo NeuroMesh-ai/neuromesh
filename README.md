@@ -284,14 +284,6 @@ Pour contribuer :
 
 ---
 
-## 📞 Support
-
-- Issues : https://github.com/username/unitybrain/issues
-- Discord : https://discord.gg/...
-- Wiki : https://github.com/username/unitybrain/wiki
-
----
-
 ## 📄 License
 
 MIT License — Open and free
