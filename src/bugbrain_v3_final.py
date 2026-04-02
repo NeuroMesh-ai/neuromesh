@@ -531,17 +531,24 @@ class BugBrain:
         return self.models[0]
 
     async def _query_ollama(self, model: str, prompt: str, max_length: int = 500) -> Tuple[str, float]:
-        """Query Ollama"""
+        """Query Ollama via stdin"""
         try:
             start = time.time()
             result = subprocess.run(
-                ["ollama", "run", model, "--keepalive", "-1", prompt],
+                ["ollama", "run", model],
+                input=prompt,
                 capture_output=True,
                 text=True,
                 timeout=60
             )
             latency = (time.time() - start) * 1000
-            return result.stdout[:max_length], latency
+
+            # Nettoyer les séquences ANSI
+            cleaned = re.sub(r'\x1b\[[0-9;]*[mGKH]', '', result.stdout)
+
+            return cleaned[:max_length], latency
+        except subprocess.TimeoutExpired:
+            return "Error: Timeout after 60s", float('inf')
         except Exception as e:
             return f"Error: {str(e)}", float('inf')
 
