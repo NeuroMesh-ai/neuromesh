@@ -43,7 +43,7 @@ logger.error("OllamaService", "Connection failed",
 - `ERROR` - Erreurs
 - `CRITICAL` - Erreurs critiques
 
-### Métriques Prometheus
+### Métriques de monitoring
 
 Métriques automatiques collectées :
 
@@ -296,14 +296,14 @@ for i, result in enumerate(results):
     print(f"Result {i+1}: {result}")
 ```
 
-### OpenAPI/Swagger
+### Documentation de l'API
 
 Documentation automatique de l'API :
 
 ```python
 # Endpoints documentés :
 GET  /health           # Health check
-GET  /metrics          # Prometheus metrics
+GET  /metrics          # Monitoring metrics
 POST /query            # Single query
 POST /query/stream     # Streaming query
 POST /query/batch      # Batch queries
@@ -312,7 +312,7 @@ POST /peers/add        # Ajouter un peer
 DELETE /peers/{id}     # Supprimer un peer
 ```
 
-**Pour générer la documentation Swagger :**
+**Pour générer la documentation documentation de l'API :**
 ```bash
 # Le système génère automatiquement la documentation
 # Accessible via : http://localhost:8080/docs
@@ -540,12 +540,12 @@ python3 src/production_enhancement.py
 
 ---
 
-## 📊 Métriques Prometheus
+## 📊 Métriques de monitoring
 
 ### Endpoints
 
 ```bash
-# Métriques Prometheus
+# Métriques de monitoring
 curl http://localhost:8080/metrics
 
 # Health check

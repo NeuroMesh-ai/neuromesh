@@ -15,7 +15,7 @@
 **UnityBrain v3.0 - Réseau P2P Distribué**
 - ✅ **True P2P Network** - 100% décentralisé avec DHT + Gossip + Kademlia
 - ✅ **Multi-model Ensembling** - Query multi-modèles avec consensus
-- ✅ **Model Sharing** - Partage BitTorrent-style de modèles
+- ✅ **Model Sharing** - Partage P2P distribué de modèles
 - ✅ **Reputation System** - Système de vote qualité
 - ✅ **Load Balancing** - 3 stratégies (Round Robin, Least Connections, Weighted)
 - ✅ **Dynamic Model Routing** - Auto-sélection du meilleur modèle
@@ -31,7 +31,7 @@
 
 **🔍 Production Enhancement (NOUVEAU)**
 - ✅ **Logging Structuré** - Logs JSON centralisés avec rotation
-- ✅ **Métriques Prometheus** - Monitoring temps réel complet
+- ✅ **Métriques de monitoring** - Monitoring temps réel complet
 - ✅ **Health Checks** - Health checks actifs avec alerting
 - ✅ **Circuit Breaker** - Protection contre les cascades d'échecs
 - ✅ **Retry Logic** - Retry avec backoff exponentiel
@@ -41,7 +41,7 @@
 - ✅ **Model Versioning** - Gestion des versions avec rollback
 - ✅ **Streaming Responses** - Réponses en temps réel (SSE)
 - ✅ **Batch Requests** - Requêtes multiples en parallèle
-- ✅ **OpenAPI/Swagger** - Documentation automatique de l'API
+- ✅ **Documentation de l'API** - Documentation automatique de l'API
 
 **Déploiement & Réseau**
 - ✅ **Auto-Deployment** - Déploiement automatique
@@ -321,7 +321,7 @@ MIT License - voir [LICENSE](LICENSE) pour les détails
 
 ## 🙏 Remerciements
 
-- **Claude Code** - Inspiration pour l'architecture production-level
+- **Architecture production-level** - Inspiration pour l'architecture production-level
 - **Kademlia** - Algorithme de routage DHT
 - **Ollama** - Runtime LLM
 

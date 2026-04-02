@@ -5,7 +5,7 @@ Module OpenClaw complet avec toutes les fonctionnalités définies depuis le dé
 
 Architecture complète:
 - P2P Network (peers connectés)
-- Model Sharing (BitTorrent-style)
+- Model Sharing (P2P distribué)
 - Multi-model Ensembling (consensus)
 - Reputation System
 - Web Interface
@@ -45,7 +45,7 @@ class Peer:
         self.reputation = 1.0
         self.last_seen = time.time()
         self.model_stats = {model: {"success": 0, "total": 0, "latency_sum": 0} for model in models}
-        self.shared_models = {}  # Model chunks for BitTorrent-style sharing
+        self.shared_models = {}  # Model chunks for P2P distribué sharing
 
     async def ping(self) -> float:
         """Ping le peer"""
@@ -108,7 +108,7 @@ class Peer:
 # ============================================================================
 
 class ModelShare:
-    """Partage de modèles en chunks sécurisés (BitTorrent-style)"""
+    """Partage de modèles en chunks sécurisés (P2P distribué)"""
     def __init__(self):
         self.chunks = {}  # {model_id: {chunk_id: chunk_data}}
         self.chunk_size = 1024 * 1024  # 1MB per chunk
@@ -440,7 +440,7 @@ async def main():
     print("🌐 UNITYBRAIN v3.0 FINAL - RÉSEAU P2P DISTRIBUTÉ ULTIME")
     print("=" * 70)
     print("\n✅ P2P Network")
-    print("✅ Model Sharing (BitTorrent-style)")
+    print("✅ Model Sharing (P2P distribué)")
     print("✅ Multi-model Ensembling (Consensus)")
     print("✅ Reputation System")
     print("✅ Web Interface")

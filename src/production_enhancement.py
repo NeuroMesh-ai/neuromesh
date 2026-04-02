@@ -3,10 +3,10 @@
 🔍 Production Enhancement Module - UnityBrain & BugBrain v3.0
 Implémente tous les gaps identifiés pour la production readiness
 
-1. Monitoring & Observability (Structured logging, Prometheus metrics, Dashboards)
+1. Monitoring & Observability (Structured logging, Monitoring metrics, Dashboards)
 2. Production Readiness (Error handling, Retry logic, Circuit breaker, Health checks)
 3. Security Implementation (TLS/DTLS, Sybil resistance, Rate limiting)
-4. API Features (Streaming responses, Batch requests, OpenAPI/Swagger)
+4. API Features (Streaming responses, Batch requests, OpenAPI/documentation de l'API)
 5. Performance (Caching, Intelligent load balancing)
 6. Model Management (Distributed sharding, Versioning, Rollback)
 """
@@ -796,7 +796,7 @@ async def main():
     prod.log(LogLevel.INFO, "TestComponent", "Test log message", user="denis")
 
     # 2. Métriques
-    print("\n2️⃣ Métriques Prometheus:")
+    print("\n2️⃣ Métriques de monitoring:")
     prod.metric_increment("requests_total", 1.0, {"endpoint": "/query"})
     prod.metric_set("active_connections", 42.0)
     prod.metric_observe("request_latency", 123.4, {"endpoint": "/query"})
@@ -843,8 +843,8 @@ async def main():
     print(f"Cached data: {cached}")
     print(f"Cache stats: {prod.cache.get_stats()}")
 
-    # 7. Prometheus metrics
-    print("\n7️⃣ Métriques Prometheus:")
+    # 7. Monitoring metrics
+    print("\n7️⃣ Métriques de monitoring:")
     print(await prod.get_prometheus_metrics())
 
     print("\n" + "=" * 70)

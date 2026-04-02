@@ -15,7 +15,7 @@ All notable changes to UnityBrain & BugBrain will be documented in this file.
 
 - ✨ **UnityBrain v3.0** - Réseau P2P distribué
   - Multi-model Ensembling
-  - Model Sharing (BitTorrent-style)
+  - Model Sharing (P2P distribué)
   - Reputation System
   - Web Interface
   - API REST
@@ -37,7 +37,7 @@ All notable changes to UnityBrain & BugBrain will be documented in this file.
 
 - 🔍 **Production Enhancement Module (NOUVEAU)**
   - Logging Structuré (JSON avec rotation)
-  - Métriques Prometheus (Counters, Gauges, Histograms)
+  - Métriques de monitoring (Counters, Gauges, Histograms)
   - Health Checks actifs avec alerting
   - Circuit Breaker pattern
   - Retry logic avec backoff exponentiel
@@ -47,7 +47,7 @@ All notable changes to UnityBrain & BugBrain will be documented in this file.
   - Model Versioning avec rollback
   - Streaming Responses (SSE)
   - Batch Requests
-  - OpenAPI/Swagger documentation
+  - Documentation de l'API documentation
 
 - ✨ **Network Specialization Module**
   - Service Discovery (LAN)
@@ -93,7 +93,7 @@ All notable changes to UnityBrain & BugBrain will be documented in this file.
 
 - ✨ **Docker Support**
   - Dockerfile
-  - Docker support complet
+  - Support de conteneurisation complet
 
 ### Changed
 - 🔄 Refactorisation complète pour architecture décentralisée
@@ -126,8 +126,8 @@ All notable changes to UnityBrain & BugBrain will be documented in this file.
 ### Planned
 - 🚀 Tests unitaires complets
 - 🚀 CI/CD GitHub Actions
-- 🚀 Docker support
-- 🚀 Kubernetes deployment
+- 🚀 Support de conteneurisation
+- 🚀 Déploiement d'orchestration
 - 🚀 Web Dashboard avancé
 - 🚀 Monitoring temps réel
 - 🚀 Alerting
