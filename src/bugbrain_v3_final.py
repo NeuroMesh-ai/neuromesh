@@ -531,15 +531,24 @@ class BugBrain:
         return self.models[0]
 
     async def _query_ollama(self, model: str, prompt: str, max_length: int = 500) -> Tuple[str, float]:
-        """Query Ollama via stdin"""
+        """Query Ollama via stdin avec timeout dynamique"""
         try:
+            # Timeout dynamique basé sur la taille du modèle
+            timeout = self._get_timeout_for_model(model)
+
+            # Ajustement selon la longueur du prompt
+            if len(prompt) > 1000:
+                timeout = int(timeout * 1.5)
+            elif len(prompt) > 500:
+                timeout = int(timeout * 1.2)
+
             start = time.time()
             result = subprocess.run(
                 ["ollama", "run", model],
                 input=prompt,
                 capture_output=True,
                 text=True,
-                timeout=60
+                timeout=timeout
             )
             latency = (time.time() - start) * 1000
 
@@ -548,9 +557,33 @@ class BugBrain:
 
             return cleaned[:max_length], latency
         except subprocess.TimeoutExpired:
-            return "Error: Timeout after 60s", float('inf')
+            return f"Error: Timeout after {timeout}s", float('inf')
         except Exception as e:
             return f"Error: {str(e)}", float('inf')
+
+    def _get_timeout_for_model(self, model: str) -> int:
+        """
+        Retourne le timeout approprié pour un modèle donné
+        (Suggestion de Denis Houet - timeouts adaptés à la taille des modèles)
+        """
+        # Petits modèles (< 4B params)
+        if any(x in model for x in ["SmolLM2", "tinyllama", "Stable-code", "phi3:mini"]):
+            return 60
+
+        # Modèles moyens (4-10B params)
+        if any(x in model for x in ["qwen3:8b", "llama3:8b", "mistral:7b", "gemma:7b"]):
+            return 180  # 3 minutes
+
+        # Gros modèles (10-30B params)
+        if any(x in model for x in ["qwen2:14b", "llama2:13b", "mistral-medium"]):
+            return 300  # 5 minutes
+
+        # Très gros modèles (30B+ params)
+        if any(x in model for x in ["llama3:70b", "mixtral:8x7b", "falcon:180b"]):
+            return 600  # 10 minutes
+
+        # Valeur par défaut (2 minutes)
+        return 120
 
     def _detect_type(self, prompt: str) -> str:
         """Détecte le type de tâche"""
