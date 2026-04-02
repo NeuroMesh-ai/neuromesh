@@ -332,6 +332,17 @@ MIT License - voir [LICENSE](LICENSE) pour les détails
 - **GitHub Issues:** https://github.com/dnshouet-cpu/Unitybrain/issues
 - **Discord:** https://discord.com/invite/clawd
 
+## 💰 Soutenir le Projet
+
+Si vous trouvez ce projet utile, nous apprécions votre soutien !
+
+**Bitcoin (BTC):**
+```
+1GRa56dSK3CN5xzGmCGQ8w9un7ZJexS34Z
+```
+
+Pour plus d'options et de détails, voir [DONATIONS.md](DONATIONS.md) 🪙
+
 ---
 
 ## 🚀 Roadmap
