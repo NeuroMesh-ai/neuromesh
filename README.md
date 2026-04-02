@@ -340,7 +340,7 @@ MIT License - voir [LICENSE](LICENSE) pour les détails
 - [ ] Tests unitaires complets
 - [ ] CI/CD GitHub Actions
 - [ ] Docker support
-- [ ] Kubernetes deployment
+- [ ] Déploiement d'orchestration
 
 ### v3.2 (Future)
 - [ ] Web Dashboard avancé

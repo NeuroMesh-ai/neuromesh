@@ -6,7 +6,7 @@ Implémente tous les gaps identifiés pour la production readiness
 1. Monitoring & Observability (Structured logging, Monitoring metrics, Dashboards)
 2. Production Readiness (Error handling, Retry logic, Circuit breaker, Health checks)
 3. Security Implementation (TLS/DTLS, Sybil resistance, Rate limiting)
-4. API Features (Streaming responses, Batch requests, OpenAPI/documentation de l'API)
+4. API Features (Streaming responses, Batch requests, Documentation de l'API)
 5. Performance (Caching, Intelligent load balancing)
 6. Model Management (Distributed sharding, Versioning, Rollback)
 """
@@ -144,14 +144,14 @@ class StructuredLogger:
 
 @dataclass
 class Metric:
-    """Métrique Prometheus"""
+    """Métrique de monitoring"""
     name: str
     value: float
     labels: Dict[str, str] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.utcnow)
 
 class MetricsCollector:
-    """Collecteur de métriques (Prometheus-style)"""
+    """Collecteur de métriques (monitoring générique)"""
 
     def __init__(self, service_name: str):
         self.service_name = service_name
@@ -191,8 +191,8 @@ class MetricsCollector:
             return f"{name}{{{label_str}}}"
         return name
 
-    def get_prometheus_metrics(self) -> str:
-        """Retourne les métriques au format Prometheus"""
+    def get_monitoring_metrics(self) -> str:
+        """Retourne les métriques au format monitoring standard"""
         output = []
 
         # Counters
@@ -747,10 +747,10 @@ class ProductionEnhancement:
         if self.config.enable_caching and hasattr(self, 'cache'):
             self.cache.set(key, value, ttl)
 
-    async def get_prometheus_metrics(self) -> str:
-        """Retourne les métriques Prometheus"""
+    async def get_monitoring_metrics(self) -> str:
+        """Retourne les métriques de monitoring"""
         if self.config.enable_monitoring and hasattr(self, 'metrics'):
-            return self.metrics.get_prometheus_metrics()
+            return self.metrics.get_monitoring_metrics()
         return ""
 
     async def get_health_status(self) -> Dict:
@@ -845,7 +845,7 @@ async def main():
 
     # 7. Monitoring metrics
     print("\n7️⃣ Métriques de monitoring:")
-    print(await prod.get_prometheus_metrics())
+    print(await prod.get_monitoring_metrics())
 
     print("\n" + "=" * 70)
     print("✅ Production Enhancement Module ready!")

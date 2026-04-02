@@ -92,7 +92,7 @@ All notable changes to UnityBrain & BugBrain will be documented in this file.
   - CI/CD GitHub Actions
 
 - ✨ **Docker Support**
-  - Dockerfile
+  - Containerfile
   - Support de conteneurisation complet
 
 ### Changed

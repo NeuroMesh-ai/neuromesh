@@ -224,7 +224,7 @@ await rendezvous.start()
 
 **Option 3: Docker**
 
-```dockerfile
+```Conteneurfile
 FROM python:3.12
 COPY internet_capable.py /app/
 CMD ["python", "/app/internet_capable.py"]

@@ -67,8 +67,8 @@ prod.metric_observe("request_latency", 145.2, {"endpoint": "/query"})
 **Exporter les métriques :**
 
 ```python
-# Format Prometheus
-metrics = await prod.get_prometheus_metrics()
+# Format monitoring
+metrics = await prod.get_monitoring_metrics()
 print(metrics)
 ```
 
