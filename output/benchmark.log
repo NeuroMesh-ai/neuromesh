@@ -1,0 +1,38 @@
+======================================================================
+🧪 BENCHMARK COMPLET - 100 REQUÊTES
+======================================================================
+
+======================================================================
+🧪 BENCHMARK UNITYBRAIN v3.0
+======================================================================
+
+🌐 Initializing UnityBrain v3.0.0...
+   P2P Network: Enabled ✅
+   Model Sharing: Enabled ✅
+   Ensemble Consensus: Enabled ✅
+   Reputation System: Enabled ✅
+   Dynamic Model Routing: Enabled ✅
+   Query History: Enabled ✅
+   Web Interface: Enabled ✅
+
+✅ UnityBrain initialized!
+   Peers: 0/0
+Traceback (most recent call last):
+  File "/home/user/.openclaw/workspace/Unitybrain/tests/benchmark_complete.py", line 539, in <module>
+    asyncio.run(main())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/user/.openclaw/workspace/Unitybrain/tests/benchmark_complete.py", line 519, in main
+    unitybrain_runner = await benchmark_unitybrain()
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/.openclaw/workspace/Unitybrain/tests/benchmark_complete.py", line 416, in benchmark_unitybrain
+    stats = await runner.run_benchmark(query_func, TEST_QUERIES, LLS_TO_TEST)
+                                                                 ^^^^^^^^^^^
+NameError: name 'LLS_TO_TEST' is not defined. Did you mean: 'LLMS_TO_TEST'?

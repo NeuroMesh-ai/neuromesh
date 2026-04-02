@@ -1,0 +1,208 @@
+# Changelog
+
+All notable changes to UnityBrain & BugBrain will be documented in this file.
+
+## [3.5.0] - 2026-04-02
+
+### Added
+- 🤖 **BugBrain v3.5 - Autonomie Complète**
+  - Auto-Support - Répond automatiquement aux questions utilisateurs
+  - Auto-Monitoring - Surveillance système temps réel (CPU, RAM, Disque, Réseau)
+  - Auto-Healing - Détection et réparation automatique des problèmes
+  - Auto-Optimization - Optimisation automatique des performances
+  - Auto-Upgrade - Mises à jour automatiques avec sauvegardes
+  - BugBrain Autonomy - Mode autonome orchestrant tous les modules
+
+- ✨ **Knowledge Base** - Base de connaissances pour auto-support
+  - Documentation intégrée (guides, exemples, FAQ)
+  - Recherche sémantique
+  - Réponses contextuelles
+
+- 📊 **Monitoring Production-Ready**
+  - Métriques système en temps réel
+  - Health checks complets
+  - Détection de problèmes automatique
+  - Logs structurés avec rotation
+
+- 🩹 **Auto-Healing System**
+  - Détection automatique des problèmes
+  - Actions de réparation préconfigurées
+  - Journalisation des réparations
+  - Stats et historique
+
+- 📈 **Auto-Optimization**
+  - Analyse des métriques système
+  - Suggestions d'optimisation
+  - Application automatique
+  - Historique des optimisations
+
+- 🔄 **Auto-Upgrade**
+  - Vérification automatique des mises à jour GitHub
+  - Sauvegardes automatiques avant upgrade
+  - Installation silencieuse
+  - Rollback en cas d'échec
+
+- 🧪 **Tests Complètes v3.5**
+  - Tests auto-support
+  - Tests auto-monitoring
+  - Tests auto-healing
+  - Tests auto-optimization
+  - Tests auto-upgrade
+
+- 📋 **Documentation Utilisateur Pinky**
+  - Plan de test utilisateur
+  - Rapport de test Pinky (100% réussite)
+  - Benchmarks comparatifs Bug vs Pinky
+
+### Changed
+- 🔄 Version 3.0.0 → 3.5.0
+- 🔄 README mis à jour avec modules d'autonomie
+- 🔄 requirements_autonomy.txt ajouté
+
+### Tested
+- ✅ 100% des tests passés sur Pinky (ThinkPad Ubuntu, 3.2GB RAM)
+- ✅ Benchmarks: 29.8ms latence moyenne (100% succès)
+- ✅ Aucun bug bloquant
+- ✅ Installation simple et fonctionnelle
+
+### Performance
+- Pinky (3.2GB RAM): 29.8ms latence
+- Bug (plus RAM): 13.8ms latence
+- Différence acceptable et prévisible
+
+---
+
+## [3.0.0] - 2026-04-02
+
+### Added
+- ✨ **True P2P Network** - Système P2P 100% décentralisé
+  - DHT (Distributed Hash Table)
+  - Gossip Protocol
+  - Kademlia Routing
+  - Bootstrap Nodes
+  - Store & Get
+  - Broadcast
+
+- ✨ **UnityBrain v3.0** - Réseau P2P distribué
+  - Multi-model Ensembling
+  - Model Sharing (P2P distribué)
+  - Reputation System
+  - Web Interface
+  - API REST
+  - Query History Persistence
+  - Multiple Export Formats (JSON, CSV, HTML)
+  - Dynamic Model Routing
+  - Auto-Selection
+
+- ✨ **BugBrain v3.0** - Système auto-émancipé
+  - Auto-Emancipation complète
+  - Self-Awareness
+  - Self-Improvement
+  - Self-Learning
+  - Self-Direction
+  - Self-Exploration
+  - Distributed Memory
+  - UX Monitor
+  - Daemon Mode
+
+- 🔍 **Production Enhancement Module (NOUVEAU)**
+  - Logging Structuré (JSON avec rotation)
+  - Métriques de monitoring (Counters, Gauges, Histograms)
+  - Health Checks actifs avec alerting
+  - Circuit Breaker pattern
+  - Retry logic avec backoff exponentiel
+  - Rate Limiting (Token Bucket)
+  - Sybil Resistance
+  - Cache intelligent avec TTL et LRU
+  - Model Versioning avec rollback
+  - Streaming Responses (SSE)
+  - Batch Requests
+  - Documentation de l'API documentation
+
+- ✨ **Network Specialization Module**
+  - Service Discovery (LAN)
+  - Load Balancing (Round Robin, Least Connections, Weighted)
+  - Failover Management
+  - TLS Security
+
+- ✨ **Deployment Module**
+  - Auto-Deployment
+  - Auto-Scaling
+  - Rolling Updates
+  - Auto-Healing
+  - Backups
+
+- ✨ **Internet Capable Module**
+  - Rendezvous Server (Discovery Internet)
+  - NAT Traversal
+  - Internet Discovery
+  - Secure Client (TLS)
+  - Multi-Network Manager (LAN/WAN/Internet)
+
+- ✨ **Interactive Interface**
+  - CLI complète
+  - Commandes pour UnityBrain et BugBrain
+  - Mode ensemble
+  - Memory search
+  - Status monitoring
+
+- ✨ **Documentation Complète**
+  - Guide Interface Interactive
+  - Guide Réseau & Déploiement
+  - Guide Internet Capable
+  - Guide True P2P
+  - Guide Production Enhancement 🔍
+  - Examples d'utilisation
+
+- ✨ **Tests Unitaires**
+  - Tests UnityBrain
+  - Tests BugBrain
+  - Tests P2P Network
+  - Tests Production Enhancement
+  - CI/CD GitHub Actions
+
+- ✨ **Docker Support**
+  - Containerfile
+  - Support de conteneurisation complet
+
+### Changed
+- 🔄 Refactorisation complète pour architecture décentralisée
+- 🔄 Optimisation des performances
+- 🔄 Séparation claire entre UnityBrain et BugBrain
+
+### Fixed
+- 🐛 Problèmes de mémoire
+- 🐛 Latence élevée
+- 🐛 Timeout sur les requêtes
+
+### Removed
+- ❌ Rendezvous Server centralisé (remplacé par True P2P)
+- ❌ Dépendances non nécessaires
+
+---
+
+## [0.1.0] - 2026-03-27
+
+### Added
+- ✨ Première version publique
+- ✨ P2P Network basic
+- ✨ Multi-model Ensembling
+- ✨ Reputation System
+
+---
+
+## [Unreleased]
+
+### Planned
+- 🚀 Tests unitaires complets
+- 🚀 CI/CD GitHub Actions
+- 🚀 Support de conteneurisation
+- 🚀 Déploiement d'orchestration
+- 🚀 Web Dashboard avancé
+- 🚀 Monitoring temps réel
+- 🚀 Alerting
+- 🚀 Analytics
+
+---
+
+**Pour les versions futures, voir [Roadmap](README.md#-roadmap)**

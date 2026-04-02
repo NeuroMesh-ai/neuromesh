@@ -1,0 +1,142 @@
+/home/user/.openclaw/workspace/Unitybrain/tests/benchmark_extreme_cloud.py:61: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  self.start_time = datetime.utcnow()
+/home/user/.openclaw/workspace/Unitybrain/tests/benchmark_extreme_cloud.py:106: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  self.end_time = datetime.utcnow()
+======================================================================
+🧪 BENCHMARK EXTREME v2 - QUESTIONS DOCTORALES AVEC MODELS CLOUD
+======================================================================
+======================================================================
+🧪 BENCHMARK EXTREME v2 - Modèles Cloud
+======================================================================
+
+📋 Configuration:
+   Questions: 5
+   Modèles: 2
+   Total tests: 10
+
+🧠 Initializing BugBrain v3.0.0...
+   Auto-emancipation: Enabled ✅
+   Distributed memory: Enabled ✅
+   UX monitor: Enabled ✅
+   Daemon mode: Enabled ✅
+   Self-awareness: Enabled ✅
+   Self-learning: Enabled ✅
+   Self-improvement: Enabled ✅
+   Self-direction: Enabled ✅
+   Self-exploration: Enabled ✅
+
+✅ BugBrain initialized!
+
+🤖 Testing model: glm-4.7:cloud
+
+   [1/5] Démontrez le théorème d'incomplétude de Gödel et e...
+
+📝 Query 1: Démontrez le théorème d'incomplétude de Gödel et e...
+      ✅ (14ms) - 0 chars
+      Response: ...
+
+   [2/5] Expliquez le problème P vs NP et pourquoi c'est im...
+
+📝 Query 2: Expliquez le problème P vs NP et pourquoi c'est im...
+      ✅ (13ms) - 0 chars
+      Response: ...
+
+   [3/5] Démontrez comment la relativité générale prédit la...
+
+📝 Query 3: Démontrez comment la relativité générale prédit la...
+      ✅ (13ms) - 0 chars
+      Response: ...
+
+   [4/5] Qu'est-ce que le problème de la conscience qualia ...
+
+📝 Query 4: Qu'est-ce que le problème de la conscience qualia ...
+      ✅ (13ms) - 0 chars
+      Response: ...
+
+   [5/5] Intégrez les concepts de relativité générale et mé...
+
+📝 Query 5: Intégrez les concepts de relativité générale et mé...
+      ✅ (13ms) - 0 chars
+      Response: ...
+
+🤖 Testing model: glm-5:cloud
+
+   [1/5] Démontrez le théorème d'incomplétude de Gödel et e...
+
+📝 Query 6: Démontrez le théorème d'incomplétude de Gödel et e...
+      ✅ (14ms) - 0 chars
+      Response: ...
+
+   [2/5] Expliquez le problème P vs NP et pourquoi c'est im...
+
+📝 Query 7: Expliquez le problème P vs NP et pourquoi c'est im...
+      ✅ (14ms) - 0 chars
+      Response: ...
+
+   [3/5] Démontrez comment la relativité générale prédit la...
+
+📝 Query 8: Démontrez comment la relativité générale prédit la...
+      ✅ (13ms) - 0 chars
+      Response: ...
+
+   [4/5] Qu'est-ce que le problème de la conscience qualia ...
+
+📝 Query 9: Qu'est-ce que le problème de la conscience qualia ...
+      ✅ (14ms) - 0 chars
+      Response: ...
+
+   [5/5] Intégrez les concepts de relativité générale et mé...
+
+📝 Query 10: Intégrez les concepts de relativité générale et mé...
+      ✅ (13ms) - 0 chars
+      Response: ...
+
+======================================================================
+📊 RÉSULTATS DU BENCHMARK EXTREME v2
+======================================================================
+
+⏱️ Durée: 0.1s
+
+📈 Statistiques:
+   Total: 10
+   ✅ Succès: 10
+   📊 Success rate: 100.00%
+
+⚡ Latence moy: 13.5ms
+📝 Longueur moy: 0 chars
+
+🤖 Stats par modèle:
+
+   glm-4.7:cloud:
+     Succès: 5/5
+     Latence moy: 13.4ms
+     Longueur moy: 0 chars
+
+   glm-5:cloud:
+     Succès: 5/5
+     Latence moy: 13.5ms
+     Longueur moy: 0 chars
+
+📝 Meilleures réponses (par longueur):
+
+   1. Model: glm-4.7:cloud
+      Query: Démontrez le théorème d'incomplétude de Gödel et expliquez s...
+      Length: 0 chars
+      Latency: 14ms
+      Response: ...
+
+   2. Model: glm-4.7:cloud
+      Query: Expliquez le problème P vs NP et pourquoi c'est important....
+      Length: 0 chars
+      Latency: 13ms
+      Response: ...
+
+   3. Model: glm-4.7:cloud
+      Query: Démontrez comment la relativité générale prédit la précessio...
+      Length: 0 chars
+      Latency: 13ms
+      Response: ...
+
+======================================================================
+✅ BENCHMARK TERMINÉ !
+======================================================================
