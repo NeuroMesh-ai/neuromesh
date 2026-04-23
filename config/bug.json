@@ -1,0 +1,28 @@
+{
+  "node_name": "bug",
+  "version": "3.2.0",
+  "host": "0.0.0.0",
+  "port": 8080,
+  "ollama_host": "127.0.0.1",
+  "ollama_port": 11434,
+  "local_models": ["glm-5.1:cloud"],
+  "heartbeat_interval": 30,
+  "auto_heal_interval": 120,
+  "memory_max_size": 1000,
+  "memory_default_ttl": 3600,
+  "p2p_secret": "bug-pinky-2026-unity",
+  "tailscale_auto_discovery": true,
+  "circuit_breaker": {
+    "failure_threshold": 3,
+    "recovery_timeout": 60,
+    "half_open_max_calls": 1
+  },
+  "peers": [
+    {
+      "name": "Pinky",
+      "host": "100.73.233.77",
+      "port": 8081,
+      "models": ["gemma4:31b-cloud", "glm-5.1:cloud"]
+    }
+  ]
+}
