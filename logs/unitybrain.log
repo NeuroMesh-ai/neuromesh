@@ -6517,3 +6517,54 @@
 2026-04-25 15:31:33,250 [UnityBrain] INFO: Initializing bug v3.3.0...
 2026-04-25 15:31:33,255 [UnityBrain] INFO: Discovery: found 1 potential peers
 2026-04-25 15:31:33,282 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:31:41,965 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:31:41,965 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:31:41,966 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:31:41,972 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:31:42,000 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:31:52,233 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:31:52,234 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:31:52,234 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:31:52,239 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:31:52,268 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:32:02,498 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:32:02,498 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:32:02,499 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:32:02,505 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:32:02,536 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:32:13,004 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:32:13,004 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:32:13,005 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:32:13,010 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:32:13,038 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:32:23,253 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:32:23,254 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:32:23,254 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:32:23,260 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:32:23,288 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:32:33,756 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:32:33,756 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:32:33,757 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:32:33,763 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:32:33,790 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:32:44,250 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:32:44,250 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:32:44,251 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:32:44,257 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:32:44,291 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:32:54,756 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:32:54,756 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:32:54,757 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:32:54,763 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:32:54,792 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:33:05,253 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:33:05,253 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:33:05,254 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:33:05,259 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:33:05,298 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:33:15,776 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 15:33:15,776 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 15:33:15,777 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 15:33:15,782 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 15:33:15,808 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 15:33:15,809 [UnityBrain] INFO: UnityBrain P2P server on http://0.0.0.0:8080

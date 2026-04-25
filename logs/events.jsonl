@@ -6343,3 +6343,54 @@
 {"time": "2026-04-25T15:31:33.255622", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
 {"time": "2026-04-25T15:31:33.255770", "type": "auth", "message": "Token generated (key_id: 75f0f7a1)", "level": "info"}
 {"time": "2026-04-25T15:31:33.282191", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:31:41.966106", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:31:41.972552", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:31:41.972743", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:31:41.972964", "type": "auth", "message": "Token generated (key_id: f596e3d5)", "level": "info"}
+{"time": "2026-04-25T15:31:42.000315", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:31:52.234409", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:31:52.239345", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:31:52.239518", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:31:52.239750", "type": "auth", "message": "Token generated (key_id: 6d272de0)", "level": "info"}
+{"time": "2026-04-25T15:31:52.267929", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:32:02.499303", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:32:02.505306", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:32:02.505456", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:32:02.505675", "type": "auth", "message": "Token generated (key_id: 636ccf56)", "level": "info"}
+{"time": "2026-04-25T15:32:02.536149", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:32:13.005105", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:32:13.010216", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:32:13.010392", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:32:13.010633", "type": "auth", "message": "Token generated (key_id: 42e97673)", "level": "info"}
+{"time": "2026-04-25T15:32:13.038173", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:32:23.254553", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:32:23.260797", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:32:23.260964", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:32:23.261197", "type": "auth", "message": "Token generated (key_id: 20e78a69)", "level": "info"}
+{"time": "2026-04-25T15:32:23.288542", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:32:33.757276", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:32:33.763421", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:32:33.763589", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:32:33.763815", "type": "auth", "message": "Token generated (key_id: 71b6be3b)", "level": "info"}
+{"time": "2026-04-25T15:32:33.790235", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:32:44.251051", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:32:44.257588", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:32:44.257817", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:32:44.258048", "type": "auth", "message": "Token generated (key_id: 54a30ae1)", "level": "info"}
+{"time": "2026-04-25T15:32:44.290631", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:32:54.757327", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:32:54.763585", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:32:54.763771", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:32:54.764005", "type": "auth", "message": "Token generated (key_id: 3ea94cc8)", "level": "info"}
+{"time": "2026-04-25T15:32:54.792506", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:33:05.254242", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:33:05.259269", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:33:05.259387", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:33:05.259543", "type": "auth", "message": "Token generated (key_id: 99391fed)", "level": "info"}
+{"time": "2026-04-25T15:33:05.297934", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:33:15.777503", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:33:15.782633", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:33:15.782801", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:33:15.783022", "type": "auth", "message": "Token generated (key_id: 25206b8d)", "level": "info"}
+{"time": "2026-04-25T15:33:15.807911", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:33:15.809451", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
