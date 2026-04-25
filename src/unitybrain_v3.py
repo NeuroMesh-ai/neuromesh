@@ -1686,7 +1686,7 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                         continue
                     
                     # Write operations require authentication
-                    if msg_type in ('memory_sync', 'query', 'discover') and not ws_authenticated:
+                    if msg_type in ('memory_sync', 'query', 'discover', 'memory_request', 'monitor') and not ws_authenticated:
                         await ws.send_json({'type': 'error', 'message': 'Authentication required'})
                         continue
                     

@@ -6853,3 +6853,23 @@
 2026-04-25 22:49:59,683 [UnityBrain] INFO: Discovery: found 1 potential peers
 2026-04-25 22:49:59,826 [UnityBrain] INFO: 🔑 Token key rotated: 30fa8896 → f399db4e
 2026-04-25 22:54:59,725 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 22:59:17,522 [UnityBrain] INFO: 🛑 UnityBrain shutting down...
+2026-04-25 22:59:17,523 [UnityBrain] INFO: Cleaning up...
+2026-04-25 22:59:17,523 [UnityBrain] INFO: UnityBrain stopped.
+2026-04-25 22:59:17,743 [UnityBrain] INFO: Starting UnityBrain v3.3 as 'bug'
+2026-04-25 22:59:17,743 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 22:59:17,744 [UnityBrain] INFO: Initializing bug v3.3.0...
+2026-04-25 22:59:17,778 [UnityBrain] INFO: brain.llm started — 7 models
+2026-04-25 22:59:17,788 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 22:59:17,814 [UnityBrain] INFO: bug initialized! Peers: 1/1
+2026-04-25 22:59:17,816 [UnityBrain] INFO: UnityBrain P2P server on http://0.0.0.0:8080
+2026-04-25 23:04:17,863 [UnityBrain] WARNING: Referral auth failed for 100.79.20.105:8081
+2026-04-25 23:04:17,864 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 23:09:17,903 [UnityBrain] WARNING: Referral auth failed for 100.79.20.105:8081
+2026-04-25 23:09:17,905 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 23:14:17,945 [UnityBrain] WARNING: Referral auth failed for 100.79.20.105:8081
+2026-04-25 23:14:17,946 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 23:19:17,988 [UnityBrain] WARNING: Referral auth failed for 100.79.20.105:8081
+2026-04-25 23:19:17,988 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 23:24:18,030 [UnityBrain] WARNING: Referral auth failed for 100.79.20.105:8081
+2026-04-25 23:24:18,030 [UnityBrain] INFO: Discovery: found 1 potential peers

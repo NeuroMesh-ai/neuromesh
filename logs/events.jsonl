@@ -6544,3 +6544,30 @@
 {"time": "2026-04-25T22:47:37.987311", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
 {"time": "2026-04-25T22:48:37.894358", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105", "level": "warn"}
 {"time": "2026-04-25T22:49:38.105959", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:59:17.744950", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T22:59:17.788215", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T22:59:17.788400", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T22:59:17.788664", "type": "auth", "message": "Token generated (key_id: bdacf6fb)", "level": "info"}
+{"time": "2026-04-25T22:59:17.814619", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T22:59:17.816322", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T22:59:24.776962", "type": "auth_fail", "message": "Unauthorized GET from 100.101.143.118 on /", "level": "warn"}
+{"time": "2026-04-25T22:59:38.617186", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:01:43.318963", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:02:43.271538", "type": "memory", "message": "Set key: p2p_test_bug", "level": "info"}
+{"time": "2026-04-25T23:03:43.437725", "type": "sync", "message": "Received 4 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:04:43.340864", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-04-25T23:05:43.552762", "type": "sync", "message": "Received 4 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:07:43.670579", "type": "sync", "message": "Received 4 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:09:43.484147", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-04-25T23:09:43.791251", "type": "sync", "message": "Received 4 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:11:43.906707", "type": "sync", "message": "Received 4 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:13:44.023503", "type": "sync", "message": "Received 4 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:14:43.624641", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-04-25T23:15:44.059102", "type": "sync", "message": "Received 3 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:17:44.159549", "type": "sync", "message": "Received 3 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:19:43.761847", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-04-25T23:19:44.197067", "type": "sync", "message": "Received 3 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:21:44.288980", "type": "sync", "message": "Received 3 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:23:44.346726", "type": "sync", "message": "Received 3 keys from peer", "level": "info"}
+{"time": "2026-04-25T23:24:43.904050", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-04-25T23:25:44.382569", "type": "sync", "message": "Received 3 keys from peer", "level": "info"}
