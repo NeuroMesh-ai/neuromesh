@@ -869,12 +869,26 @@ def load_config(config_path: str = None) -> Dict:
         try:
             with open(config_path) as f:
                 user_config = json.load(f)
-            # Deep merge
+            # Deep merge with env var interpolation
+            import re
+            env_pattern = re.compile(r'\$\{(\w+)\}')
             for key, value in user_config.items():
-                default_config[key] = value
+                if isinstance(value, str) and env_pattern.match(value):
+                    # Interpolate ${VAR} references from environment
+                    match = env_pattern.match(value)
+                    env_value = os.environ.get(match.group(1))
+                    if env_value:
+                        default_config[key] = env_value
+                    # If env var not set, leave default (which may be None)
+                else:
+                    default_config[key] = value
             logger.info(f"Config loaded from {config_path}")
         except Exception as e:
             logger.warning(f"Config load failed, using defaults: {e}")
+
+    # Validate required fields
+    if not default_config.get("p2p_secret"):
+        raise ValueError("P2P_SECRET is required: set P2P_SECRET env var or p2p_secret in config")
 
     return default_config
 
@@ -923,17 +937,8 @@ class UnityBrain:
         self.ollama_host = config["ollama_host"]
         self.ollama_port = config["ollama_port"]
         self.local_models = config["local_models"]
-        secret = config.get("p2p_secret") or os.environ.get("P2P_SECRET")
-        if not secret or secret.startswith("${"):
-            # Try to resolve ${VAR} references from environment
-            import re
-            match = re.match(r'\$\{(\w+)\}', secret or "")
-            if match:
-                secret = os.environ.get(match.group(1))
-            else:
-                secret = None
-        if not secret:
-            raise ValueError("P2P_SECRET is required: set P2P_SECRET env var or p2p_secret in config")
+        secret = config.get("p2p_secret")
+        # Already validated by load_config()
         self.p2p_secret = secret
 
         # Components

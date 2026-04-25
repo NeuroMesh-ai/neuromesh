@@ -6458,3 +6458,5 @@
 {"time": "2026-04-25T21:17:39.668305", "type": "peer_added", "message": "Peer azil added (100.101.143.118:8081)", "level": "info"}
 {"time": "2026-04-25T21:17:39.668696", "type": "discovery", "message": "Auto-discovered azil via referral", "level": "info"}
 {"time": "2026-04-25T21:18:59.173190", "type": "peer_purged", "message": "Purged undiscovered peer azil (100.101.143.118:8081) \u2014 CB open, never seen", "level": "warn"}
+{"time": "2026-04-25T21:22:51.654500", "type": "peer_added", "message": "Peer azil added (100.101.143.118:8081)", "level": "info"}
+{"time": "2026-04-25T21:22:51.654861", "type": "discovery", "message": "Auto-discovered azil via referral", "level": "info"}

@@ -6734,3 +6734,11 @@
 2026-04-25 21:17:51,611 [UnityBrain] INFO: Discovery: found 2 potential peers
 2026-04-25 21:18:59,172 [UnityBrain] WARNING: Circuit breaker: CLOSED → OPEN (3 failures)
 2026-04-25 21:18:59,173 [UnityBrain] INFO: Purged 1 dead peers
+2026-04-25 21:22:04,512 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 21:22:13,524 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 21:22:39,728 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-04-25 21:22:50,454 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 21:22:50,607 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 21:22:51,654 [UnityBrain] INFO: Discovery: found 2 potential peers
+2026-04-25 21:22:55,758 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-04-25 21:23:05,018 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
