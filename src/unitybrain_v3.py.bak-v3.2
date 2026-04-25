@@ -10,6 +10,7 @@ Evolution from v3.2:
 - System monitoring (psutil)
 - Auto-heal (Ollama restart)
 - Health dashboard
+- File logging + event persistence
 """
 
 import asyncio
@@ -21,32 +22,15 @@ import socket
 import hashlib
 import hmac
 import os
-import base64
-import uuid
 import psutil
 import logging
-from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional, Tuple, Set
+from datetime import datetime
+from typing import List, Dict, Any, Optional, Tuple
 from collections import deque
 from pathlib import Path
-import logging.handlers
-try:
-    import jwt
-    HAS_JWT = True
-except ImportError:
-    HAS_JWT = False
 
-# File logging + console
-log_dir = Path(__file__).parent.parent / "logs"
-log_dir.mkdir(exist_ok=True)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(name)s] %(levelname)s: %(message)s')
 logger = logging.getLogger('UnityBrain')
-file_handler = logging.handlers.RotatingFileHandler(
-    log_dir / "unitybrain.log", maxBytes=5*1024*1024, backupCount=3
-)
-file_handler.setFormatter(logging.Formatter('%(asctime)s [%(name)s] %(levelname)s: %(message)s'))
-file_handler.setLevel(logging.INFO)
-logger.addHandler(file_handler)
 
 
 # ============================================================================
@@ -113,379 +97,6 @@ class CircuitBreaker:
             "failures": self.failure_count,
             "last_failure": self.last_failure_time
         }
-
-
-# ============================================================================
-# ============== JWT TOKEN AUTH (Point 1) ==================================
-# ============================================================================
-
-class TokenAuth:
-    """JWT-based token auth with rotation for P2P security.
-    Replaces simple HMAC with:
-    - Signed JWT tokens (HS256 or Ed25519)
-    - Automatic token rotation every N hours
-    - Token blacklist for revocation
-    - Fallback to HMAC for v3.2 compatibility
-    """
-    
-    def __init__(self, secret: str, token_lifetime: int = 86400,
-                 rotation_interval: int = 3600):
-        self.secret = secret.encode() if isinstance(secret, str) else secret
-        self.token_lifetime = token_lifetime  # 24h default
-        self.rotation_interval = rotation_interval  # Rotate signing key every hour
-        self.current_key_id = str(uuid.uuid4())[:8]
-        self.key_history: deque = deque(maxlen=5)  # Keep last 5 keys for validation
-        self.blacklisted_tokens: set = set()
-        self.key_history.append({
-            'key_id': self.current_key_id,
-            'secret': self.secret,
-            'created': time.time()
-        })
-        self.last_rotation = time.time()
-    
-    def _check_rotation(self):
-        """Rotate signing key if interval exceeded"""
-        if time.time() - self.last_rotation >= self.rotation_interval:
-            old_key_id = self.current_key_id
-            self.current_key_id = str(uuid.uuid4())[:8]
-            new_secret = f"{self.secret.decode()}-{self.current_key_id}".encode()
-            self.key_history.append({
-                'key_id': self.current_key_id,
-                'secret': new_secret,
-                'created': time.time()
-            })
-            self.secret = new_secret
-            self.last_rotation = time.time()
-            logger.info(f"🔑 Token key rotated: {old_key_id} → {self.current_key_id}")
-    
-    def generate_token(self, node_name: str, scopes: List[str] = None) -> str:
-        """Generate a JWT token for a peer"""
-        self._check_rotation()
-        now = time.time()
-        payload = {
-            'sub': node_name,
-            'iat': now,
-            'exp': now + self.token_lifetime,
-            'kid': self.current_key_id,
-            'scopes': scopes or ['query', 'sync', 'ping']
-        }
-        if HAS_JWT:
-            token = jwt.encode(payload, self.secret, algorithm='HS256')
-        else:
-            # Fallback: base64-encoded payload + HMAC signature
-            payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode()
-            sig = hmac.new(self.secret, payload_b64.encode(), hashlib.sha256).hexdigest()
-            token = f"{payload_b64}.{sig}"
-        return token
-    
-    def verify_token(self, token: str) -> Optional[Dict]:
-        """Verify a JWT token. Returns payload if valid, None otherwise."""
-        if token in self.blacklisted_tokens:
-            return None
-        
-        # Try current key first, then history
-        for key_entry in reversed(list(self.key_history)):
-            try:
-                if HAS_JWT:
-                    payload = jwt.decode(token, key_entry['secret'], 
-                                        algorithms=['HS256'],
-                                        options={'require': ['exp', 'sub']})
-                else:
-                    # Fallback verification
-                    parts = token.split('.')
-                    if len(parts) != 2:
-                        continue
-                    payload_b64, sig = parts
-                    expected_sig = hmac.new(key_entry['secret'], 
-                                           payload_b64.encode(), 
-                                           hashlib.sha256).hexdigest()
-                    if not hmac.compare_digest(sig, expected_sig):
-                        continue
-                    payload = json.loads(base64.urlsafe_b64decode(payload_b64))
-                    
-                # Check expiry
-                if payload.get('exp', 0) < time.time():
-                    continue
-                return payload
-            except Exception:
-                continue
-        return None
-    
-    def revoke_token(self, token: str):
-        """Blacklist a token"""
-        self.blacklisted_tokens.add(token)
-    
-    def auth_headers(self, node_name: str, path: str) -> Dict[str, str]:
-        """Generate auth headers for outgoing requests"""
-        token = self.generate_token(node_name)
-        return {
-            'Authorization': f'Bearer {token}',
-            'X-UnityBrain-Version': '3.3.0'
-        }
-    
-    def verify_request(self, request: web.Request, secret: str = None) -> Optional[Dict]:
-        """Verify an incoming request's auth. Returns payload or None."""
-        auth = request.headers.get('Authorization', '')
-        if auth.startswith('Bearer '):
-            token = auth[7:]
-            payload = self.verify_token(token)
-            if payload:
-                return payload
-            # JWT failed — fall through to HMAC below
-        # Fallback: verify legacy HMAC headers for v3.2 compat
-        hmac_auth = request.headers.get('X-UnityBrain-Auth', '')
-        hmac_ts = request.headers.get('X-UnityBrain-TS', '')
-        if hmac_auth and hmac_ts and secret:
-            try:
-                ts = float(hmac_ts)
-                if abs(time.time() - ts) > 300:
-                    return None
-                # Use request.path for consistent signing (not full URL which varies by host)
-                path = request.path
-                msg = f"{path}:{hmac_ts}"
-                expected = hmac.new(secret.encode(), msg.encode(), hashlib.sha256).hexdigest()
-                if hmac.compare_digest(hmac_auth, expected):
-                    return {'sub': 'legacy', 'scopes': ['query', 'sync', 'ping']}
-            except (ValueError, TypeError):
-                return None
-        return None
-
-
-# ============================================================================
-# ============== DYNAMIC DISCOVERY (Point 3) ================================
-# ============================================================================
-
-class PeerDiscovery:
-    """Dynamic peer discovery via multiple mechanisms:
-    1. Tailscale status API
-    2. mDNS broadcast on local network
-    3. Config file fallback (v3.2 compat)
-    4. Peer referral (learn about new peers from existing ones)
-    """
-    
-    def __init__(self, node_name: str, own_host: str, own_port: int,
-                 config_peers: List[Dict] = None):
-        self.node_name = node_name
-        self.own_host = own_host
-        self.own_port = own_port
-        self.known_peers: Dict[str, Dict] = {}  # host:port → peer info
-        self.config_peers = config_peers or []
-        self.last_discovery = 0
-        self.discovery_interval = 300  # Re-discover every 5 min
-    
-    async def discover_all(self) -> List[Dict]:
-        """Run all discovery mechanisms and return found peers"""
-        found = {}
-        now = time.time()
-        
-        # 1. Config file peers (always checked)
-        for p in self.config_peers:
-            key = f"{p['host']}:{p.get('port', 8081)}"
-            found[key] = p
-        
-        # 2. Tailscale discovery
-        ts_peers = await self._discover_tailscale()
-        for p in ts_peers:
-            key = f"{p['host']}:{p.get('port', 8081)}"
-            if key not in found:
-                found[key] = p
-        
-        # 3. mDNS discovery
-        mdns_peers = await self._discover_mdns()
-        for p in mdns_peers:
-            key = f"{p['host']}:{p.get('port', 8081)}"
-            if key not in found:
-                found[key] = p
-        
-        # 4. Peer referral
-        referral_peers = await self._discover_referrals()
-        for p in referral_peers:
-            key = f"{p['host']}:{p.get('port', 8081)}"
-            if key not in found:
-                found[key] = p
-        
-        self.known_peers = found
-        self.last_discovery = now
-        logger.info(f"Discovery: found {len(found)} potential peers")
-        return list(found.values())
-    
-    async def _discover_tailscale(self) -> List[Dict]:
-        """Discover peers via Tailscale status API"""
-        peers = []
-        try:
-            proc = await asyncio.create_subprocess_exec(
-                'tailscale', 'status', '--json',
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
-            stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=5)
-            if proc.returncode == 0:
-                status = json.loads(stdout)
-                for peer in status.get('Peer', {}).values():
-                    if peer.get('Online', False):
-                        ips = peer.get('TailscaleIPs', [])
-                        # Skip self: check by hostname OR by IP matching our Tailscale IP
-                        if peer.get('HostName') == self.node_name:
-                            continue
-                        # Also skip if this peer's IP is our own
-                        own_ts_ip = status.get('Self', {}).get('TailscaleIPs', [])
-                        if own_ts_ip and any(ip in own_ts_ip for ip in ips):
-                            continue
-                        if ips:
-                            peers.append({
-                                'name': peer.get('HostName', 'unknown'),
-                                'host': ips[0],
-                                'port': 8081,  # Default UnityBrain port
-                                'source': 'tailscale'
-                            })
-        except Exception as e:
-            logger.debug(f"Tailscale discovery failed: {e}")
-        return peers
-    
-    async def _discover_mdns(self) -> List[Dict]:
-        """Discover peers via mDNS/DNS-SD on local network"""
-        peers = []
-        try:
-            # Use zeroconf if available, otherwise use socket broadcast
-            import socket
-            # Simple UDP broadcast on UnityBrain discovery port
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            sock.settimeout(2)
-            
-            # Send discovery broadcast
-            msg = json.dumps({
-                'type': 'unitybrain_discovery',
-                'node': self.node_name,
-                'port': self.own_port
-            }).encode()
-            
-            # Broadcast on common subnets
-            for subnet in ['192.168.1.255', '192.168.129.255', '100.64.0.255']:
-                try:
-                    sock.sendto(msg, (subnet, 8090))
-                except:
-                    pass
-            
-            # Listen for responses
-            sock.close()
-        except Exception as e:
-            logger.debug(f"mDNS discovery failed: {e}")
-        return peers
-    
-    async def _discover_referrals(self) -> List[Dict]:
-        """Ask known peers about other peers they know"""
-        referred = []
-        for key, peer_info in list(self.known_peers.items()):
-            try:
-                async with aiohttp.ClientSession() as session:
-                    url = f"http://{peer_info['host']}:{peer_info.get('port', 8081)}/api/peers"
-                    async with session.get(url, timeout=aiohttp.ClientTimeout(total=3)) as resp:
-                        if resp.status == 200:
-                            peer_list = await resp.json()
-                            for p in peer_list:
-                                pkey = f"{p['host']}:{p.get('port', 8081)}"
-                                if pkey not in self.known_peers:
-                                    p['source'] = 'referral'
-                                    referred.append(p)
-            except:
-                pass
-        return referred
-
-
-# ============================================================================
-# ============== LOAD BALANCER (Point 4) ===================================
-# ============================================================================
-
-class LoadBalancer:
-    """Intelligent load balancing between nodes.
-    Routes queries based on:
-    - Latency (lower is better)
-    - CPU load (lower is better)  
-    - Available memory (more is better)
-    - Model availability
-    - Reputation score
-    - Circuit breaker state
-    """
-    
-    def __init__(self):
-        self.node_scores: Dict[str, float] = {}  # Cached scores
-        self.last_scoring = 0
-        self.scoring_interval = 30  # Recalculate every 30s
-    
-    def calculate_score(self, peer, local_cpu: float = 0,
-                         local_mem_pct: float = 0) -> float:
-        """Calculate a routing score for a peer (lower = better choice).
-        Score components:
-        - latency_weight: 40% (lower latency = better)
-        - load_weight: 30% (lower CPU = better)
-        - model_weight: 20% (has the model = better)
-        - reputation_weight: 10% (higher reputation = better)
-        """
-        # Latency component (0-100, lower is better)
-        if peer.latency == float('inf') or not peer.available:
-            return float('inf')
-        latency_score = min(peer.latency / 10, 100)  # 0ms=0, 1000ms=100
-        
-        # Load component (use reputation as proxy if no direct load data)
-        # We could query /api/monitor but that adds latency
-        # For now, use inverse reputation as load proxy
-        load_score = (1 - peer.reputation) * 50  # 0-50
-        
-        # Combined score
-        score = (
-            latency_score * 0.4 +
-            load_score * 0.3 +
-            (1 - peer.reputation) * 10 +  # Reputation bonus
-            (0 if peer.circuit_breaker.state == 'closed' else 50)  # CB penalty
-        )
-        
-        self.node_scores[peer.name] = score
-        return score
-    
-    def select_best_peer(self, peers: list, model: str = None,
-                          exclude: str = None) -> Optional[Any]:
-        """Select the best peer for a query"""
-        candidates = [p for p in peers 
-                       if p.available 
-                       and p.circuit_breaker.can_execute()
-                       and p.name != exclude]
-        
-        if model:
-            # Prefer peers that have the requested model
-            model_peers = [p for p in candidates if model in p.models]
-            if model_peers:
-                candidates = model_peers
-        
-        if not candidates:
-            return None
-        
-        # Score and sort
-        scored = [(self.calculate_score(p), p) for p in candidates]
-        scored.sort(key=lambda x: x[0])
-        
-        best_score, best_peer = scored[0]
-        if best_score == float('inf'):
-            return None
-        
-        return best_peer
-    
-    def should_handle_locally(self, local_cpu: float, local_mem_pct: float,
-                                peers: list, model: str) -> bool:
-        """Decide if query should be handled locally or offloaded"""
-        # If local CPU is high and peers are available, offload
-        if local_cpu > 80 and len([p for p in peers if p.available]) > 0:
-            best_peer = self.select_best_peer(peers, model)
-            if best_peer and best_peer.latency < 200:
-                return False
-        
-        # If local CPU is low, handle locally
-        if local_cpu < 50:
-            return True
-        
-        # Medium load: handle locally if no low-latency peers
-        low_lat_peers = [p for p in peers if p.available and p.latency < 50]
-        return len(low_lat_peers) == 0
 
 
 # ============================================================================
@@ -730,7 +341,7 @@ def load_config(config_path: str = None) -> Dict:
     """Load config from JSON file or defaults"""
     default_config = {
         "node_name": "unknown",
-        "version": "3.3.0",
+        "version": "3.2.0",
         "host": "0.0.0.0",
         "port": 8080,
         "ollama_host": "127.0.0.1",
@@ -747,9 +358,6 @@ def load_config(config_path: str = None) -> Dict:
             "recovery_timeout": 60,
             "half_open_max_calls": 1
         },
-        "token_lifetime": 86400,
-        "token_rotation_interval": 3600,
-        "discovery_interval": 300,
         "peers": []
     }
 
@@ -800,12 +408,12 @@ async def discover_tailscale_peers() -> List[Dict]:
 # ============================================================================
 
 class UnityBrain:
-    """UnityBrain v3.3 - P2P Distribué avec Auth JWT, Discovery, Load Balancing"""
+    """UnityBrain v3.2 - P2P Distribué avec Circuit Breaker"""
 
     def __init__(self, config: Dict):
         self.config = config
         self.node_name = config["node_name"]
-        self.version = "3.3.0"
+        self.version = "3.2.0"
         self.host = config["host"]
         self.port = config["port"]
         self.ollama_host = config["ollama_host"]
@@ -821,24 +429,6 @@ class UnityBrain:
             max_size=config.get("memory_max_size", 1000),
             default_ttl=config.get("memory_default_ttl", 3600)
         )
-        
-        # v3.3: Token Auth (Point 1)
-        self.auth = TokenAuth(
-            secret=self.p2p_secret,
-            token_lifetime=config.get("token_lifetime", 86400),
-            rotation_interval=config.get("token_rotation_interval", 3600)
-        )
-        
-        # v3.3: Dynamic Discovery (Point 3)
-        self.discovery = PeerDiscovery(
-            node_name=self.node_name,
-            own_host=self.host,
-            own_port=self.port,
-            config_peers=config.get("peers", [])
-        )
-        
-        # v3.3: Load Balancer (Point 4)
-        self.load_balancer = LoadBalancer()
 
         # Peers
         self.peers: List[Peer] = []
@@ -855,67 +445,37 @@ class UnityBrain:
         self.heartbeat_interval = config.get("heartbeat_interval", 30)
         self.heartbeat_running = False
 
-        # WebSocket clients for real-time sync (Point 2)
-        self.ws_clients: Set[web.WebSocketResponse] = set()
-
         # Event log for dashboard
         self.event_log: deque = deque(maxlen=50)
 
     def log_event(self, event_type: str, message: str, level: str = "info"):
-        entry = {
+        self.event_log.append({
             "time": datetime.now().isoformat(),
             "type": event_type,
             "message": message,
             "level": level
-        }
-        self.event_log.append(entry)
-        # Persist to event log file (append mode, one JSON per line)
-        try:
-            log_file = Path(__file__).parent.parent / "logs" / "events.jsonl"
-            log_file.parent.mkdir(exist_ok=True)
-            with open(log_file, 'a') as f:
-                f.write(json.dumps(entry) + '\n')
-        except Exception:
-            pass  # Non-critical, don't crash on log write failure
+        })
 
     async def add_peer(self, peer: Peer):
         self.peers.append(peer)
         self.log_event("peer_added", f"Peer {peer.name} added ({peer.host}:{peer.port})")
 
     async def initialize(self):
-        """Initialise UnityBrain v3.3"""
+        """Initialise UnityBrain"""
         logger.info(f"Initializing {self.node_name} v{self.version}...")
         self.log_event("init", f"UnityBrain v{self.version} starting as '{self.node_name}'")
 
         self.session = aiohttp.ClientSession()
 
-        # v3.3: Dynamic peer discovery
-        discovered = await self.discovery.discover_all()
-        for peer_info in discovered:
-            # Check if peer already added
-            existing = [p for p in self.peers if p.host == peer_info['host'] 
-                        and p.port == peer_info.get('port', 8081)]
-            if not existing:
-                peer = Peer(
-                    name=peer_info.get('name', 'unknown'),
-                    host=peer_info['host'],
-                    port=peer_info.get('port', 8081),
-                    models=peer_info.get('models', []),
-                    ollama_host=peer_info.get('ollama_host', peer_info['host']),
-                    ollama_port=peer_info.get('ollama_port', 11434)
-                )
-                cb_config = self.config.get('circuit_breaker', {})
-                peer.circuit_breaker = CircuitBreaker(
-                    failure_threshold=cb_config.get('failure_threshold', 3),
-                    recovery_timeout=cb_config.get('recovery_timeout', 60),
-                    half_open_max=cb_config.get('half_open_max_calls', 1)
-                )
-                await self.add_peer(peer)
-                self.log_event("discovery", f"Discovered {peer.name} via {peer_info.get('source', 'config')}")
-
-        # Generate auth token for self
-        self.self_token = self.auth.generate_token(self.node_name)
-        self.log_event("auth", f"Token generated (key_id: {self.auth.current_key_id})")
+        # Auto-discover via Tailscale
+        if self.config.get("tailscale_auto_discovery", False):
+            ts_peers = await discover_tailscale_peers()
+            for ts_peer in ts_peers:
+                if ts_peer['name'] != self.node_name:
+                    # Check if already configured
+                    existing = [p for p in self.peers if p.host == ts_peer['host']]
+                    if not existing:
+                        logger.info(f"Tailscale discovered: {ts_peer['name']} at {ts_peer['host']}")
 
         await self.check_peers()
         available = [p for p in self.peers if p.available]
@@ -942,53 +502,29 @@ class UnityBrain:
 
     async def query(self, prompt: str, model: str = None,
                      use_ensemble: bool = False) -> Dict:
-        """Exécute une requête avec failover, load balancing et circuit breaker"""
+        """Exécute une requête avec failover et circuit breaker"""
         self.queries += 1
         logger.info(f"Query {self.queries}: {prompt[:50]}...")
 
         selected_model = model or await self.router.route(prompt, self.local_models)
-        
-        # v3.3: Use load balancer to decide local vs remote
-        local_cpu = psutil.cpu_percent(interval=0.1)
-        local_mem = psutil.virtual_memory().percent
-        handle_local = self.load_balancer.should_handle_locally(
-            local_cpu, local_mem, self.peers, selected_model)
-        
-        response, latency = '', float('inf')
-        if handle_local:
-            response, latency = await self._query_local(selected_model, prompt)
-        
+        response, latency = await self._query_local(selected_model, prompt)
+
         if latency == float('inf'):
-            # Local failed or offloaded — try peers via load balancer
-            logger.info("Query routing to peers (failover/load balance)...")
-            best_peer = self.load_balancer.select_best_peer(
-                self.peers, model=selected_model, exclude=self.node_name)
-            
-            if best_peer:
-                response, latency = await best_peer.query_via_peer(
-                    self.session, selected_model, prompt,
-                    auth_headers=self.auth.auth_headers(self.node_name,
-                        f"http://{best_peer.host}:{best_peer.port}/api/query")
-                )
-                if latency < float('inf'):
-                    self.log_event("load_balance", 
-                        f"Query routed to {best_peer.name} (score: {self.load_balancer.node_scores.get(best_peer.name, 0):.1f}, {latency:.0f}ms)")
-            else:
-                # Fallback: try any available peer (v3.2 compat)
-                available = sorted(
-                    [p for p in self.peers if p.available and p.circuit_breaker.can_execute()],
-                    key=lambda p: p.latency
-                )
-                for peer in available:
-                    if selected_model in peer.models or not peer.models:
-                        response, latency = await peer.query_via_peer(
-                            self.session, selected_model, prompt,
-                            auth_headers=self.auth.auth_headers(self.node_name,
-                                f"http://{peer.host}:{peer.port}/api/query")
-                        )
-                        if latency < float('inf'):
-                            self.log_event("failover", f"Query routed to {peer.name} ({latency:.0f}ms)")
-                            break
+            logger.info("Local query failed, trying peers (failover)...")
+            self.log_event("failover", f"Local failed, trying peers for model {selected_model}")
+            available = sorted(
+                [p for p in self.peers if p.available and p.circuit_breaker.can_execute()],
+                key=lambda p: p.latency
+            )
+            for peer in available:
+                if selected_model in peer.models or not peer.models:
+                    response, latency = await peer.query_via_peer(
+                        self.session, selected_model, prompt,
+                        auth_headers=self._auth_headers(f"http://{peer.host}:{peer.port}/api/query")
+                    )
+                    if latency < float('inf'):
+                        self.log_event("failover", f"Query routed to {peer.name} ({latency:.0f}ms)")
+                        break
 
         success = latency < float('inf')
         if success:
@@ -996,15 +532,13 @@ class UnityBrain:
 
         await self.history.add({
             "prompt": prompt, "response": response,
-            "model": selected_model, "latency": latency, "success": success,
-            "routed_to": "local" if handle_local and success else "peer"
+            "model": selected_model, "latency": latency, "success": success
         })
 
         return {
             "status": "success" if success else "error",
             "response": response, "model": selected_model,
-            "latency": latency, "node": self.node_name,
-            "routed_locally": handle_local and success
+            "latency": latency, "node": self.node_name
         }
 
     async def _query_local(self, model: str, prompt: str) -> Tuple[str, float]:
@@ -1051,28 +585,31 @@ class UnityBrain:
     # ========================================================================
 
     def _verify_auth(self, request: web.Request) -> bool:
-        """Verify P2P authentication (JWT tokens + HMAC fallback for v3.2 compat)"""
-        # v3.3: Try JWT/Bearer token first, then HMAC fallback
-        payload = self.auth.verify_request(request, secret=self.p2p_secret)
-        if payload:
-            return True
-        return request.method == 'GET'
+        """Verify P2P authentication (HMAC-based)"""
+        auth = request.headers.get('X-UnityBrain-Auth', '')
+        timestamp = request.headers.get('X-UnityBrain-TS', '')
+        if not auth or not timestamp:
+            return request.method == 'GET'
+        try:
+            ts = float(timestamp)
+            if abs(time.time() - ts) > 300:
+                return False
+        except:
+            return False
+        path = str(request.url)
+        msg = f"{path}:{timestamp}"
+        expected = hmac.new(self.p2p_secret.encode(), msg.encode(), hashlib.sha256).hexdigest()
+        return hmac.compare_digest(auth, expected)
 
     def _auth_headers(self, path: str) -> Dict[str, str]:
-        """Generate auth headers (v3.3 JWT + v3.2 HMAC for compatibility)
-        path should be just the URL path (e.g. '/api/ping'), not the full URL."""
-        headers = self.auth.auth_headers(self.node_name, path)
-        # Also include HMAC for v3.2 peer compat
-        # Strip full URL to path-only for consistent signing with server-side verify
-        if path.startswith('http'):
-            from urllib.parse import urlparse
-            path = urlparse(path).path
         ts = str(time.time())
         msg = f"{path}:{ts}"
         sig = hmac.new(self.p2p_secret.encode(), msg.encode(), hashlib.sha256).hexdigest()
-        headers['X-UnityBrain-Auth'] = sig
-        headers['X-UnityBrain-TS'] = ts
-        return headers
+        return {
+            'X-UnityBrain-Auth': sig,
+            'X-UnityBrain-TS': ts,
+            'X-UnityBrain-Version': self.version
+        }
 
     # ========================================================================
     # ============== HTTP API ================================================
@@ -1219,11 +756,6 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
             return web.json_response({"status": "error", "message": str(e)}, status=500)
 
     async def handle_memory_get(self, request: web.Request) -> web.Response:
-        # v3.3: Require auth for memory reads (may contain sensitive data)
-        # Bypass _verify_auth's default GET exemption - check JWT/HMAC directly
-        auth = self.auth.verify_request(request, secret=self.p2p_secret)
-        if not auth:
-            return web.json_response({'error': 'Unauthorized'}, status=401)
         key = request.match_info['key']
         value = self.memory.get(key)
         return web.json_response({"key": key, "value": value})
@@ -1268,131 +800,43 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
         except Exception as e:
             return web.json_response({'error': str(e)}, status=500)
 
-    # --- WebSocket (Point 2: Real-time Memory Sync) ---
+    # --- WebSocket ---
 
     async def handle_websocket(self, request: web.Request) -> web.WebSocketResponse:
         ws = web.WebSocketResponse()
-        # v3.3: Authenticate WebSocket connections
-        # Check for token in query params or first message
-        ws_authenticated = False
-        
         await ws.prepare(request)
-        self.ws_clients.add(ws)
-        self.log_event("ws", f"WebSocket connected from {request.remote} ({len(self.ws_clients)} clients)")
+        self.log_event("ws", f"WebSocket connected from {request.remote}")
         try:
             async for msg in ws:
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     data = json.loads(msg.data)
-                    msg_type = data.get('type', '')
-                    
-                    # v3.3: Require auth for write operations via WS
-                    # Allow ping, memory_request, monitor without auth
-                    if msg_type == 'auth':
-                        # Authenticate via JWT or HMAC
-                        token = data.get('token', '')
-                        hmac_auth = data.get('hmac', '')
-                        hmac_ts = data.get('ts', '')
-                        if token:
-                            payload = self.auth.verify_token(token)
-                            if payload:
-                                ws_authenticated = True
-                                await ws.send_json({'type': 'auth_ack', 'status': 'ok'})
-                                self.log_event("ws_auth", f"WS client authenticated via JWT")
-                        elif hmac_auth and hmac_ts:
-                            msg_str = f"/ws:{hmac_ts}"
-                            expected_sig = hmac.new(self.p2p_secret.encode(), msg_str.encode(), hashlib.sha256).hexdigest()
-                            if hmac.compare_digest(hmac_auth, expected_sig):
-                                ws_authenticated = True
-                                await ws.send_json({'type': 'auth_ack', 'status': 'ok'})
-                                self.log_event("ws_auth", f"WS client authenticated via HMAC")
-                        if not ws_authenticated:
-                            await ws.send_json({'type': 'auth_ack', 'status': 'failed'})
-                        continue
-                    
-                    # Write operations require authentication
-                    if msg_type in ('memory_sync', 'query', 'discover') and not ws_authenticated:
-                        await ws.send_json({'type': 'error', 'message': 'Authentication required'})
-                        continue
-                    
-                    if msg_type == 'ping':
+                    if data.get('type') == 'ping':
                         await ws.send_json({'type': 'pong', 'node': self.node_name,
                                             'timestamp': time.time()})
-                    elif msg_type == 'query':
+                    elif data.get('type') == 'query':
                         result = await self.query(data.get('prompt', ''),
                                                    model=data.get('model'))
                         await ws.send_json({'type': 'query_result', **result})
-                    elif msg_type == 'memory_sync':
-                        # v3.3: Real-time memory sync via WebSocket
-                        keys_synced = 0
-                        for key, entry in data.get('entries', {}).items():
-                            if isinstance(entry, dict) and 'value' in entry:
-                                ttl = entry.get('ttl', 3600)
-                                self.memory.set(key, entry['value'], ttl)
-                                keys_synced += 1
-                            else:
-                                self.memory.set(key, entry)
-                                keys_synced += 1
-                        self.log_event("ws_sync", f"Received {keys_synced} keys via WebSocket")
+                    elif data.get('type') == 'memory_sync':
+                        for key, value in data.get('entries', {}).items():
+                            self.memory.set(key, value)
                         await ws.send_json({'type': 'sync_ack',
-                                            'keys': keys_synced})
-                        # Broadcast to other WS clients
-                        await self._broadcast_ws({'type': 'memory_update',
-                                                   'keys': list(data.get('entries', {}).keys())},
-                                                   exclude=ws)
-                    elif msg_type == 'memory_request':
-                        # Peer requests our memory state
-                        memory_data = self.memory.get_all_for_sync()
-                        await ws.send_json({'type': 'memory_full',
-                                            'entries': memory_data})
-                    elif msg_type == 'discover':
-                        # v3.3: Peer announces itself
-                        peer_info = data.get('peer', {})
-                        self.log_event("ws_discover", f"Peer {peer_info.get('name', '?')} announced via WS")
-                        await ws.send_json({'type': 'discover_ack',
-                                            'node': self.node_name,
-                                            'models': self.local_models,
-                                            'peers': [p.to_dict() for p in self.peers]})
-                    elif msg_type == 'monitor':
+                                            'keys': len(data.get('entries', {}))})
+                    elif data.get('type') == 'monitor':
+                        # Real-time monitoring via WS
                         cpu = psutil.cpu_percent(interval=0.5)
                         mem = psutil.virtual_memory()
                         await ws.send_json({
                             'type': 'monitor_data',
                             'cpu': cpu,
                             'mem_percent': mem.percent,
-                            'load_balancer_scores': self.load_balancer.node_scores,
                             'timestamp': time.time()
                         })
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     logger.error(f'WS error: {ws.exception()}')
         except Exception as e:
             logger.error(f'WebSocket error: {e}')
-        finally:
-            self.ws_clients.discard(ws)
-            self.log_event("ws", f"WebSocket disconnected ({len(self.ws_clients)} clients)")
         return ws
-    
-    async def _broadcast_ws(self, data: Dict, exclude=None):
-        """Broadcast data to all connected WebSocket clients except excluded one"""
-        msg = json.dumps(data)
-        for client in list(self.ws_clients):
-            if client != exclude and not client.closed:
-                try:
-                    await client.send_str(msg)
-                except:
-                    self.ws_clients.discard(client)
-    
-    async def _ws_memory_sync_loop(self):
-        """Background task: periodically push memory updates to WebSocket peers"""
-        while self.heartbeat_running:
-            await asyncio.sleep(60)  # Sync every 60s via WS
-            if self.ws_clients and self.memory.store:
-                memory_data = self.memory.get_all_for_sync()
-                if memory_data:
-                    await self._broadcast_ws({
-                        'type': 'memory_sync',
-                        'entries': memory_data
-                    })
-                    self.log_event("ws_sync", f"Pushed {len(memory_data)} keys to {len(self.ws_clients)} WS clients")
 
     # --- Background Tasks ---
 
@@ -1443,24 +887,21 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                 self.log_event("auto_heal", "Ollama health check failed", "warn")
             await self.sync_memory_to_peers()
 
-    async def _discovery_loop(self):
-        """Background task: periodically re-discover peers"""
-        interval = self.config.get("discovery_interval", 300)
-        while self.heartbeat_running:
-            await asyncio.sleep(interval)
-            new_peers = await self.discovery.discover_all()
-            for peer_info in new_peers:
-                existing = [p for p in self.peers if p.host == peer_info['host'] 
-                            and p.port == peer_info.get('port', 8081)]
-                if not existing:
-                    peer = Peer(
-                        name=peer_info.get('name', 'unknown'),
-                        host=peer_info['host'],
-                        port=peer_info.get('port', 8081),
-                        models=peer_info.get('models', [])
-                    )
-                    await self.add_peer(peer)
-                    self.log_event("discovery", f"Auto-discovered {peer.name} via {peer_info.get('source', 'unknown')}")
+    async def run_server(self):
+        """Start aiohttp server"""
+        app = await self.create_app()
+        runner = web.AppRunner(app)
+        await runner.setup()
+        site = web.TCPSite(runner, self.host, self.port)
+        await site.start()
+        logger.info(f"UnityBrain P2P server on http://{self.host}:{self.port}")
+        self.log_event("server", f"Listening on {self.host}:{self.port}")
+
+        asyncio.create_task(self.start_heartbeat())
+        asyncio.create_task(self.auto_heal())
+
+        while True:
+            await asyncio.sleep(3600)
 
 
 # ============================================================================
@@ -1469,7 +910,6 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
 
 async def main():
     import sys
-    import signal
 
     node_name = sys.argv[1] if len(sys.argv) > 1 else "bug"
 
@@ -1483,58 +923,42 @@ async def main():
     if len(sys.argv) > 1:
         config["node_name"] = node_name
 
-    # Create UnityBrain v3.3
+    # Create UnityBrain
     brain = UnityBrain(config)
 
-    # v3.3: Peers are added during initialize() via PeerDiscovery
-    # Config peers are passed to PeerDiscovery as fallback
+    # Add peers from config
+    cb_config = config.get("circuit_breaker", {})
+    for peer_cfg in config.get("peers", []):
+        peer = Peer(
+            name=peer_cfg["name"],
+            host=peer_cfg["host"],
+            port=peer_cfg.get("port", 8081),
+            models=peer_cfg.get("models", []),
+            ollama_host=peer_cfg.get("ollama_host", peer_cfg["host"]),
+            ollama_port=peer_cfg.get("ollama_port", 11434)
+        )
+        peer.circuit_breaker = CircuitBreaker(
+            failure_threshold=cb_config.get("failure_threshold", 3),
+            recovery_timeout=cb_config.get("recovery_timeout", 60),
+            half_open_max=cb_config.get("half_open_max_calls", 1)
+        )
+        await brain.add_peer(peer)
+
     await brain.initialize()
-
-    # Graceful shutdown via asyncio Event
-    shutdown_event = asyncio.Event()
-
-    def _signal_handler():
-        logger.info("🛑 UnityBrain shutting down...")
-        shutdown_event.set()
-
-    loop = asyncio.get_running_loop()
-    for sig in (signal.SIGTERM, signal.SIGINT):
-        loop.add_signal_handler(sig, _signal_handler)
-
-    # Start server
-    app = await brain.create_app()
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, brain.host, brain.port)
-    await site.start()
-    logger.info(f"UnityBrain P2P server on http://{brain.host}:{brain.port}")
-    brain.log_event("server", f"Listening on {brain.host}:{brain.port}")
-
-    # Start background tasks
-    tasks = [
-        asyncio.create_task(brain.start_heartbeat()),
-        asyncio.create_task(brain.auto_heal()),
-        asyncio.create_task(brain._ws_memory_sync_loop()),
-        asyncio.create_task(brain._discovery_loop()),
-    ]
-
-    # Wait for shutdown signal
-    await shutdown_event.wait()
-
-    # Cleanup
-    logger.info("Cleaning up...")
-    brain.heartbeat_running = False
-    for task in tasks:
-        task.cancel()
-    await asyncio.gather(*tasks, return_exceptions=True)
-    if brain.session:
-        await brain.session.close()
-    await runner.cleanup()
-    logger.info("UnityBrain stopped.")
+    await brain.run_server()
 
 
 if __name__ == '__main__':
+    import signal
     import sys
+
+    def shutdown(sig, frame):
+        logger.info("🛑 UnityBrain shutting down...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, shutdown)
+    signal.signal(signal.SIGINT, shutdown)
+
     node = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    logger.info(f"Starting UnityBrain v3.3 as '{node}'")
+    logger.info(f"Starting UnityBrain v3.2 as '{node}'")
     asyncio.run(main())

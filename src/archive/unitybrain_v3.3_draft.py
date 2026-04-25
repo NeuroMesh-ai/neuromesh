@@ -26,27 +26,19 @@ import uuid
 import psutil
 import logging
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional, Tuple, Set
+from typing import List, Dict, Any, Optional, Tuple
 from collections import deque
 from pathlib import Path
-import logging.handlers
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ed25519
 try:
     import jwt
     HAS_JWT = True
 except ImportError:
     HAS_JWT = False
 
-# File logging + console
-log_dir = Path(__file__).parent.parent / "logs"
-log_dir.mkdir(exist_ok=True)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(name)s] %(levelname)s: %(message)s')
 logger = logging.getLogger('UnityBrain')
-file_handler = logging.handlers.RotatingFileHandler(
-    log_dir / "unitybrain.log", maxBytes=5*1024*1024, backupCount=3
-)
-file_handler.setFormatter(logging.Formatter('%(asctime)s [%(name)s] %(levelname)s: %(message)s'))
-file_handler.setLevel(logging.INFO)
-logger.addHandler(file_handler)
 
 
 # ============================================================================
@@ -228,10 +220,7 @@ class TokenAuth:
         auth = request.headers.get('Authorization', '')
         if auth.startswith('Bearer '):
             token = auth[7:]
-            payload = self.verify_token(token)
-            if payload:
-                return payload
-            # JWT failed — fall through to HMAC below
+            return self.verify_token(token)
         # Fallback: verify legacy HMAC headers for v3.2 compat
         hmac_auth = request.headers.get('X-UnityBrain-Auth', '')
         hmac_ts = request.headers.get('X-UnityBrain-TS', '')
@@ -322,15 +311,8 @@ class PeerDiscovery:
             if proc.returncode == 0:
                 status = json.loads(stdout)
                 for peer in status.get('Peer', {}).values():
-                    if peer.get('Online', False):
+                    if peer.get('Online', False) and peer.get('HostName') != self.node_name:
                         ips = peer.get('TailscaleIPs', [])
-                        # Skip self: check by hostname OR by IP matching our Tailscale IP
-                        if peer.get('HostName') == self.node_name:
-                            continue
-                        # Also skip if this peer's IP is our own
-                        own_ts_ip = status.get('Self', {}).get('TailscaleIPs', [])
-                        if own_ts_ip and any(ip in own_ts_ip for ip in ips):
-                            continue
                         if ips:
                             peers.append({
                                 'name': peer.get('HostName', 'unknown'),
@@ -862,21 +844,12 @@ class UnityBrain:
         self.event_log: deque = deque(maxlen=50)
 
     def log_event(self, event_type: str, message: str, level: str = "info"):
-        entry = {
+        self.event_log.append({
             "time": datetime.now().isoformat(),
             "type": event_type,
             "message": message,
             "level": level
-        }
-        self.event_log.append(entry)
-        # Persist to event log file (append mode, one JSON per line)
-        try:
-            log_file = Path(__file__).parent.parent / "logs" / "events.jsonl"
-            log_file.parent.mkdir(exist_ok=True)
-            with open(log_file, 'a') as f:
-                f.write(json.dumps(entry) + '\n')
-        except Exception:
-            pass  # Non-critical, don't crash on log write failure
+        })
 
     async def add_peer(self, peer: Peer):
         self.peers.append(peer)
@@ -1443,6 +1416,24 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                 self.log_event("auto_heal", "Ollama health check failed", "warn")
             await self.sync_memory_to_peers()
 
+    async def run_server(self):
+        """Start aiohttp server with v3.3 background tasks"""
+        app = await self.create_app()
+        runner = web.AppRunner(app)
+        await runner.setup()
+        site = web.TCPSite(runner, self.host, self.port)
+        await site.start()
+        logger.info(f"UnityBrain P2P server on http://{self.host}:{self.port}")
+        self.log_event("server", f"Listening on {self.host}:{self.port}")
+
+        asyncio.create_task(self.start_heartbeat())
+        asyncio.create_task(self.auto_heal())
+        asyncio.create_task(self._ws_memory_sync_loop())  # v3.3: WS memory sync
+        asyncio.create_task(self._discovery_loop())  # v3.3: Periodic discovery
+
+        while True:
+            await asyncio.sleep(3600)
+    
     async def _discovery_loop(self):
         """Background task: periodically re-discover peers"""
         interval = self.config.get("discovery_interval", 300)
@@ -1469,7 +1460,6 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
 
 async def main():
     import sys
-    import signal
 
     node_name = sys.argv[1] if len(sys.argv) > 1 else "bug"
 
@@ -1489,52 +1479,20 @@ async def main():
     # v3.3: Peers are added during initialize() via PeerDiscovery
     # Config peers are passed to PeerDiscovery as fallback
     await brain.initialize()
-
-    # Graceful shutdown via asyncio Event
-    shutdown_event = asyncio.Event()
-
-    def _signal_handler():
-        logger.info("🛑 UnityBrain shutting down...")
-        shutdown_event.set()
-
-    loop = asyncio.get_running_loop()
-    for sig in (signal.SIGTERM, signal.SIGINT):
-        loop.add_signal_handler(sig, _signal_handler)
-
-    # Start server
-    app = await brain.create_app()
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, brain.host, brain.port)
-    await site.start()
-    logger.info(f"UnityBrain P2P server on http://{brain.host}:{brain.port}")
-    brain.log_event("server", f"Listening on {brain.host}:{brain.port}")
-
-    # Start background tasks
-    tasks = [
-        asyncio.create_task(brain.start_heartbeat()),
-        asyncio.create_task(brain.auto_heal()),
-        asyncio.create_task(brain._ws_memory_sync_loop()),
-        asyncio.create_task(brain._discovery_loop()),
-    ]
-
-    # Wait for shutdown signal
-    await shutdown_event.wait()
-
-    # Cleanup
-    logger.info("Cleaning up...")
-    brain.heartbeat_running = False
-    for task in tasks:
-        task.cancel()
-    await asyncio.gather(*tasks, return_exceptions=True)
-    if brain.session:
-        await brain.session.close()
-    await runner.cleanup()
-    logger.info("UnityBrain stopped.")
+    await brain.run_server()
 
 
 if __name__ == '__main__':
+    import signal
     import sys
+
+    def shutdown(sig, frame):
+        logger.info("🛑 UnityBrain shutting down...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, shutdown)
+    signal.signal(signal.SIGINT, shutdown)
+
     node = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    logger.info(f"Starting UnityBrain v3.3 as '{node}'")
+    logger.info(f"Starting UnityBrain v3.2 as '{node}'")
     asyncio.run(main())

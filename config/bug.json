@@ -1,11 +1,13 @@
 {
   "node_name": "bug",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "host": "0.0.0.0",
   "port": 8080,
   "ollama_host": "127.0.0.1",
   "ollama_port": 11434,
-  "local_models": ["glm-5.1:cloud"],
+  "local_models": [
+    "glm-5.1:cloud"
+  ],
   "heartbeat_interval": 30,
   "auto_heal_interval": 120,
   "memory_max_size": 1000,
@@ -20,9 +22,14 @@
   "peers": [
     {
       "name": "Pinky",
-      "host": "100.73.233.77",
+      "host": "100.79.20.105",
       "port": 8081,
-      "models": ["gemma4:31b-cloud", "glm-5.1:cloud"]
+      "models": [
+        "glm-5.1:cloud"
+      ]
     }
-  ]
+  ],
+  "token_lifetime": 86400,
+  "token_rotation_interval": 3600,
+  "discovery_interval": 300
 }
