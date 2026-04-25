@@ -769,13 +769,14 @@ class QueryHistory:
 # ============================================================================
 
 class DistributedMemory:
-    """Mémoire distribuée P2P avec cache LRU et TTL"""
-    def __init__(self, max_size: int = 1000, default_ttl: int = 3600):
+    """Volatile LRU cache for UnityBrain P2P sync.
+    Private persistent memory is handled by the standalone PersistentMemory service."""
+    def __init__(self, max_size: int = 1000, default_ttl: int = 3600, **kwargs):
         self.store: Dict[str, Dict] = {}
         self.max_size = max_size
         self.default_ttl = default_ttl
 
-    def set(self, key: str, value: Any, ttl: int = None):
+    def set(self, key: str, value: Any, ttl: int = None, **kwargs):
         if len(self.store) >= self.max_size:
             oldest = min(self.store.items(), key=lambda x: x[1]['accessed'])
             del self.store[oldest[0]]
@@ -785,7 +786,7 @@ class DistributedMemory:
             'accessed': time.time()
         }
 
-    def get(self, key: str) -> Any:
+    def get(self, key: str, **kwargs) -> Any:
         if key in self.store:
             entry = self.store[key]
             if entry['expires'] > time.time():
@@ -794,11 +795,32 @@ class DistributedMemory:
             del self.store[key]
         return None
 
+    def delete(self, key: str, **kwargs) -> bool:
+        if key in self.store:
+            del self.store[key]
+            return True
+        return False
+
     def get_all_for_sync(self) -> Dict[str, Dict]:
-        """Get all non-expired entries for sync"""
+        """Get all non-expired entries for P2P sync"""
         now = time.time()
         return {k: {'value': v['value'], 'expires': v['expires']}
                 for k, v in self.store.items() if v['expires'] > now}
+
+    def import_from_sync(self, data: Dict[str, Dict]):
+        """Import entries from P2P sync"""
+        count = 0
+        for key, entry in data.items():
+            if entry.get('expires', 0) > time.time():
+                self.store[key] = entry
+                count += 1
+        return count
+
+    def search(self, **kwargs) -> list:
+        return []
+
+    def stats(self) -> Dict:
+        return {'total_entries': len(self.store), 'categories': {}}
 
 
 # ============================================================================
@@ -901,6 +923,8 @@ class UnityBrain:
             default_ttl=config.get("memory_default_ttl", 3600)
         )
         
+
+
         # v3.3: Token Auth (Point 1)
         self.auth = TokenAuth(
             secret=self.p2p_secret,
