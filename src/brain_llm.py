@@ -387,7 +387,7 @@ class BrainLLM:
             async with self.session.get(
                 f"http://127.0.0.1:{memory_info.get('port', 8084)}/search",
                 params={"q": query, "limit": str(limit)},
-                headers={"X-Node-Secret": SHARED_SECRET},
+                headers={"X-Node-Secret": os.environ.get("P2P_SECRET", "")},
                 timeout=aiohttp.ClientTimeout(total=5)
             ) as resp:
                 if resp.status == 200:
