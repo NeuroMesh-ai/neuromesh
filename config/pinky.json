@@ -1,14 +1,18 @@
 {
   "node_name": "pinky",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "host": "0.0.0.0",
   "port": 8081,
   "ollama_host": "127.0.0.1",
   "ollama_port": 11434,
-  "local_models": ["gemma4:31b-cloud", "glm-5.1:cloud"],
+  "local_models": [
+    "glm-5.1:cloud",
+    "deepseek-v3.1:671b-cloud",
+    "qwen3-coder-next:cloud"
+  ],
   "heartbeat_interval": 30,
   "auto_heal_interval": 120,
-  "memory_max_size": 500,
+  "memory_max_size": 1000,
   "memory_default_ttl": 3600,
   "p2p_secret": "bug-pinky-2026-unity",
   "tailscale_auto_discovery": true,
@@ -22,7 +26,14 @@
       "name": "Bug",
       "host": "100.101.143.118",
       "port": 8080,
-      "models": ["glm-5.1:cloud"]
+      "models": [
+        "glm-5.1:cloud",
+        "deepseek-v3.1:671b-cloud",
+        "qwen3-coder-next:cloud"
+      ]
     }
-  ]
+  ],
+  "token_lifetime": 86400,
+  "token_rotation_interval": 3600,
+  "discovery_interval": 300
 }

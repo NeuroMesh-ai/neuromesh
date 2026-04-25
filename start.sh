@@ -1,14 +1,16 @@
 #!/bin/bash
-# UnityBrain Quick Start
+# UnityBrain Start — loads .env and starts the node
 
-echo "🐛 UnityBrain — Quick Start"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ENV_FILE="$SCRIPT_DIR/.env"
 
-# Check if installed
-if [ ! -d "$HOME/.unitybrain" ]; then
-    echo "❌ Not installed. Run install.sh first"
-    exit 1
+# Load .env if exists
+if [ -f "$ENV_FILE" ]; then
+    set -a
+    source "$ENV_FILE"
+    set +a
 fi
 
-# Start the service
-cd "$HOME/.unitybrain"
-python3 -m uvicorn openclaw_p2p_service:app --host 127.0.0.1 --port 8001 --log-level info
+NODE=${1:-pinky}
+cd "$SCRIPT_DIR/src"
+exec python3 unitybrain_v3.py "$NODE"

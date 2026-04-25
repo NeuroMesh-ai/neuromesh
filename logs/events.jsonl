@@ -6412,3 +6412,49 @@
 {"time": "2026-04-25T15:35:11.766315", "type": "auth", "message": "Token generated (key_id: 6d5d3c1b)", "level": "info"}
 {"time": "2026-04-25T15:35:11.864185", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
 {"time": "2026-04-25T15:35:11.868213", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T15:37:10.903052", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:37:10.908315", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:37:10.908426", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:37:10.908579", "type": "auth", "message": "Token generated (key_id: 634bc9f1)", "level": "info"}
+{"time": "2026-04-25T15:37:10.935961", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:37:10.937511", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T15:38:43.012382", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T15:38:43.019201", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T15:38:43.019385", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T15:38:43.019610", "type": "auth", "message": "Token generated (key_id: aa656626)", "level": "info"}
+{"time": "2026-04-25T15:38:43.047357", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T15:38:43.048522", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T15:40:11.919528", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-04-25T15:40:11.919672", "type": "discovery", "message": "Auto-discovered Bug via referral", "level": "info"}
+{"time": "2026-04-25T15:42:10.991194", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-04-25T15:42:10.991591", "type": "discovery", "message": "Auto-discovered Bug via referral", "level": "info"}
+{"time": "2026-04-25T15:43:43.106838", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-04-25T15:43:43.107182", "type": "discovery", "message": "Auto-discovered Bug via referral", "level": "info"}
+{"time": "2026-04-25T15:43:43.107338", "type": "peer_added", "message": "Peer azil added (100.101.143.118:8081)", "level": "info"}
+{"time": "2026-04-25T15:43:43.107448", "type": "discovery", "message": "Auto-discovered azil via referral", "level": "info"}
+{"time": "2026-04-25T15:44:43.510325", "type": "peer_purged", "message": "Purged undiscovered peer azil (100.101.143.118:8081) \u2014 CB open, never seen", "level": "warn"}
+{"time": "2026-04-25T16:22:55.007994", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T16:22:55.083294", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T16:22:55.083551", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T16:22:55.083902", "type": "auth", "message": "Token generated (key_id: 44cf5f49)", "level": "info"}
+{"time": "2026-04-25T16:22:55.116506", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T16:22:55.120281", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T16:23:07.057504", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T16:23:07.096072", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T16:23:07.096396", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T16:23:07.096759", "type": "auth", "message": "Token generated (key_id: 5ab0ddbd)", "level": "info"}
+{"time": "2026-04-25T16:23:07.125178", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T16:23:07.129188", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T16:27:55.200348", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-04-25T16:27:55.200710", "type": "discovery", "message": "Auto-discovered Bug via referral", "level": "info"}
+{"time": "2026-04-25T16:28:07.189765", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-04-25T16:28:07.190263", "type": "discovery", "message": "Auto-discovered Bug via referral", "level": "info"}
+{"time": "2026-04-25T21:07:39.581748", "type": "peer_added", "message": "Peer azil added (100.101.143.118:8081)", "level": "info"}
+{"time": "2026-04-25T21:07:39.582223", "type": "discovery", "message": "Auto-discovered azil via referral", "level": "info"}
+{"time": "2026-04-25T21:08:58.439637", "type": "peer_purged", "message": "Purged undiscovered peer azil (100.101.143.118:8081) \u2014 CB open, never seen", "level": "warn"}
+{"time": "2026-04-25T21:12:51.575379", "type": "peer_added", "message": "Peer azil added (100.101.143.118:8081)", "level": "info"}
+{"time": "2026-04-25T21:12:51.575668", "type": "discovery", "message": "Auto-discovered azil via referral", "level": "info"}
+{"time": "2026-04-25T21:14:12.485948", "type": "peer_purged", "message": "Purged undiscovered peer azil (100.101.143.118:8081) \u2014 CB open, never seen", "level": "warn"}
+{"time": "2026-04-25T21:17:39.668305", "type": "peer_added", "message": "Peer azil added (100.101.143.118:8081)", "level": "info"}
+{"time": "2026-04-25T21:17:39.668696", "type": "discovery", "message": "Auto-discovered azil via referral", "level": "info"}
+{"time": "2026-04-25T21:18:59.173190", "type": "peer_purged", "message": "Purged undiscovered peer azil (100.101.143.118:8081) \u2014 CB open, never seen", "level": "warn"}

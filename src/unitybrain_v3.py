@@ -36,6 +36,17 @@ try:
 except ImportError:
     HAS_JWT = False
 
+# Modular imports (extracted classes)
+try:
+    from auth import CircuitBreaker, TokenAuth
+    from discovery import PeerDiscovery, Peer
+    from balancing import LoadBalancer
+    from models import ModelRouter, EnsembleConsensus, QueryHistory
+    from monitoring import DistributedMemory
+    _MODULAR = True
+except ImportError:
+    _MODULAR = False
+
 # File logging + console
 log_dir = Path(__file__).parent.parent / "logs"
 log_dir.mkdir(exist_ok=True)
@@ -364,7 +375,7 @@ class PeerDiscovery:
             for subnet in ['192.168.1.255', '192.168.129.255', '100.64.0.255']:
                 try:
                     sock.sendto(msg, (subnet, 8090))
-                except:
+                except (OSError, socket.error):
                     pass
             
             # Listen for responses
@@ -388,7 +399,7 @@ class PeerDiscovery:
                                 if pkey not in self.known_peers:
                                     p['source'] = 'referral'
                                     referred.append(p)
-            except:
+            except (KeyError, TypeError, ValueError):
                 pass
         return referred
 
@@ -841,7 +852,7 @@ def load_config(config_path: str = None) -> Dict:
         "auto_heal_interval": 120,
         "memory_max_size": 1000,
         "memory_default_ttl": 3600,
-        "p2p_secret": "bug-pinky-2026-unity",
+        "p2p_secret": os.environ.get("P2P_SECRET", None),  # REQUIRED: no default, must be set
         "tailscale_auto_discovery": True,
         "circuit_breaker": {
             "failure_threshold": 3,
@@ -912,7 +923,18 @@ class UnityBrain:
         self.ollama_host = config["ollama_host"]
         self.ollama_port = config["ollama_port"]
         self.local_models = config["local_models"]
-        self.p2p_secret = config.get("p2p_secret", "bug-pinky-2026-unity")
+        secret = config.get("p2p_secret") or os.environ.get("P2P_SECRET")
+        if not secret or secret.startswith("${"):
+            # Try to resolve ${VAR} references from environment
+            import re
+            match = re.match(r'\$\{(\w+)\}', secret or "")
+            if match:
+                secret = os.environ.get(match.group(1))
+            else:
+                secret = None
+        if not secret:
+            raise ValueError("P2P_SECRET is required: set P2P_SECRET env var or p2p_secret in config")
+        self.p2p_secret = secret
 
         # Components
         self.router = ModelRouter()
@@ -922,11 +944,6 @@ class UnityBrain:
             max_size=config.get("memory_max_size", 1000),
             default_ttl=config.get("memory_default_ttl", 3600)
         )
-        # Persistent shared memory (git-synced)
-        sys.path.insert(0, str(Path(__file__).parent))
-        from persistent_memory import PersistentSharedMemory
-        shared_mem_path = str(Path(__file__).parent.parent / "shared_memory" / "unitybrain_persistent_memory")
-        self.persistent_memory = PersistentSharedMemory(shared_mem_path, self.node_name)
         
 
 
@@ -955,6 +972,14 @@ class UnityBrain:
         self.queries = 0
         self.successful = 0
         self.start_time = time.time()
+
+        # Brain LLM engine
+        try:
+            from brain_llm import BrainLLM
+            self.brain_llm = BrainLLM(node_name=self.node_name)
+        except ImportError:
+            self.brain_llm = None
+            logger.warning("brain.llm not available")
 
         # HTTP session
         self.session: Optional[aiohttp.ClientSession] = None
@@ -1045,6 +1070,12 @@ class UnityBrain:
         self.log_event("init", f"UnityBrain v{self.version} starting as '{self.node_name}'")
 
         self.session = aiohttp.ClientSession()
+
+        # Initialize brain.llm engine
+        if self.brain_llm:
+            self.brain_llm.session = self.session
+            await self.brain_llm.start()
+            logger.info(f"brain.llm started — {self.brain_llm.status()['models_available']} models")
 
         # v3.3: Dynamic peer discovery
         discovered = await self.discovery.discover_all()
@@ -1291,11 +1322,11 @@ class UnityBrain:
             web.get('/api/peers', self.handle_peers),
             web.get('/api/monitor', self.handle_monitor),
             web.post('/api/sync', self.handle_sync),
-            # Persistent shared memory
-            web.get('/api/persistent', self.handle_persistent_list),
-            web.get('/api/persistent/{key}', self.handle_persistent_get),
-            web.post('/api/persistent', self.handle_persistent_set),
-            web.delete('/api/persistent/{key}', self.handle_persistent_delete),
+            web.get('/api/brain/status', self.handle_brain_status),
+            web.post('/api/brain/query', self.handle_brain_query),
+            web.post('/api/brain/consensus', self.handle_brain_consensus),
+            web.post('/api/brain/chain', self.handle_brain_chain),
+            web.get('/api/brain/models', self.handle_brain_models),
             web.get('/ws', self.handle_websocket),
         ])
         return app
@@ -1305,6 +1336,12 @@ class UnityBrain:
         if request.method == 'POST' and not self._verify_auth(request):
             self.log_event("auth_fail", f"Unauthorized POST from {request.remote}", "warn")
             return web.json_response({'error': 'unauthorized'}, status=401)
+        # Also require auth for sensitive GET endpoints
+        SENSITIVE_GET_PATHS = ['/api/peers', '/api/monitor', '/api/memory']
+        if request.method == 'GET' and any(request.path.startswith(p) for p in SENSITIVE_GET_PATHS):
+            if not self.auth.verify_request(request, secret=self.p2p_secret):
+                self.log_event("auth_fail", f"Unauthorized GET from {request.remote} on {request.path}", "warn")
+                return web.json_response({'error': 'unauthorized'}, status=401)
         return await handler(request)
 
     # --- Dashboard ---
@@ -1401,6 +1438,9 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
         })
 
     async def handle_query(self, request: web.Request) -> web.Response:
+        auth = self._verify_auth(request)
+        if not auth:
+            return web.json_response({'error': 'Unauthorized'}, status=401)
         try:
             data = await request.json()
             prompt = data.get('prompt', '')
@@ -1424,6 +1464,9 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
             return web.json_response({"status": "error", "message": str(e)}, status=500)
 
     async def handle_memory_set(self, request: web.Request) -> web.Response:
+        auth = self._verify_auth(request)
+        if not auth:
+            return web.json_response({'error': 'Unauthorized'}, status=401)
         try:
             data = await request.json()
             key = data.get('key', '')
@@ -1446,9 +1489,15 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
         return web.json_response({"key": key, "value": value})
 
     async def handle_peers(self, request: web.Request) -> web.Response:
+        auth = self._verify_auth(request)
+        if not auth:
+            return web.json_response({'error': 'Unauthorized'}, status=401)
         return web.json_response([p.to_dict() for p in self.peers])
 
     async def handle_monitor(self, request: web.Request) -> web.Response:
+        auth = self._verify_auth(request)
+        if not auth:
+            return web.json_response({'error': 'Unauthorized'}, status=401)
         try:
             # Cache monitor results for 10 seconds to avoid slow psutil calls
             now = time.time()
@@ -1481,6 +1530,9 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
             return web.json_response({'error': str(e)}, status=500)
 
     async def handle_sync(self, request: web.Request) -> web.Response:
+        auth = self._verify_auth(request)
+        if not auth:
+            return web.json_response({'error': 'Unauthorized'}, status=401)
         try:
             data = await request.json()
             keys_synced = 0
@@ -1493,6 +1545,82 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
             return web.json_response({'status': 'ok', 'keys_synced': keys_synced})
         except Exception as e:
             return web.json_response({'error': str(e)}, status=500)
+
+    # --- Brain LLM Endpoints ---
+
+    async def handle_brain_status(self, request: web.Request) -> web.Response:
+        """GET /api/brain/status — Brain LLM engine status"""
+        if not self.brain_llm:
+            return web.json_response({"error": "brain.llm not available"}, status=503)
+        return web.json_response(self.brain_llm.status())
+
+    async def handle_brain_models(self, request: web.Request) -> web.Response:
+        """GET /api/brain/models — Available models"""
+        if not self.brain_llm:
+            return web.json_response({"error": "brain.llm not available"}, status=503)
+        return web.json_response(self.brain_llm.status().get("models", {}))
+
+    async def handle_brain_query(self, request: web.Request) -> web.Response:
+        """POST /api/brain/query — Intelligent query routing"""
+        if not self.brain_llm:
+            return web.json_response({"error": "brain.llm not available"}, status=503)
+        try:
+            data = await request.json()
+            prompt = data.get('prompt', '')
+            model = data.get('model')
+            strategy = data.get('strategy', 'auto')
+            if not prompt:
+                return web.json_response({"error": "prompt is required"}, status=400)
+            result = await self.brain_llm.query(prompt, model=model, strategy=strategy)
+            return web.json_response({
+                "response": result.response,
+                "model": result.model,
+                "provider": result.provider,
+                "latency_ms": result.latency_ms,
+                "tokens_used": result.tokens_used,
+                "confidence": result.confidence,
+                "error": result.error
+            })
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=500)
+
+    async def handle_brain_consensus(self, request: web.Request) -> web.Response:
+        """POST /api/brain/consensus — Multi-model consensus query"""
+        if not self.brain_llm:
+            return web.json_response({"error": "brain.llm not available"}, status=503)
+        try:
+            data = await request.json()
+            prompt = data.get('prompt', '')
+            if not prompt:
+                return web.json_response({"error": "prompt is required"}, status=400)
+            result = await self.brain_llm.query(prompt, strategy="consensus")
+            return web.json_response({
+                "response": result.response,
+                "model": result.model,
+                "latency_ms": result.latency_ms,
+                "confidence": result.confidence
+            })
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=500)
+
+    async def handle_brain_chain(self, request: web.Request) -> web.Response:
+        """POST /api/brain/chain — Chain-of-thought query"""
+        if not self.brain_llm:
+            return web.json_response({"error": "brain.llm not available"}, status=503)
+        try:
+            data = await request.json()
+            prompt = data.get('prompt', '')
+            if not prompt:
+                return web.json_response({"error": "prompt is required"}, status=400)
+            result = await self.brain_llm.query(prompt, strategy="chain")
+            return web.json_response({
+                "response": result.response,
+                "model": result.model,
+                "latency_ms": result.latency_ms,
+                "confidence": result.confidence
+            })
+        except Exception as e:
+            return web.json_response({"error": str(e)}, status=500)
 
     # --- WebSocket (Point 2: Real-time Memory Sync) ---
 
@@ -1604,7 +1732,7 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
             if client != exclude and not client.closed:
                 try:
                     await client.send_str(msg)
-                except:
+                except (ConnectionResetError, asyncio.CancelledError):
                     self.ws_clients.discard(client)
     
     async def _ws_memory_sync_loop(self):
@@ -1665,7 +1793,7 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                         await proc.communicate()
                         self.log_event("auto_heal", "Ollama restart triggered")
                         logger.info("Ollama restart triggered")
-            except:
+            except (OSError, asyncio.TimeoutError, ProcessLookupError):
                 self.log_event("auto_heal", "Ollama health check failed", "warn")
             await self.sync_memory_to_peers()
 
