@@ -400,97 +400,101 @@ class PeerDiscovery:
 class LoadBalancer:
     """Intelligent load balancing between nodes.
     Routes queries based on:
-    - Latency (lower is better)
-    - CPU load (lower is better)  
-    - Available memory (more is better)
-    - Model availability
-    - Reputation score
-    - Circuit breaker state
+    - Model availability (primary filter)
+    - Latency + success rate (secondary)
+    - Circuit breaker state (safety)
+    - Local CPU load (offload when busy)
     """
     
     def __init__(self):
-        self.node_scores: Dict[str, float] = {}  # Cached scores
-        self.last_scoring = 0
-        self.scoring_interval = 30  # Recalculate every 30s
+        self.node_scores: Dict[str, float] = {}
     
-    def calculate_score(self, peer, local_cpu: float = 0,
-                         local_mem_pct: float = 0) -> float:
-        """Calculate a routing score for a peer (lower = better choice).
-        Score components:
-        - latency_weight: 40% (lower latency = better)
-        - load_weight: 30% (lower CPU = better)
-        - model_weight: 20% (has the model = better)
-        - reputation_weight: 10% (higher reputation = better)
+    def calculate_score(self, peer, model: str = None) -> float:
+        """Calculate routing score (lower = better).
+        Factors: latency (40%), model availability (30%), success rate (20%), CB (10%)
         """
-        # Latency component (0-100, lower is better)
         if peer.latency == float('inf') or not peer.available:
             return float('inf')
-        latency_score = min(peer.latency / 10, 100)  # 0ms=0, 1000ms=100
         
-        # Load component (use reputation as proxy if no direct load data)
-        # We could query /api/monitor but that adds latency
-        # For now, use inverse reputation as load proxy
-        load_score = (1 - peer.reputation) * 50  # 0-50
+        # Latency score (0-100)
+        latency_score = min(peer.latency / 10, 100)
         
-        # Combined score
+        # Model availability penalty
+        model_penalty = 0
+        if model and model not in peer.models and peer.models:
+            model_penalty = 50
+        
+        # Success rate from model stats
+        stats = peer.model_stats.get(model, {}) if model else {}
+        total = stats.get('total', 0)
+        success = stats.get('success', 0)
+        success_rate = success / total if total > 0 else 1.0
+        success_score = (1 - success_rate) * 100
+        
+        # CB penalty
+        cb_penalty = 0 if peer.circuit_breaker.state == 'closed' else 50
+        
         score = (
             latency_score * 0.4 +
-            load_score * 0.3 +
-            (1 - peer.reputation) * 10 +  # Reputation bonus
-            (0 if peer.circuit_breaker.state == 'closed' else 50)  # CB penalty
+            model_penalty * 0.3 +
+            success_score * 0.2 +
+            cb_penalty * 0.1
         )
-        
         self.node_scores[peer.name] = score
         return score
     
     def select_best_peer(self, peers: list, model: str = None,
                           exclude: str = None) -> Optional[Any]:
-        """Select the best peer for a query"""
+        """Select the best peer for a query, prioritizing model availability."""
         candidates = [p for p in peers 
                        if p.available 
                        and p.circuit_breaker.can_execute()
                        and p.name != exclude]
+        if not candidates:
+            return None
         
+        # Prefer peers that have the requested model
         if model:
-            # Prefer peers that have the requested model
             model_peers = [p for p in candidates if model in p.models]
             if model_peers:
                 candidates = model_peers
         
-        if not candidates:
-            return None
-        
-        # Score and sort
-        scored = [(self.calculate_score(p), p) for p in candidates]
+        scored = [(self.calculate_score(p, model), p) for p in candidates]
         scored.sort(key=lambda x: x[0])
         
-        best_score, best_peer = scored[0]
-        if best_score == float('inf'):
+        if scored[0][0] == float('inf'):
             return None
-        
-        return best_peer
+        return scored[0][1]
     
     def should_handle_locally(self, local_cpu: float, local_mem_pct: float,
                                 peers: list, model: str) -> bool:
-        """Decide if query should be handled locally or offloaded"""
-        # If local CPU is high and peers are available, offload
-        if local_cpu > 80 and len([p for p in peers if p.available]) > 0:
-            best_peer = self.select_best_peer(peers, model)
-            if best_peer and best_peer.latency < 200:
+        """Decide if query should be handled locally or offloaded.
+        - CPU > 80% and fast peer available -> offload
+        - CPU < 50% or no peers -> handle locally
+        - Medium: prefer local (network overhead > latency gain)
+        """
+        available_peers = [p for p in peers if p.available]
+        
+        if local_cpu > 80 and available_peers:
+            best = self.select_best_peer(peers, model)
+            if best and best.latency < 200:
                 return False
         
-        # If local CPU is low, handle locally
-        if local_cpu < 50:
+        if local_cpu < 50 or not available_peers:
             return True
         
-        # Medium load: handle locally if no low-latency peers
-        low_lat_peers = [p for p in peers if p.available and p.latency < 50]
-        return len(low_lat_peers) == 0
+        return True
 
 
 # ============================================================================
 # ============== PEER & P2P NETWORK ========================================
 # ============================================================================
+
+# Peer purge constants
+PEER_STALE_SECONDS = 600      # 10 min without being seen = stale
+PEER_PURGE_SECONDS = 1800     # 30 min without being seen = purge (remove)
+PEER_CB_PURGE_FAILURES = 50   # CB failures above this = candidate for purge
+
 
 class Peer:
     """Représente un peer dans le réseau P2P"""
@@ -619,23 +623,98 @@ class Peer:
 # ============================================================================
 
 class ModelRouter:
-    """Routeur dynamique de modèles basé sur le contenu"""
+    """Routeur dynamique de modèles basé sur le contenu du prompt.
+    
+    Strategies de routing:
+    - Code/dev → qwen3-coder (spécialiste)
+    - Raisonnement/logique/math → deepseek (thinking model)
+    - Chat/general → glm-5.1 (rapide, équilibré)
+    - Si modèle demandé explicitement → utilise ce modèle
+    - Si modèle indisponible → fallback intelligent
+    """
+    
+    # Catégories de prompts avec mots-clés
+    CATEGORIES = {
+        'code': {
+            'keywords': ['code', 'function', 'python', 'javascript', 'typescript', 'rust',
+                         'program', 'script', 'debug', 'implement', 'class ', 'def ', 'async ',
+                         'import ', 'return ', 'compile', 'refactor', 'api endpoint',
+                         'fonction', 'programme', 'script', 'débog', 'implément', 'codez',
+                         'écris un', 'write a', 'create a', 'build a'],
+            'models': ['qwen3-coder-next:cloud', 'deepseek-v3.1:671b-cloud', 'glm-5.1:cloud'],
+        },
+        'reasoning': {
+            'keywords': ['explique', 'analyse', 'raisonne', 'think', 'pourquoi', 'compare',
+                         'why', 'how does', 'what if', 'calculate', 'solve', 'proof',
+                         'logique', 'mathématique', 'déduire', 'infér', 'prouve',
+                         'step by step', 'étape par étape', 'résonnement',
+                         'démontr', 'what is the reason', 'caus'],
+            'models': ['deepseek-v3.1:671b-cloud', 'glm-5.1:cloud', 'qwen3-coder-next:cloud'],
+        },
+        'creative': {
+            'keywords': ['écris', 'write', 'story', 'histoire', 'poem', 'poème', 'creative',
+                         'imagine', 'invent', 'fiction', 'narratif', 'romain',
+                         'conte', 'chanson', 'song', 'letter', 'lettre'],
+            'models': ['glm-5.1:cloud', 'deepseek-v3.1:671b-cloud', 'qwen3-coder-next:cloud'],
+        },
+        'factual': {
+            'keywords': ['quoi', 'what is', 'qui', 'où', 'quand', 'combien',
+                         'définition', 'definition', 'capitale', 'capital',
+                         'explique-moi', 'tell me about', 'describe', 'décris',
+                         'résumé', 'summary', 'liste', 'list'],
+            'models': ['glm-5.1:cloud', 'deepseek-v3.1:671b-cloud', 'qwen3-coder-next:cloud'],
+        },
+    }
+    
+    # Fallback chains per model
+    FALLBACK_CHAINS = {
+        'glm-5.1:cloud': ['deepseek-v3.1:671b-cloud', 'qwen3-coder-next:cloud'],
+        'deepseek-v3.1:671b-cloud': ['glm-5.1:cloud', 'qwen3-coder-next:cloud'],
+        'qwen3-coder-next:cloud': ['glm-5.1:cloud', 'deepseek-v3.1:671b-cloud'],
+    }
+    
+    # Approximate model speeds (ms for simple prompt) — lower = faster
+    MODEL_SPEED = {
+        'glm-5.1:cloud': 4000,
+        'deepseek-v3.1:671b-cloud': 5000,
+        'qwen3-coder-next:cloud': 15000,
+    }
+    
     async def route(self, prompt: str, available_models: List[str]) -> str:
+        """Route le prompt vers le meilleur modèle disponible."""
+        if not available_models:
+            return 'glm-5.1:cloud'
+        
         prompt_lower = prompt.lower()
-        # Code-related
-        if any(kw in prompt_lower for kw in ["code", "function", "python", "javascript",
-                                              "program", "script", "debug"]):
-            code_models = [m for m in available_models if "code" in m.lower() or "coder" in m.lower()]
-            if code_models:
-                return code_models[0]
-        # Reasoning/analysis
-        if any(kw in prompt_lower for kw in ["explique", "analyse", "raisonne", "think",
-                                              "pourquoi", "compare", "why", "how"]):
-            reasoning = [m for m in available_models if "glm" in m.lower()]
-            if reasoning:
-                return reasoning[0]
-        # Default: first available
-        return available_models[0] if available_models else "glm-5.1:cloud"
+        
+        # Detect category by keyword scoring
+        best_category = None
+        best_score = 0
+        for cat_name, cat_data in self.CATEGORIES.items():
+            score = sum(1 for kw in cat_data['keywords'] if kw in prompt_lower)
+            if score > best_score:
+                best_score = score
+                best_category = cat_name
+        
+        # If we detected a category, pick best available model from it
+        if best_category and best_score >= 1:
+            preferred = self.CATEGORIES[best_category]['models']
+            for model in preferred:
+                if model in available_models:
+                    return model
+        
+        # Default: fastest model (glm-5.1)
+        sorted_by_speed = sorted(available_models, key=lambda m: self.MODEL_SPEED.get(m, 99999))
+        return sorted_by_speed[0]
+    
+    def get_fallback(self, model: str, available_models: List[str]) -> Optional[str]:
+        """Get the best fallback model if the requested one fails."""
+        chain = self.FALLBACK_CHAINS.get(model, [])
+        for fallback in chain:
+            if fallback in available_models:
+                return fallback
+        # Last resort: any available model
+        return available_models[0] if available_models else None
 
 
 # ============================================================================
@@ -879,8 +958,57 @@ class UnityBrain:
             pass  # Non-critical, don't crash on log write failure
 
     async def add_peer(self, peer: Peer):
+        # Don't add self as a peer
+        if peer.host in (self.host, '127.0.0.1', 'localhost') and peer.port == self.port:
+            logger.debug(f"Skipping self-peer: {peer.name} ({peer.host}:{peer.port})")
+            return
         self.peers.append(peer)
         self.log_event("peer_added", f"Peer {peer.name} added ({peer.host}:{peer.port})")
+
+    def purge_dead_peers(self):
+        """Remove peers that are definitively dead:
+        - CB open AND stale (not seen recently)
+        - CB open AND excessive failures
+        - Never seen AND excessive CB failures
+        """
+        now = time.time()
+        to_remove = []
+        for p in self.peers:
+            # Skip config peers (from config file) — they get a pass
+            is_config_peer = any(cp['host'] == p.host and cp.get('port', 8081) == p.port 
+                                 for cp in self.config.get('peers', []))
+            
+            # Never seen and lots of failures → ghost peer
+            if p.last_seen == 0 and p.circuit_breaker.failure_count >= PEER_CB_PURGE_FAILURES:
+                to_remove.append(p)
+                self.log_event("peer_purged", 
+                    f"Purged ghost peer {p.name} ({p.host}:{p.port}) — {p.circuit_breaker.failure_count} failures, never seen",
+                    level="warn")
+                continue
+            
+            # Stale peer (not seen in PEER_STALE_SECONDS) with open CB and many failures
+            if (p.last_seen > 0 and now - p.last_seen > PEER_STALE_SECONDS 
+                and p.circuit_breaker.state == CircuitBreaker.STATE_OPEN
+                and p.circuit_breaker.failure_count >= PEER_CB_PURGE_FAILURES):
+                to_remove.append(p)
+                self.log_event("peer_purged",
+                    f"Purged stale peer {p.name} ({p.host}:{p.port}) — last seen {int(now-p.last_seen)}s ago, {p.circuit_breaker.failure_count} failures",
+                    level="warn")
+                continue
+            
+            # Not config peer, never seen, stale
+            if (not is_config_peer and p.last_seen == 0 
+                and p.circuit_breaker.state == CircuitBreaker.STATE_OPEN):
+                to_remove.append(p)
+                self.log_event("peer_purged",
+                    f"Purged undiscovered peer {p.name} ({p.host}:{p.port}) — CB open, never seen",
+                    level="warn")
+                continue
+        
+        for p in to_remove:
+            self.peers.remove(p)
+        
+        return len(to_remove)
 
     async def initialize(self):
         """Initialise UnityBrain v3.3"""
@@ -931,64 +1059,104 @@ class UnityBrain:
             await peer.ping(self.session, auth_headers=headers)
 
     async def start_heartbeat(self):
-        """Background heartbeat"""
+        """Background heartbeat with peer purge"""
         self.heartbeat_running = True
         while self.heartbeat_running:
             await asyncio.sleep(self.heartbeat_interval)
             await self.check_peers()
+            # Purge dead peers every heartbeat
+            purged = self.purge_dead_peers()
+            if purged:
+                logger.info(f"Purged {purged} dead peers")
             available = [p for p in self.peers if p.available]
             if available:
                 logger.debug(f"Heartbeat: {len(available)}/{len(self.peers)} peers alive")
 
     async def query(self, prompt: str, model: str = None,
                      use_ensemble: bool = False) -> Dict:
-        """Exécute une requête avec failover, load balancing et circuit breaker"""
+        """Exécute une requête avec failover intelligent, load balancing et circuit breaker.
+        
+        Strategy:
+        1. Route to best model based on prompt content
+        2. Try local first (if model available and not overloaded)
+        3. If local fails, try peer with same model
+        4. If all fail, fallback to alternative model
+        5. Return error if nothing works
+        """
         self.queries += 1
         logger.info(f"Query {self.queries}: {prompt[:50]}...")
 
         selected_model = model or await self.router.route(prompt, self.local_models)
         
-        # v3.3: Use load balancer to decide local vs remote
-        local_cpu = psutil.cpu_percent(interval=0.1)
-        local_mem = psutil.virtual_memory().percent
+        # Use cached CPU if available (avoid psutil per-query)
+        now = time.time()
+        if hasattr(self, '_monitor_cache_time') and now - self._monitor_cache_time < 10:
+            local_cpu = self._monitor_cache.get('cpu_percent', 0)
+            local_mem = self._monitor_cache.get('memory', {}).get('percent', 0)
+        else:
+            local_cpu = psutil.cpu_percent(interval=0.1)
+            local_mem = psutil.virtual_memory().percent
+        
         handle_local = self.load_balancer.should_handle_locally(
             local_cpu, local_mem, self.peers, selected_model)
         
-        response, latency = '', float('inf')
-        if handle_local:
-            response, latency = await self._query_local(selected_model, prompt)
+        # Build fallback chain
+        fallback_models = self.router.FALLBACK_CHAINS.get(selected_model, [])
+        all_models_to_try = [selected_model] + [m for m in fallback_models if m != selected_model]
+        # Filter to models we actually have
+        all_local = list(self.local_models)
+        for p in self.peers:
+            if p.available:
+                all_local.extend(p.models)
+        all_local = list(set(all_local))
+        models_to_try = [m for m in all_models_to_try if m in all_local]
+        if not models_to_try:
+            models_to_try = [selected_model]  # fallback to original even if missing
         
-        if latency == float('inf'):
-            # Local failed or offloaded — try peers via load balancer
-            logger.info("Query routing to peers (failover/load balance)...")
-            best_peer = self.load_balancer.select_best_peer(
-                self.peers, model=selected_model, exclude=self.node_name)
+        response, latency, used_model = '', float('inf'), selected_model
+        
+        # Try each model in priority order
+        for try_model in models_to_try:
+            if handle_local and try_model in self.local_models:
+                # Try local
+                resp, lat = await self._query_local(try_model, prompt)
+                if lat < float('inf'):
+                    response, latency, used_model = resp, lat, try_model
+                    break
             
+            # Try peer
+            best_peer = self.load_balancer.select_best_peer(
+                self.peers, model=try_model, exclude=self.node_name)
             if best_peer:
-                response, latency = await best_peer.query_via_peer(
-                    self.session, selected_model, prompt,
+                resp, lat = await best_peer.query_via_peer(
+                    self.session, try_model, prompt,
                     auth_headers=self.auth.auth_headers(self.node_name,
                         f"http://{best_peer.host}:{best_peer.port}/api/query")
                 )
-                if latency < float('inf'):
+                if lat < float('inf'):
+                    response, latency, used_model = resp, lat, try_model
                     self.log_event("load_balance", 
-                        f"Query routed to {best_peer.name} (score: {self.load_balancer.node_scores.get(best_peer.name, 0):.1f}, {latency:.0f}ms)")
-            else:
-                # Fallback: try any available peer (v3.2 compat)
-                available = sorted(
-                    [p for p in self.peers if p.available and p.circuit_breaker.can_execute()],
-                    key=lambda p: p.latency
-                )
-                for peer in available:
-                    if selected_model in peer.models or not peer.models:
-                        response, latency = await peer.query_via_peer(
-                            self.session, selected_model, prompt,
-                            auth_headers=self.auth.auth_headers(self.node_name,
-                                f"http://{peer.host}:{peer.port}/api/query")
-                        )
-                        if latency < float('inf'):
-                            self.log_event("failover", f"Query routed to {peer.name} ({latency:.0f}ms)")
-                            break
+                        f"Query routed to {best_peer.name} ({try_model}, {latency:.0f}ms)")
+                    break
+            
+            # Fallback: try any available peer
+            available = sorted(
+                [p for p in self.peers if p.available and p.circuit_breaker.can_execute()],
+                key=lambda p: p.latency
+            )
+            for peer in available:
+                if try_model in peer.models or not peer.models:
+                    resp, lat = await peer.query_via_peer(
+                        self.session, try_model, prompt,
+                        auth_headers=self.auth.auth_headers(self.node_name,
+                            f"http://{peer.host}:{peer.port}/api/query")
+                    )
+                    if lat < float('inf'):
+                        response, latency, used_model = resp, lat, try_model
+                        self.log_event("failover", f"Failover to {peer.name} ({try_model}, {latency:.0f}ms)")
+                        break
+            if latency < float('inf'):
+                break
 
         success = latency < float('inf')
         if success:
@@ -996,15 +1164,18 @@ class UnityBrain:
 
         await self.history.add({
             "prompt": prompt, "response": response,
-            "model": selected_model, "latency": latency, "success": success,
-            "routed_to": "local" if handle_local and success else "peer"
+            "model": used_model, "latency": latency, "success": success,
+            "routed_to": "local" if handle_local and success else "peer",
+            "fallback": used_model != selected_model
         })
 
         return {
             "status": "success" if success else "error",
-            "response": response, "model": selected_model,
+            "response": response, "model": used_model,
             "latency": latency, "node": self.node_name,
-            "routed_locally": handle_local and success
+            "routed_locally": handle_local and success,
+            "fallback_used": used_model != selected_model,
+            "original_model": selected_model
         }
 
     async def _query_local(self, model: str, prompt: str) -> Tuple[str, float]:
@@ -1199,8 +1370,20 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
         try:
             data = await request.json()
             prompt = data.get('prompt', '')
+            if not prompt or not prompt.strip():
+                return web.json_response(
+                    {"status": "error", "message": "'prompt' is required and cannot be empty"},
+                    status=400)
             model = data.get('model')
             use_ensemble = data.get('ensemble', False)
+            # Validate model exists locally or on a peer
+            all_models = list(self.local_models)
+            for p in self.peers:
+                all_models.extend(p.models)
+            if model and model not in all_models:
+                return web.json_response(
+                    {"status": "error", "message": f"Model '{model}' not found. Available: {list(set(all_models))}"},
+                    status=404)
             result = await self.query(prompt, model=model, use_ensemble=use_ensemble)
             return web.json_response(result)
         except Exception as e:
@@ -1233,12 +1416,18 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
 
     async def handle_monitor(self, request: web.Request) -> web.Response:
         try:
-            cpu = psutil.cpu_percent(interval=0.5)
+            # Cache monitor results for 10 seconds to avoid slow psutil calls
+            now = time.time()
+            if hasattr(self, '_monitor_cache') and hasattr(self, '_monitor_cache_time'):
+                if now - self._monitor_cache_time < 10:
+                    return web.json_response(self._monitor_cache)
+            
+            cpu = psutil.cpu_percent(interval=0.1)  # Much faster than 0.5s
             mem = psutil.virtual_memory()
             disk = psutil.disk_usage('/')
             net = psutil.net_io_counters()
             load = os.getloadavg() if hasattr(os, 'getloadavg') else (0, 0, 0)
-            return web.json_response({
+            result = {
                 'node': self.node_name,
                 'cpu_percent': cpu,
                 'load_avg': {'1m': load[0], '5m': load[1], '15m': load[2]},
@@ -1247,10 +1436,13 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                 'disk': {'total_gb': round(disk.total/1e9, 1), 'used_gb': round(disk.used/1e9, 1),
                          'percent': disk.percent, 'free_gb': round(disk.free/1e9, 1)},
                 'network': {'bytes_sent': net.bytes_sent, 'bytes_recv': net.bytes_recv},
-                'uptime': round(time.time() - self.start_time, 1),
-                'system_uptime': round(time.time() - psutil.boot_time(), 1),
+                'uptime': round(now - self.start_time, 1),
+                'system_uptime': round(now - psutil.boot_time(), 1),
                 'processes': len(psutil.pids())
-            })
+            }
+            self._monitor_cache = result
+            self._monitor_cache_time = now
+            return web.json_response(result)
         except Exception as e:
             return web.json_response({'error': str(e)}, status=500)
 
@@ -1505,7 +1697,7 @@ async def main():
     app = await brain.create_app()
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, brain.host, brain.port)
+    site = web.TCPSite(runner, brain.host, brain.port, reuse_address=True, reuse_port=True)
     await site.start()
     logger.info(f"UnityBrain P2P server on http://{brain.host}:{brain.port}")
     brain.log_event("server", f"Listening on {brain.host}:{brain.port}")
