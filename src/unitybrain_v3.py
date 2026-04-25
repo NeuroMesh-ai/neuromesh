@@ -922,6 +922,11 @@ class UnityBrain:
             max_size=config.get("memory_max_size", 1000),
             default_ttl=config.get("memory_default_ttl", 3600)
         )
+        # Persistent shared memory (git-synced)
+        sys.path.insert(0, str(Path(__file__).parent))
+        from persistent_memory import PersistentSharedMemory
+        shared_mem_path = str(Path(__file__).parent.parent / "shared_memory" / "unitybrain_persistent_memory")
+        self.persistent_memory = PersistentSharedMemory(shared_mem_path, self.node_name)
         
 
 
@@ -1286,6 +1291,11 @@ class UnityBrain:
             web.get('/api/peers', self.handle_peers),
             web.get('/api/monitor', self.handle_monitor),
             web.post('/api/sync', self.handle_sync),
+            # Persistent shared memory
+            web.get('/api/persistent', self.handle_persistent_list),
+            web.get('/api/persistent/{key}', self.handle_persistent_get),
+            web.post('/api/persistent', self.handle_persistent_set),
+            web.delete('/api/persistent/{key}', self.handle_persistent_delete),
             web.get('/ws', self.handle_websocket),
         ])
         return app
