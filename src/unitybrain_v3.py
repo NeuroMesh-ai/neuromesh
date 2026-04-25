@@ -1494,43 +1494,6 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
         except Exception as e:
             return web.json_response({'error': str(e)}, status=500)
 
-    # --- Persistent Shared Memory API ---
-
-    async def handle_persistent_list(self, request: web.Request) -> web.Response:
-        category = request.query.get('category')
-        tag = request.query.get('tag')
-        results = self.persistent_memory.search(query='', category=category, tags=[tag] if tag else None)
-        return web.json_response({"entries": results, "count": len(results), "stats": self.persistent_memory.stats()})
-
-    async def handle_persistent_get(self, request: web.Request) -> web.Response:
-        key = request.match_info['key']
-        entry = self.persistent_memory.get_entry(key)
-        if entry:
-            return web.json_response(entry)
-        return web.json_response({"error": f"Key '{key}' not found"}, status=404)
-
-    async def handle_persistent_set(self, request: web.Request) -> web.Response:
-        try:
-            data = await request.json()
-            key = data.get('key')
-            value = data.get('value')
-            if not key or value is None:
-                return web.json_response({"error": "'key' and 'value' required"}, status=400)
-            category = data.get('category', 'core')
-            tags = data.get('tags', [])
-            entry = self.persistent_memory.set(key, value, category=category, tags=tags)
-            self.log_event("persistent_memory", f"Set key: {key} (cat: {category})")
-            return web.json_response(entry)
-        except Exception as e:
-            return web.json_response({"error": str(e)}, status=500)
-
-    async def handle_persistent_delete(self, request: web.Response) -> web.Response:
-        key = request.match_info['key']
-        if self.persistent_memory.delete(key):
-            self.log_event("persistent_memory", f"Deleted key: {key}")
-            return web.json_response({"status": "deleted", "key": key})
-        return web.json_response({"error": f"Key '{key}' not found"}, status=404)
-
     # --- WebSocket (Point 2: Real-time Memory Sync) ---
 
     async def handle_websocket(self, request: web.Request) -> web.WebSocketResponse:
