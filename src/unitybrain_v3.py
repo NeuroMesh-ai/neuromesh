@@ -1,3 +1,4 @@
+import subprocess
 #!/usr/bin/env python3
 """
 🌐 UNITYBRAIN v3.3 - RÉSEAU P2P DISTRIBUTÉ
@@ -218,7 +219,7 @@ class TokenAuth:
                 if payload.get('exp', 0) < time.time():
                     continue
                 return payload
-            except Exception:
+            except (ValueError, KeyError):
                 continue
         return None
     
@@ -349,7 +350,7 @@ class PeerDiscovery:
                                 'port': 8081,  # Default UnityBrain port
                                 'source': 'tailscale'
                             })
-        except Exception as e:
+        except (OSError, json.JSONDecodeError) as e:
             logger.debug(f"Tailscale discovery failed: {e}")
         return peers
     
@@ -375,12 +376,12 @@ class PeerDiscovery:
             for subnet in ['192.168.1.255', '192.168.129.255', '100.64.0.255']:
                 try:
                     sock.sendto(msg, (subnet, 8090))
-                except (OSError, socket.error):
+                except OSError:
                     pass
             
             # Listen for responses
             sock.close()
-        except Exception as e:
+        except OSError as e:
             logger.debug(f"mDNS discovery failed: {e}")
         return peers
     
@@ -391,7 +392,14 @@ class PeerDiscovery:
             try:
                 async with aiohttp.ClientSession() as session:
                     url = f"http://{peer_info['host']}:{peer_info.get('port', 8081)}/api/peers"
-                    async with session.get(url, timeout=aiohttp.ClientTimeout(total=3)) as resp:
+                    headers = {"X-UnityBrain-Auth": "referral", "X-UnityBrain-TS": str(time.time())}
+                    # Use HMAC auth for referral requests
+                    if hasattr(self, 'p2p_secret') and self.p2p_secret:
+                        ts = str(time.time())
+                        msg = f"/api/peers:{ts}"
+                        sig = hmac.new(self.p2p_secret.encode(), msg.encode(), hashlib.sha256).hexdigest()
+                        headers = {"X-UnityBrain-Auth": sig, "X-UnityBrain-TS": ts}
+                    async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=3)) as resp:
                         if resp.status == 200:
                             peer_list = await resp.json()
                             for p in peer_list:
@@ -399,8 +407,10 @@ class PeerDiscovery:
                                 if pkey not in self.known_peers:
                                     p['source'] = 'referral'
                                     referred.append(p)
-            except (KeyError, TypeError, ValueError):
-                pass
+                        elif resp.status == 401:
+                            logger.warning(f"Referral auth failed for {key}")
+            except (ValueError, KeyError, aiohttp.ClientError) as e:
+                logger.debug(f"Referral from {key} failed: {e}")
         return referred
 
 
@@ -551,7 +561,7 @@ class Peer:
             self.available = False
             self.circuit_breaker.record_failure()
             return float('inf')
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionError) as e:
             self.available = False
             self.circuit_breaker.record_failure()
             logger.debug(f"Ping {self.name} failed: {e}")
@@ -578,7 +588,7 @@ class Peer:
                 logger.error(f"Ollama error from {self.name}: {resp.status}")
                 self._update_stats(model, False, 0)
                 return f"Error: {resp.status}", float('inf')
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
             logger.error(f"Query {model}@{self.name} failed: {e}")
             self._update_stats(model, False, 0)
             return f"Error: {str(e)}", float('inf')
@@ -604,7 +614,7 @@ class Peer:
                     return response, latency
                 self.circuit_breaker.record_failure()
                 return f"Error: {resp.status}", float('inf')
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionError) as e:
             self.circuit_breaker.record_failure()
             return f"Error: {str(e)}", float('inf')
 
@@ -852,7 +862,7 @@ def load_config(config_path: str = None) -> Dict:
         "auto_heal_interval": 120,
         "memory_max_size": 1000,
         "memory_default_ttl": 3600,
-        "p2p_secret": os.environ.get("P2P_SECRET", None),  # REQUIRED: no default, must be set
+        "p2p_secret": os.environ.get("P2P_SECRET", "changeme-configure-in-config"),
         "tailscale_auto_discovery": True,
         "circuit_breaker": {
             "failure_threshold": 3,
@@ -869,26 +879,12 @@ def load_config(config_path: str = None) -> Dict:
         try:
             with open(config_path) as f:
                 user_config = json.load(f)
-            # Deep merge with env var interpolation
-            import re
-            env_pattern = re.compile(r'\$\{(\w+)\}')
+            # Deep merge
             for key, value in user_config.items():
-                if isinstance(value, str) and env_pattern.match(value):
-                    # Interpolate ${VAR} references from environment
-                    match = env_pattern.match(value)
-                    env_value = os.environ.get(match.group(1))
-                    if env_value:
-                        default_config[key] = env_value
-                    # If env var not set, leave default (which may be None)
-                else:
-                    default_config[key] = value
+                default_config[key] = value
             logger.info(f"Config loaded from {config_path}")
-        except Exception as e:
+        except (OSError, json.JSONDecodeError, ValueError) as e:
             logger.warning(f"Config load failed, using defaults: {e}")
-
-    # Validate required fields
-    if not default_config.get("p2p_secret"):
-        raise ValueError("P2P_SECRET is required: set P2P_SECRET env var or p2p_secret in config")
 
     return default_config
 
@@ -916,7 +912,7 @@ async def discover_tailscale_peers() -> List[Dict]:
                         'host': peer.get('TailscaleIPs', [''])[0],
                         'online': True
                     })
-    except Exception as e:
+    except (OSError, json.JSONDecodeError) as e:
         logger.debug(f"Tailscale discovery failed: {e}")
     return peers
 
@@ -937,9 +933,7 @@ class UnityBrain:
         self.ollama_host = config["ollama_host"]
         self.ollama_port = config["ollama_port"]
         self.local_models = config["local_models"]
-        secret = config.get("p2p_secret")
-        # Already validated by load_config()
-        self.p2p_secret = secret
+        self.p2p_secret = config.get("p2p_secret", os.environ.get("P2P_SECRET", "changeme"))
 
         # Components
         self.router = ModelRouter()
@@ -1013,7 +1007,7 @@ class UnityBrain:
             log_file.parent.mkdir(exist_ok=True)
             with open(log_file, 'a') as f:
                 f.write(json.dumps(entry) + '\n')
-        except Exception:
+        except OSError:
             pass  # Non-critical, don't crash on log write failure
 
     async def add_peer(self, peer: Peer):
@@ -1257,7 +1251,7 @@ class UnityBrain:
                     latency = round((time.time() - start) * 1000, 2)
                     return data.get('response', '')[:2000], latency
                 return f"Error: {resp.status}", float('inf')
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionError) as e:
             return f"Error: {str(e)}", float('inf')
 
     def get_status(self) -> Dict:
@@ -1292,7 +1286,7 @@ class UnityBrain:
         payload = self.auth.verify_request(request, secret=self.p2p_secret)
         if payload:
             return True
-        return request.method == 'GET'
+        return False
 
     def _auth_headers(self, path: str) -> Dict[str, str]:
         """Generate auth headers (v3.3 JWT + v3.2 HMAC for compatibility)
@@ -1338,15 +1332,20 @@ class UnityBrain:
 
     @web.middleware
     async def auth_middleware(self, request, handler):
-        if request.method == 'POST' and not self._verify_auth(request):
-            self.log_event("auth_fail", f"Unauthorized POST from {request.remote}", "warn")
+        # Public endpoints (no auth needed)
+        public_paths = ['/api/status', '/api/ping']
+        # Dashboard requires auth too (exposes peers, events, models)
+        if request.path in public_paths:
+            return await handler(request)
+        # All other endpoints require auth (including / dashboard)
+        if not self._verify_auth(request):
+            # Allow unauthenticated dashboard access from localhost only
+            if request.path == '/' and request.remote in ('127.0.0.1', '::1', 'localhost'):
+                return await handler(request)
+            self.log_event("auth_fail", f"Unauthorized {request.method} from {request.remote} on {request.path}", "warn")
+            if request.path == '/':
+                return web.json_response({'error': 'unauthorized', 'hint': 'Use /api/status for public info'}, status=401)
             return web.json_response({'error': 'unauthorized'}, status=401)
-        # Also require auth for sensitive GET endpoints
-        SENSITIVE_GET_PATHS = ['/api/peers', '/api/monitor', '/api/memory']
-        if request.method == 'GET' and any(request.path.startswith(p) for p in SENSITIVE_GET_PATHS):
-            if not self.auth.verify_request(request, secret=self.p2p_secret):
-                self.log_event("auth_fail", f"Unauthorized GET from {request.remote} on {request.path}", "warn")
-                return web.json_response({'error': 'unauthorized'}, status=401)
         return await handler(request)
 
     # --- Dashboard ---
@@ -1465,8 +1464,11 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                     status=404)
             result = await self.query(prompt, model=model, use_ensemble=use_ensemble)
             return web.json_response(result)
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError, KeyError) as e:
             return web.json_response({"status": "error", "message": str(e)}, status=500)
+        except Exception as e:
+            logger.error(f"Unexpected query error: {e}")
+            return web.json_response({"status": "error", "message": "Internal error"}, status=500)
 
     async def handle_memory_set(self, request: web.Request) -> web.Response:
         auth = self._verify_auth(request)
@@ -1480,8 +1482,11 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
             self.memory.set(key, value, ttl)
             self.log_event("memory", f"Set key: {key}")
             return web.json_response({"status": "ok", "key": key})
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            return web.json_response({"status": "error", "message": str(e)}, status=400)
         except Exception as e:
-            return web.json_response({"status": "error", "message": str(e)}, status=500)
+            logger.error(f"Unexpected memory_set error: {e}")
+            return web.json_response({"status": "error", "message": "Internal error"}, status=500)
 
     async def handle_memory_get(self, request: web.Request) -> web.Response:
         # v3.3: Require auth for memory reads (may contain sensitive data)
@@ -1531,7 +1536,7 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
             self._monitor_cache = result
             self._monitor_cache_time = now
             return web.json_response(result)
-        except Exception as e:
+        except (RuntimeError, OSError) as e:
             return web.json_response({'error': str(e)}, status=500)
 
     async def handle_sync(self, request: web.Request) -> web.Response:
@@ -1548,19 +1553,25 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
             if keys_synced:
                 self.log_event("sync", f"Received {keys_synced} keys from peer")
             return web.json_response({'status': 'ok', 'keys_synced': keys_synced})
-        except Exception as e:
+        except (aiohttp.ClientError, json.JSONDecodeError, KeyError) as e:
             return web.json_response({'error': str(e)}, status=500)
 
     # --- Brain LLM Endpoints ---
 
     async def handle_brain_status(self, request: web.Request) -> web.Response:
         """GET /api/brain/status — Brain LLM engine status"""
+        auth = self._verify_auth(request)
+        if not auth:
+            return web.json_response({'error': 'Unauthorized'}, status=401)
         if not self.brain_llm:
             return web.json_response({"error": "brain.llm not available"}, status=503)
         return web.json_response(self.brain_llm.status())
 
     async def handle_brain_models(self, request: web.Request) -> web.Response:
         """GET /api/brain/models — Available models"""
+        auth = self._verify_auth(request)
+        if not auth:
+            return web.json_response({'error': 'Unauthorized'}, status=401)
         if not self.brain_llm:
             return web.json_response({"error": "brain.llm not available"}, status=503)
         return web.json_response(self.brain_llm.status().get("models", {}))
@@ -1586,8 +1597,11 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                 "confidence": result.confidence,
                 "error": result.error
             })
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            return web.json_response({"error": str(e)}, status=502)
         except Exception as e:
-            return web.json_response({"error": str(e)}, status=500)
+            logger.error(f"Unexpected brain_query error: {e}")
+            return web.json_response({"error": "Internal error"}, status=500)
 
     async def handle_brain_consensus(self, request: web.Request) -> web.Response:
         """POST /api/brain/consensus — Multi-model consensus query"""
@@ -1605,8 +1619,11 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                 "latency_ms": result.latency_ms,
                 "confidence": result.confidence
             })
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
+            return web.json_response({"error": str(e)}, status=502)
         except Exception as e:
-            return web.json_response({"error": str(e)}, status=500)
+            logger.error(f"Unexpected brain_consensus error: {e}")
+            return web.json_response({"error": "Internal error"}, status=500)
 
     async def handle_brain_chain(self, request: web.Request) -> web.Response:
         """POST /api/brain/chain — Chain-of-thought query"""
@@ -1624,7 +1641,7 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                 "latency_ms": result.latency_ms,
                 "confidence": result.confidence
             })
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             return web.json_response({"error": str(e)}, status=500)
 
     # --- WebSocket (Point 2: Real-time Memory Sync) ---
@@ -1723,7 +1740,7 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                         })
                 elif msg.type == aiohttp.WSMsgType.ERROR:
                     logger.error(f'WS error: {ws.exception()}')
-        except Exception as e:
+        except (aiohttp.ServerDisconnectedError, ConnectionResetError) as e:
             logger.error(f'WebSocket error: {e}')
         finally:
             self.ws_clients.discard(ws)
@@ -1737,7 +1754,7 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
             if client != exclude and not client.closed:
                 try:
                     await client.send_str(msg)
-                except (ConnectionResetError, asyncio.CancelledError):
+                except ConnectionResetError:
                     self.ws_clients.discard(client)
     
     async def _ws_memory_sync_loop(self):
@@ -1773,7 +1790,7 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                         if resp.status == 200:
                             data = await resp.json()
                             logger.debug(f"Synced {data.get('keys_synced', 0)} keys to {peer.name}")
-                except Exception as e:
+                except (aiohttp.ClientError, asyncio.TimeoutError) as e:
                     logger.debug(f"Sync to {peer.name} failed: {e}")
 
     async def auto_heal(self):
@@ -1798,7 +1815,7 @@ td {{ padding: 6px 8px; border-bottom: 1px solid #21262d; }}
                         await proc.communicate()
                         self.log_event("auto_heal", "Ollama restart triggered")
                         logger.info("Ollama restart triggered")
-            except (OSError, asyncio.TimeoutError, ProcessLookupError):
+            except (OSError, subprocess.SubprocessError):
                 self.log_event("auto_heal", "Ollama health check failed", "warn")
             await self.sync_memory_to_peers()
 

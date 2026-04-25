@@ -6460,3 +6460,87 @@
 {"time": "2026-04-25T21:18:59.173190", "type": "peer_purged", "message": "Purged undiscovered peer azil (100.101.143.118:8081) \u2014 CB open, never seen", "level": "warn"}
 {"time": "2026-04-25T21:22:51.654500", "type": "peer_added", "message": "Peer azil added (100.101.143.118:8081)", "level": "info"}
 {"time": "2026-04-25T21:22:51.654861", "type": "discovery", "message": "Auto-discovered azil via referral", "level": "info"}
+{"time": "2026-04-25T21:23:57.369990", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T21:23:57.405814", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T21:23:57.405972", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T21:23:57.406203", "type": "auth", "message": "Token generated (key_id: 93b21f3c)", "level": "info"}
+{"time": "2026-04-25T21:23:57.436112", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T21:23:57.439352", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T21:23:58.654866", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T21:23:58.764784", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T21:23:58.765034", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T21:23:58.765365", "type": "auth", "message": "Token generated (key_id: d39d3cfd)", "level": "info"}
+{"time": "2026-04-25T21:23:58.799142", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T21:23:58.801889", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T21:24:04.720249", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T21:24:04.757298", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T21:24:04.757627", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T21:24:04.757987", "type": "auth", "message": "Token generated (key_id: 9ac53e3b)", "level": "info"}
+{"time": "2026-04-25T21:24:04.799480", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T21:24:04.802992", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T21:24:12.442393", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T21:24:12.481005", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T21:24:12.481189", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T21:24:12.481481", "type": "auth", "message": "Token generated (key_id: 3b6fa1b0)", "level": "info"}
+{"time": "2026-04-25T21:24:12.510438", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T21:24:12.513251", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T21:24:22.716170", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1 on /api/peers", "level": "warn"}
+{"time": "2026-04-25T21:24:22.742707", "type": "auth_fail", "message": "Unauthorized POST from 127.0.0.1", "level": "warn"}
+{"time": "2026-04-25T21:26:32.622618", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T21:26:32.658074", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T21:26:32.658412", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T21:26:32.658807", "type": "auth", "message": "Token generated (key_id: e4711304)", "level": "info"}
+{"time": "2026-04-25T21:26:32.686708", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T21:26:32.690548", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T21:28:32.628254", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T21:28:32.664530", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T21:28:32.664684", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T21:28:32.664985", "type": "auth", "message": "Token generated (key_id: 2d5d5535)", "level": "info"}
+{"time": "2026-04-25T21:28:32.697174", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T21:28:32.700620", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T21:33:24.375058", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T21:33:24.415655", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T21:33:24.415948", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T21:33:24.416325", "type": "auth", "message": "Token generated (key_id: 7ce5ced4)", "level": "info"}
+{"time": "2026-04-25T21:33:24.456459", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T21:33:24.459568", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T21:35:50.620172", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T21:35:50.658746", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T21:35:50.659045", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T21:35:50.659415", "type": "auth", "message": "Token generated (key_id: 4467c830)", "level": "info"}
+{"time": "2026-04-25T21:35:50.687348", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T21:35:50.690604", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T21:36:35.402122", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105", "level": "warn"}
+{"time": "2026-04-25T21:49:05.446277", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105", "level": "warn"}
+{"time": "2026-04-25T21:49:08.158341", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105", "level": "warn"}
+{"time": "2026-04-25T21:49:59.062996", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-04-25T21:49:59.097192", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-04-25T21:49:59.097485", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-04-25T21:49:59.097859", "type": "auth", "message": "Token generated (key_id: 30fa8896)", "level": "info"}
+{"time": "2026-04-25T21:49:59.126945", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-04-25T21:49:59.129930", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-04-25T22:14:25.538694", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1", "level": "warn"}
+{"time": "2026-04-25T22:14:25.556183", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1", "level": "warn"}
+{"time": "2026-04-25T22:14:48.537414", "type": "auth_fail", "message": "Unauthorized POST from 127.0.0.1", "level": "warn"}
+{"time": "2026-04-25T22:14:48.579415", "type": "memory", "message": "Set key: test_audit", "level": "info"}
+{"time": "2026-04-25T22:14:48.636960", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1", "level": "warn"}
+{"time": "2026-04-25T22:15:51.984659", "type": "auth_fail", "message": "Unauthorized POST from 127.0.0.1", "level": "warn"}
+{"time": "2026-04-25T22:16:08.358629", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:18:08.396293", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:20:08.430251", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:22:08.464134", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:24:08.498230", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:26:08.534610", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:28:08.569175", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:29:20.733596", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1", "level": "warn"}
+{"time": "2026-04-25T22:30:08.607322", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:32:08.646860", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:34:08.683898", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:36:08.720689", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:38:08.755496", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:40:08.787909", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:42:08.820458", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:45:37.851047", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:47:37.987311", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}
+{"time": "2026-04-25T22:48:37.894358", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105", "level": "warn"}
+{"time": "2026-04-25T22:49:38.105959", "type": "sync", "message": "Received 1 keys from peer", "level": "info"}

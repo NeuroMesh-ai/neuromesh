@@ -106,7 +106,7 @@ class BrainLLM:
                             size=model.get("size", ""),
                             capabilities=["local", "fast"]
                         )
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, KeyError, json.JSONDecodeError) as e:
             logger.debug(f"Ollama discovery failed: {e}")
 
         # P2P peers
@@ -125,7 +125,7 @@ class BrainLLM:
                                 name=model, provider="p2p",
                                 capabilities=["p2p", peer_name]
                             )
-            except Exception as e:
+            except (aiohttp.ClientError, asyncio.TimeoutError, KeyError, json.JSONDecodeError) as e:
                 logger.debug(f"P2P discovery {peer_name}: {e}")
 
         # Cloud models (configured)
@@ -259,7 +259,7 @@ class BrainLLM:
                         latency_ms=(time.time() - start) * 1000,
                         error=f"Ollama error: {resp.status} {error[:200]}"
                     )
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionRefusedError) as e:
             return QueryResult(
                 model=model, provider="ollama", response="",
                 latency_ms=(time.time() - start) * 1000,
@@ -294,7 +294,7 @@ class BrainLLM:
                         latency_ms=(time.time() - start) * 1000,
                         error=f"Peer error: {resp.status}"
                     )
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionRefusedError) as e:
             return QueryResult(
                 model=model, provider=f"p2p:{peer_name}", response="",
                 latency_ms=(time.time() - start) * 1000,
@@ -393,7 +393,7 @@ class BrainLLM:
                 if resp.status == 200:
                     data = await resp.json()
                     return data.get("results", [])
-        except Exception as e:
+        except (aiohttp.ClientError, asyncio.TimeoutError, json.JSONDecodeError) as e:
             logger.debug(f"Context lookup failed: {e}")
             return []
 
