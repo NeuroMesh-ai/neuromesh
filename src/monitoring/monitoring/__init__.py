@@ -1,1 +1,1 @@
-from .distributed_memory import DistributedMemory
+from .distributed_memory import DistributedMemory, load_config

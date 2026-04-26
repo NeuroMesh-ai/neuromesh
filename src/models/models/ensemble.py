@@ -1,8 +1,10 @@
 # Auto-imports for extracted module
+import logging
+logger = logging.getLogger('UnityBrain.models')
 from typing import Dict
 from typing import List
 import aiohttp
-from discovery.peer import Peer
+from discovery.discovery.peer import Peer
 
 
 class EnsembleConsensus:
@@ -33,5 +35,5 @@ class EnsembleConsensus:
 # ============================================================================
 # ============== QUERY HISTORY ============================================
 # ============================================================================
-from discovery.peer import Peer
+from discovery.discovery.peer import Peer
 import aiohttp

@@ -1,4 +1,6 @@
 # Auto-imports for extracted module
+import logging
+logger = logging.getLogger('UnityBrain.discovery')
 from typing import Dict
 from typing import List
 import aiohttp

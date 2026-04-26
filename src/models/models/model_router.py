@@ -1,4 +1,6 @@
 # Auto-imports for extracted module
+import logging
+logger = logging.getLogger('UnityBrain.models')
 from typing import List
 from typing import Optional
 

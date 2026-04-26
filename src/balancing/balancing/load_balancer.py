@@ -1,4 +1,6 @@
 # Auto-imports for extracted module
+import logging
+logger = logging.getLogger('UnityBrain.balancing')
 from typing import Any
 from typing import Dict
 from typing import Optional

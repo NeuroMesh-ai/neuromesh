@@ -5,8 +5,11 @@ from typing import Dict
 from typing import List
 import asyncio
 import json
+import logging
 import os
 import time
+
+logger = logging.getLogger('UnityBrain.monitoring')
 
 
 class DistributedMemory:
@@ -103,7 +106,7 @@ def load_config(config_path: str = None) -> Dict:
             for key, value in user_config.items():
                 default_config[key] = value
             logger.info(f"Config loaded from {config_path}")
-        except Exception as e:
+        except (OSError, json.JSONDecodeError, ValueError) as e:
             logger.warning(f"Config load failed, using defaults: {e}")
 
     return default_config
@@ -132,7 +135,7 @@ async def discover_tailscale_peers() -> List[Dict]:
                         'host': peer.get('TailscaleIPs', [''])[0],
                         'online': True
                     })
-    except Exception as e:
+    except (OSError, json.JSONDecodeError) as e:
         logger.debug(f"Tailscale discovery failed: {e}")
     return peers
 

@@ -106,7 +106,7 @@ class TokenAuth:
                 if payload.get('exp', 0) < time.time():
                     continue
                 return payload
-            except Exception:
+            except (ValueError, KeyError):
                 continue
         return None
     
