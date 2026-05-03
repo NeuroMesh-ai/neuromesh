@@ -1,12 +1,11 @@
 """
-UnityBrain & BugBrain v3.0
+UnityBrain v4.0
 """
 
-__version__ = "3.0.0"
+__version__ = "4.0.0"
 __author__ = "Bug 🐛"
 __license__ = "MIT"
 
-from .unitybrain_v3_final import UnityBrain
-from .bugbrain_v3_final import BugBrain
+from .unitybrain_v4 import UnityBrain
 
-__all__ = ["UnityBrain", "BugBrain", "__version__"]
+__all__ = ["UnityBrain", "__version__"]
