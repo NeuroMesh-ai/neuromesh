@@ -1,6 +1,6 @@
 {
   "node_name": "bug",
-  "version": "3.3.0",
+  "version": "4.0.0",
   "host": "0.0.0.0",
   "port": 8080,
   "ollama_host": "127.0.0.1",
@@ -16,6 +16,10 @@
   "memory_default_ttl": 3600,
   "p2p_secret": "bug-pinky-2026-unity",
   "tailscale_auto_discovery": true,
+  "stealth_mode": false,
+  "share_ai": false,
+  "rate_limit": 10.0,
+  "rate_burst": 20,
   "circuit_breaker": {
     "failure_threshold": 3,
     "recovery_timeout": 60,
@@ -33,6 +37,7 @@
       ]
     }
   ],
+  "seed_nodes": [],
   "token_lifetime": 86400,
   "token_rotation_interval": 3600,
   "discovery_interval": 300

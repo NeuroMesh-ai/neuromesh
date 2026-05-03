@@ -1,6 +1,32 @@
 # Changelog
 
-All notable changes to UnityBrain & BugBrain will be documented in this file.
+All notable changes to UnityBrain will be documented in this file.
+
+## [4.0.0] - 2026-05-04
+
+### Added
+- 🔌 **WebSocket Temps Réel** — Bidirectional WebSocket (`/ws`) with typed messages (query, memory_sync, memory_update, notification, peer_discovery, status). Auto-reconnect, WS heartbeat, ping/pong. HTTP REST API remains available (retrocompatible).
+
+- 🔐 **Auth Renforcée (Decentralized)** — Ed25519 node identity (self-generated, no registry). Challenge-response auth with nonce + timestamp (anti-replay). Web of Trust (PGP-like transitive trust). Rate limiting per node (token bucket). Stealth mode (hidden node, no discovery, trusted peers only). Users don't need accounts — auth is between nodes.
+
+- 🧠 **Mémoire Sync P2P** — CRDT-based conflict-free replicated memory. Gossip protocol for propagation. Vector clocks for event ordering. Last-write-wins with metadata (author, timestamp, node_id). API: `/api/memory/sync`, `/api/memory/push`, `/api/memory/pull`. Share AI models via `share_ai: true` config or `unitybrain share` CLI.
+
+- 🧹 **Clean Architecture** — Removed dead code (`_archive_old`, `archive`, `output`, `__pycache__`). Updated requirements (minimal: aiohttp, psutil, PyNaCl optional). Fast startup, low memory. brain_llm stays async, non-blocking.
+
+- 📝 **Docs** — `docs/AUTH_DESIGN.md` with complete auth design. `DONATIONS.md` with BTC address.
+
+### Changed
+- Main file renamed: `src/unitybrain_v3.py` → `src/unitybrain_v4.py`
+- VERSION: 3.3.0 → 4.0.0
+- README.md rewritten for v4.0
+- requirements.txt cleaned up (PyJWT removed, PyNaCl optional)
+
+### Removed
+- `_archive_old/` directory
+- `archive/` directory
+- `output/` directory
+- `__pycache__` directories
+- PyJWT hard dependency (auth now Ed25519-based)
 
 ## [3.5.0] - 2026-04-02
 
