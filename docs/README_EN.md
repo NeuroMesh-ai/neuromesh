@@ -1,4 +1,4 @@
-# 🌐 UnityBrain v4.0.1
+# 🌐 UnityBrain v4.1.0
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
@@ -62,6 +62,14 @@ That's it. Memory sync, model sharing, and real-time communication happen automa
 ---
 
 ## 🔑 Key Features
+
+### 🤖 Multi-LLM Providers
+- **Ollama** (local) — backward compatible default
+- **OpenAI** — GPT-4o, GPT-4o-mini, etc.
+- **Anthropic** — Claude models
+- **OpenAI-compatible** — LM Studio, vLLM, any custom API
+- Models from all providers are shared across the P2P network
+- Automatic routing based on model name
 
 ### 🔌 WebSocket Real-Time Communication
 - Bidirectional WebSocket on `/ws` endpoint
@@ -204,7 +212,7 @@ Connect to `ws://host:port/ws` and send typed JSON messages:
 ```ini
 # ~/.config/systemd/user/unitybrain.service
 [Unit]
-Description=UnityBrain v4.0.1 P2P Node
+Description=UnityBrain v4.1.0 P2P Node
 After=network.target
 
 [Service]

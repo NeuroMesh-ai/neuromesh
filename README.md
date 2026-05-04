@@ -1,158 +1,201 @@
-# 🌐 UnityBrain v4.0.1
+# 🌐 UnityBrain
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-100%25_Decentralized-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/dnshouet-cpu/Unitybrain)
 
-**Lightweight P2P distributed AI network.** No central server. No accounts. Install, connect, query.
+**Lightweight P2P distributed AI network.** No central server. No accounts. No premium tier. Connect machines, share models, sync memory.
 
-> 🌍 [English](./docs/README_EN.md) | 🇫🇷 [Français](./docs/README_FR.md) | 🇪🇸 [Español](./docs/README_ES.md)
-
----
-
-## ✨ v4.0 Features
-
-### 🔌 WebSocket Temps Réel
-- Bidirectional WebSocket communication (`/ws`)
-- Typed messages: `query`, `memory_sync`, `memory_update`, `notification`, `peer_discovery`, `status`
-- Auto-reconnect, WS heartbeat (ping/pong)
-- HTTP REST API still available (retrocompatible)
-
-### 🔐 Auth Renforcée (Decentralized)
-- **Ed25519 identity** — each node generates its own keypair, no registry
-- **Challenge-response** between nodes (nonce + timestamp, anti-replay)
-- **Web of Trust** — nodes vouch for each other, transitive trust (PGP-like)
-- **Rate limiting** per node (token bucket)
-- **Stealth mode** — hidden node, no discovery broadcast, only trusted peers connect
-- Users don't need accounts — auth is between nodes, transparent
-
-### 🧠 Mémoire Sync P2P
-- **CRDT-based** conflict-free replicated memory
-- **Gossip protocol** for propagation
-- **Vector clocks** for event ordering
-- **Last-write-wins** with metadata (author, timestamp, node_id)
-- API: `/api/memory/sync`, `/api/memory/push`, `/api/memory/pull`
-- Share AI models: `share_ai: true` in config
-
-### 🧹 Clean Architecture
-- Lightweight — minimal dependencies (aiohttp, psutil, PyNaCl optional)
-- Fast startup, low memory
-- brain_llm stays async, non-blocking, cloud models on demand
-- No heavy frameworks, no bloat
+> 🌍 [English](./docs/README_EN.md) · 🇫🇷 [Français](./docs/README_FR.md) · 🇪🇸 [Español](./docs/README_ES.md)
 
 ---
 
-## 📦 Installation
+## Why this exists
 
-### Prérequis
+Every AI tool wants your email, your phone number, and $20/month. Cloud APIs lock you in. Self-hosted solutions need Kubernetes and a DevOps degree.
+
+**UnityBrain is the alternative.** Two machines, one config file each, and they're a distributed AI network. No Docker. No SaaS. No middleman. Your machines talk directly, share AI responses, and sync memory — if one goes down, the others keep working.
+
+---
+
+## At a glance
+
+| | What you get |
+|---|---|
+| **LLM Providers** | Ollama · OpenAI · Anthropic · Any OpenAI-compatible API (LM Studio, vLLM, etc.) — plug in your keys, models are shared across the P2P network |
+| **P2P Communication** | Bidirectional WebSocket (`/ws`) + HTTP REST — real-time sync with gossip protocol |
+| **Distributed Memory** | CRDT-based conflict-free state · Vector clocks · Gossip propagation · TTL support |
+| **Decentralized Auth** | Ed25519 identity · HMAC shared secret · Web of Trust (PGP-like) · Stealth mode |
+| **AI Routing** | Local models first → cloud on demand → peer failover · Ensemble consensus · Circuit breakers |
+| **Auto-Discovery** | Static config · Tailscale auto-discovery · Dynamic API registration |
+| **Stats** | ⚡ 0.16s startup · 💾 17MB RAM · 📦 4 dependencies (aiohttp, psutil, PyYAML, PyNaCl optional) |
+
+---
+
+## Quick Start
+
+### Prerequisites
 - Python 3.12+
-- Ollama (https://ollama.ai)
+- [Ollama](https://ollama.ai) (or any LLM provider)
 
-### Install
+### Install & Run
 
 ```bash
 git clone https://github.com/dnshouet-cpu/Unitybrain.git
 cd Unitybrain
-pip install -r requirements.txt
+
+# Start with default config
+python3 src/unitybrain_v4.py
+
+# Or specify a config
+python3 src/unitybrain_v4.py --config config/bug.json
 ```
 
-### Quick Start
-
-```bash
-# Start a node
-python -m src.unitybrain_v4 bug
-
-# Or with custom config
-python -m src.unitybrain_v4 mynode
-```
-
-### Config
-
-Edit `config/<node_name>.json`:
+### Connect Two Nodes
 
 ```json
 {
   "node_name": "bug",
-  "host": "0.0.0.0",
   "port": 8080,
-  "ollama_host": "127.0.0.1",
-  "ollama_port": 11434,
-  "local_models": ["glm-5.1:cloud"],
-  "stealth_mode": false,
-  "share_ai": false,
-  "peers": [
-    {"name": "Pinky", "host": "100.79.20.105", "port": 8081, "models": ["glm-5.1:cloud"]}
-  ]
+  "p2p_secret": "shared-secret-here",
+  "providers": {
+    "ollama": {
+      "type": "ollama",
+      "host": "127.0.0.1",
+      "port": 11434,
+      "models": ["glm-5.1:cloud"],
+      "enabled": true
+    }
+  },
+  "peers": [{"name": "pinky", "host": "192.168.1.101", "port": 8081}]
 }
 ```
 
+That's it. Memory sync, model sharing, and real-time communication happen automatically.
+
+### Add OpenAI or Anthropic
+
+```json
+"providers": {
+  "ollama": { "type": "ollama", "host": "127.0.0.1", "port": 11434, "models": ["glm-5.1:cloud"], "enabled": true },
+  "openai": { "type": "openai", "api_key": "sk-...", "models": ["gpt-4o", "gpt-4o-mini"], "enabled": true },
+  "anthropic": { "type": "anthropic", "api_key": "sk-ant-...", "models": ["claude-sonnet-4-20250514"], "enabled": true }
+}
+```
+
+Queries with `"model": "gpt-4o"` are automatically routed to OpenAI. No code changes. Models from all providers are visible across the P2P network.
+
 ---
 
-## 🔌 API Reference
+## API Reference
 
-### HTTP REST (retrocompatible)
+### REST Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/ping` | Health check |
-| GET | `/api/status` | Node status |
-| POST | `/api/query` | Query an AI model |
-| POST | `/api/memory/set` | Set a memory key |
-| GET | `/api/memory/{key}` | Get a memory key |
-| POST | `/api/memory/sync` | Full memory sync push |
-| POST | `/api/memory/push` | Push entries (CRDT merge) |
-| POST | `/api/memory/pull` | Pull delta since vector clock |
-| GET | `/api/peers` | List known peers |
-| GET | `/api/monitor` | System metrics |
-| POST | `/api/trust/sign` | Vouch for a node's public key |
-| GET | `/api/trust/score/{key}` | Get trust score |
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/api/ping` | No | Health check |
+| GET | `/api/status` | No | Node status, providers, peers, memory |
+| GET | `/api/memory/{key}` | No | Read a memory entry |
+| POST | `/api/memory/set` | Yes | Write a memory entry |
+| POST | `/api/memory/push` | Yes | Push memory entries (sync) |
+| POST | `/api/query` | Yes | Query AI models |
+| POST | `/api/brain/chain` | Yes | Chain multiple AI queries |
+| POST | `/api/trust/sign` | Yes | Sign a peer's key (Web of Trust) |
 
 ### WebSocket (`/ws`)
 
 ```json
-{"type": "auth", "response": "<signature>", "from_key": "<public_key>"}
+{"type": "auth", "hmac": "<signature>", "ts": "<timestamp>"}
 {"type": "ping"}
-{"type": "query", "prompt": "Hello", "model": "glm-5.1:cloud"}
-{"type": "memory_sync", "entries": {...}}
-{"type": "memory_request", "vector_clock": {...}}
-{"type": "notification", "message": "New model available"}
-{"type": "peer_discovery", "peer": {"name": "...", "host": "...", "port": 8081}}
-{"type": "status"}
+{"type": "query", "prompt": "Hello!", "model": "gpt-4o"}
+{"type": "memory_request", "vector_clock": {}}
+{"type": "memory_update", "key": "mykey", "entry": {"value": "mydata"}}
+```
+
+### Authentication
+
+```bash
+TIMESTAMP=$(date +%s)
+SIGNATURE=$(echo -n "/api/query:${TIMESTAMP}" | openssl dgst -sha256 -hmac "your-secret" | awk '{print $NF}')
+
+curl -X POST http://localhost:8080/api/query \
+  -H "X-UnityBrain-Auth: ${SIGNATURE}" \
+  -H "X-UnityBrain-TS: ${TIMESTAMP}" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Hello","model":"glm-5.1:cloud"}'
 ```
 
 ---
 
-## 🔐 Security
+## Architecture
 
-See [docs/AUTH_DESIGN.md](docs/AUTH_DESIGN.md) for the full auth design.
-
-**Key points:**
-- Node identity = Ed25519 public key (self-generated)
-- Challenge-response auth between nodes (anti-replay)
-- Web of Trust for decentralized trust propagation
-- Stealth mode for nodes exposed to the internet
-- Users don't authenticate — auth is transparent between nodes
-
----
-
-## 🧠 brain_llm
-
-The brain_llm engine coordinates distributed LLM reasoning:
-- Model routing (local → cloud → P2P fallback)
-- Ensemble consensus (multi-model agreement)
-- Chain of reasoning (task decomposition)
-- Context from distributed memory
-
-brain_llm is **async and non-blocking**. Cloud models are loaded on demand only. It never feels heavy.
+```
+┌─────────────────────────────────────────────┐
+│                  Node (Bug)                  │
+│  ┌──────────┐  ┌──────────┐  ┌───────────┐ │
+│  │ Providers │  │WebSocket │  │   CRDT    │ │
+│  │ Ollama ◄──┤  │  Server  │  │  Memory   │ │
+│  │ OpenAI   │  └────┬─────┘  └─────┬─────┘ │
+│  │Anthropic │       │              │       │
+│  │ Custom   │───────┴──────────────┘       │
+│  └──────────┘                              │
+│       │                                     │
+│  ┌────┴────┐                               │
+│  │AI Router│◄── P2P ──► Other Nodes        │
+│  └─────────┘                               │
+└────────────────────────────────────────────┘
+```
 
 ---
 
-## 💰 Support UnityBrain
+## Configuration
 
-See [DONATIONS.md](DONATIONS.md) — voluntary BTC donations, clean sponsorship. No premium tiers, no feature gates. The project stays 100% free and open.
+| Key | Default | Description |
+|-----|---------|-------------|
+| `node_name` | required | Unique node name |
+| `port` | `8080` | HTTP/WS port |
+| `p2p_secret` | required | HMAC shared secret for peer auth |
+| `providers` | `{}` | LLM providers (Ollama, OpenAI, Anthropic, custom) |
+| `peers` | `[]` | Peer nodes |
+| `stealth_mode` | `false` | Hidden node, trusted peers only |
+| `share_ai` | `false` | Share AI responses across network |
+| `memory_max_size` | `1000` | Max memory entries |
+| `tailscale_auto_discovery` | `true` | Auto-discover Tailscale peers |
 
 ---
 
-## 📄 License
+## Running as a Service
 
-MIT License — see [LICENSE](LICENSE)
+```ini
+# ~/.config/systemd/user/unitybrain.service
+[Unit]
+Description=UnityBrain P2P Node
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Unitybrain
+ExecStart=/usr/bin/python3 %h/Unitybrain/src/unitybrain_v4.py bug
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+```
+
+---
+
+## Philosophy
+
+**No mining. No premium tier. No hidden costs.** Just free, open, distributed AI.
+
+Built by Bug 🐛 and Denis Houet — a small bug in the machine and a human who believes in symbiosis, not hierarchy.
+
+**BTC:** `bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x`
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.

@@ -1,4 +1,4 @@
-# 🌐 UnityBrain v4.0.1
+# 🌐 UnityBrain v4.1.0
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
@@ -206,7 +206,7 @@ Conectar a `ws://host:puerto/ws` y enviar mensajes JSON tipados:
 ```ini
 # ~/.config/systemd/user/unitybrain.service
 [Unit]
-Description=UnityBrain v4.0.1 Nodo P2P
+Description=UnityBrain v4.1.0 Nodo P2P
 After=network.target
 
 [Service]
