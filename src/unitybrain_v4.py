@@ -522,7 +522,8 @@ class PeerDiscovery:
 
         self.known_peers = found
         self.last_discovery = time.time()
-        logger.info(f"Discovery: found {len(found)} potential peers")
+        if found:
+            logger.info(f"Discovery: found {len(found)} potential peers")
         return list(found.values())
 
     async def _discover_tailscale(self) -> List[Dict]:
@@ -949,6 +950,7 @@ def load_config(config_path: str = None) -> Dict:
         "memory_default_ttl": 3600,
         "p2p_secret": os.environ.get("P2P_SECRET", "changeme-configure-in-config"),
         "tailscale_auto_discovery": True,
+        "standalone": False,
         "circuit_breaker": {
             "failure_threshold": 3,
             "recovery_timeout": 60,
@@ -999,6 +1001,9 @@ class UnityBrain:
             logger.warning("⚠️  Using default p2p_secret — configure a strong secret in config or P2P_SECRET env var!")
         self.stealth_mode = config.get("stealth_mode", False)
         self.share_ai = config.get("share_ai", False)
+        self.standalone = config.get("standalone", False)
+        if self.standalone:
+            logger.info("🏠 STANDALONE mode — no P2P discovery or peer connections")
 
         # v4.1.0: Multi-LLM providers
         self.providers: Dict[str, ProviderAdapter] = {}
@@ -1155,22 +1160,25 @@ class UnityBrain:
         self.session = aiohttp.ClientSession()
         self.heartbeat_running = True
 
-        # Discover peers
-        found_peers = await self.discovery.discover_all()
-        for peer_info in found_peers:
-            peer = Peer(
-                name=peer_info.get('name', 'unknown'),
-                host=peer_info['host'],
-                port=peer_info.get('port', 8081),
-                models=peer_info.get('models', []),
-                public_key_hex=peer_info.get('public_key', '')
-            )
-            await self.add_peer(peer)
+        # Discover peers (skip in standalone mode)
+        if not self.standalone:
+            found_peers = await self.discovery.discover_all()
+            for peer_info in found_peers:
+                peer = Peer(
+                    name=peer_info.get('name', 'unknown'),
+                    host=peer_info['host'],
+                    port=peer_info.get('port', 8081),
+                    models=peer_info.get('models', []),
+                    public_key_hex=peer_info.get('public_key', '')
+                )
+                await self.add_peer(peer)
 
-        # Ping all peers
-        if self.peers:
-            tasks = [p.ping(self.session) for p in self.peers]
-            await asyncio.gather(*tasks, return_exceptions=True)
+            # Ping all peers
+            if self.peers:
+                tasks = [p.ping(self.session) for p in self.peers]
+                await asyncio.gather(*tasks, return_exceptions=True)
+        else:
+            logger.info("🏠 Standalone mode — skipping peer discovery")
 
         # Start brain_llm if available
         if self.brain_llm:
@@ -1293,8 +1301,9 @@ class UnityBrain:
             "version": self.version,
             "uptime": round(uptime, 0),
             "identity": self.identity.to_dict(),
-            "stealth_mode": self.stealth_mode,
+                        "stealth_mode": self.stealth_mode,
             "share_ai": self.share_ai,
+            "standalone": self.standalone,
             "queries": {"total": self.queries, "success": self.successful,
                         "rate": round(self.successful / max(self.queries, 1) * 100, 1)},
             "memory": self.memory.stats(),
@@ -1542,6 +1551,18 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         strategy = data.get("strategy", "auto")
         if not prompt:
             return web.json_response({"error": "prompt required"}, status=400)
+        
+        # Check if this is a peer request
+        auth_info = request.get('auth', {})
+        is_peer_request = auth_info.get('node', self.node_name) != self.node_name
+        
+        # If share_ai is False and this comes from a peer, reject
+        if is_peer_request and not self.share_ai:
+            return web.json_response({
+                "error": "AI sharing disabled on this node",
+                "share_ai": False
+            }, status=403)
+        
         result = await self.query(prompt, model, strategy)
         return web.json_response(result)
 
@@ -2148,15 +2169,25 @@ async def main():
         logger.info("🔒 Stealth mode ACTIVE — node is hidden from discovery")
     if brain.share_ai:
         logger.info("📤 AI sharing ENABLED — models available to the network")
+    if brain.standalone:
+        logger.info("🏠 STANDALONE mode — single-node, no P2P")
+    elif not brain.share_ai:
+        logger.info("🔇 AI sharing DISABLED — peers cannot use your models")
+        logger.info("💡 Set share_ai: true to allow peers to use your CPU/RAM")
 
     tasks = [
         asyncio.create_task(brain.start_heartbeat()),
         asyncio.create_task(brain.auto_heal()),
         asyncio.create_task(brain._memory_sync_loop()),
-        asyncio.create_task(brain._ws_memory_sync_loop()),
-        asyncio.create_task(brain._connect_to_peers_ws()),
-        asyncio.create_task(brain._discovery_loop()),
     ]
+
+    # P2P tasks only if not in standalone mode
+    if not brain.standalone:
+        tasks.extend([
+            asyncio.create_task(brain._ws_memory_sync_loop()),
+            asyncio.create_task(brain._connect_to_peers_ws()),
+            asyncio.create_task(brain._discovery_loop()),
+        ])
 
     await shutdown_event.wait()
 

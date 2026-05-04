@@ -26,7 +26,7 @@
   "p2p_secret": "bug-pinky-2026-unity",
   "tailscale_auto_discovery": true,
   "stealth_mode": false,
-  "share_ai": false,
+  "share_ai": true,
   "rate_limit": 10.0,
   "rate_burst": 20,
   "circuit_breaker": {
