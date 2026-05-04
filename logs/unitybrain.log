@@ -174,3 +174,50 @@
 2026-05-04 09:07:29,220 [UnityBrain] INFO: Discovery: found 1 potential peers
 2026-05-04 09:12:29,227 [UnityBrain] INFO: Discovery: found 1 potential peers
 2026-05-04 09:17:29,233 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:22:29,240 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:27:29,247 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:31:35,011 [UnityBrain] WARNING: ⚠️  Using default p2p_secret — configure a strong secret in config or P2P_SECRET env var!
+2026-05-04 09:31:35,011 [UnityBrain] INFO: brain_llm not available (optional)
+2026-05-04 09:32:29,255 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:37:29,261 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:39:52,554 [UnityBrain] INFO: Config loaded from config/bug.json
+2026-05-04 09:39:52,554 [UnityBrain] INFO: Provider 'ollama' (ollama): 3 models - glm-5.1:cloud, deepseek-v3.1:671b-cloud, qwen3-coder-next:cloud
+2026-05-04 09:39:52,554 [UnityBrain] INFO: Available models (3): deepseek-v3.1:671b-cloud, glm-5.1:cloud, qwen3-coder-next:cloud
+2026-05-04 09:39:52,554 [UnityBrain] INFO: brain_llm not available (optional)
+2026-05-04 09:39:52,554 [UnityBrain] INFO: No providers configured, using Ollama at 127.0.0.1:11434
+2026-05-04 09:39:52,554 [UnityBrain] INFO: Available models (2): model-a, model-b
+2026-05-04 09:39:52,554 [UnityBrain] INFO: brain_llm not available (optional)
+2026-05-04 09:40:00,177 [UnityBrain] INFO: 🛑 UnityBrain shutting down...
+2026-05-04 09:40:00,177 [UnityBrain] INFO: Cleaning up...
+2026-05-04 09:40:21,918 [UnityBrain] INFO: UnityBrain stopped.
+2026-05-04 09:40:22,099 [UnityBrain] INFO: Starting UnityBrain v4.1.0 as 'bug'
+2026-05-04 09:40:22,100 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-05-04 09:40:22,100 [UnityBrain] INFO: Provider 'ollama' (ollama): 3 models - glm-5.1:cloud, deepseek-v3.1:671b-cloud, qwen3-coder-next:cloud
+2026-05-04 09:40:22,100 [UnityBrain] INFO: Available models (3): deepseek-v3.1:671b-cloud, glm-5.1:cloud, qwen3-coder-next:cloud
+2026-05-04 09:40:22,107 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:40:22,163 [UnityBrain] INFO: 🌐 UnityBrain v4.1.0 on http://0.0.0.0:8080
+2026-05-04 09:40:32,197 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 09:40:41,842 [UnityBrain] INFO: 🛑 UnityBrain shutting down...
+2026-05-04 09:40:41,842 [UnityBrain] INFO: Cleaning up...
+2026-05-04 09:40:41,843 [UnityBrain] INFO: UnityBrain stopped.
+2026-05-04 09:40:42,028 [UnityBrain] INFO: Starting UnityBrain v4.1.0 as 'bug'
+2026-05-04 09:40:42,028 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-05-04 09:40:42,028 [UnityBrain] INFO: Provider 'ollama' (ollama): 3 models - glm-5.1:cloud, deepseek-v3.1:671b-cloud, qwen3-coder-next:cloud
+2026-05-04 09:40:42,028 [UnityBrain] INFO: Available models (3): deepseek-v3.1:671b-cloud, glm-5.1:cloud, qwen3-coder-next:cloud
+2026-05-04 09:40:42,043 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:40:42,103 [UnityBrain] INFO: 🌐 UnityBrain v4.1.0 on http://0.0.0.0:8080
+2026-05-04 09:40:52,137 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 09:41:15,737 [UnityBrain] INFO: WS disconnected from Pinky, will reconnect
+2026-05-04 09:41:55,776 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 09:44:17,525 [UnityBrain] INFO: 🛑 UnityBrain shutting down...
+2026-05-04 09:44:17,525 [UnityBrain] INFO: Cleaning up...
+2026-05-04 09:44:39,969 [UnityBrain] INFO: UnityBrain stopped.
+2026-05-04 09:44:40,142 [UnityBrain] INFO: Starting UnityBrain v4.1.0 as 'bug'
+2026-05-04 09:44:40,142 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-05-04 09:44:40,142 [UnityBrain] INFO: Provider 'ollama' (ollama): 3 models - glm-5.1:cloud, deepseek-v3.1:671b-cloud, qwen3-coder-next:cloud
+2026-05-04 09:44:40,142 [UnityBrain] INFO: Available models (3): deepseek-v3.1:671b-cloud, glm-5.1:cloud, qwen3-coder-next:cloud
+2026-05-04 09:44:40,149 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:44:40,203 [UnityBrain] INFO: 🌐 UnityBrain v4.1.0 on http://0.0.0.0:8080
+2026-05-04 09:44:50,236 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 09:45:13,737 [UnityBrain] INFO: WS disconnected from Pinky, will reconnect
+2026-05-04 09:45:53,782 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)

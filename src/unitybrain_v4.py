@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-🌐 UNITYBRAIN v4.0.1 — RÉSEAU P2P DISTRIBUÉ
+🌐 UNITYBRAIN v4.1.0 — RÉSEAU P2P DISTRIBUÉ
 ===============================================
+v4.1.0 Multi-LLM provider support:
+1. ProviderAdapter base class — OllamaProvider, OpenAIProvider, AnthropicProvider
+2. Config `providers` section — connect any LLM API alongside Ollama
+3. _query_local() routes to correct provider based on model name
+4. ModelRouter considers all provider models
+5. Backward compatible — if no providers, falls back to ollama_host/ollama_port
+
 v4.0.1 Bug fixes:
 1. Memory gossip: send correct payload for memory_update messages
 2. Outgoing WS: connect to peers via WS for real-time sync
@@ -688,6 +695,160 @@ class Peer:
 # MODEL ROUTING
 # ============================================================================
 
+# ========================================================================
+# MULTI-LLM PROVIDER ADAPTERS
+# ========================================================================
+
+class ProviderAdapter:
+    """Base class for LLM providers. Each adapter knows how to query its API."""
+    provider_type: str = "base"
+
+    def __init__(self, name: str, config: Dict):
+        self.name = name
+        self.enabled = config.get("enabled", True)
+        self.models = config.get("models", [])
+
+    async def query(self, session: aiohttp.ClientSession, model: str, prompt: str, timeout: int = 120) -> Dict:
+        raise NotImplementedError
+
+    def supports(self, model: str) -> bool:
+        if not self.models:
+            return True  # Empty models list = supports all
+        return model in self.models or model.startswith(tuple(self.models))
+
+
+class OllamaProvider(ProviderAdapter):
+    """Ollama API provider (default, backward compatible)."""
+    provider_type = "ollama"
+
+    def __init__(self, name: str, config: Dict):
+        super().__init__(name, config)
+        self.host = config.get("host", "127.0.0.1")
+        self.port = config.get("port", 11434)
+        self.base_url = f"http://{self.host}:{self.port}"
+
+    async def query(self, session: aiohttp.ClientSession, model: str, prompt: str, timeout: int = 120) -> Dict:
+        try:
+            async with session.post(
+                f"{self.base_url}/api/generate",
+                json={"model": model, "prompt": prompt, "stream": False},
+                timeout=aiohttp.ClientTimeout(total=timeout)
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    return {
+                        "response": data.get("response", ""),
+                        "model": model,
+                        "source": f"ollama:{self.name}",
+                        "tokens_used": data.get("eval_count", 0)
+                    }
+                return {"response": "", "model": model, "source": f"ollama:{self.name}",
+                        "error": f"Ollama {self.name}: HTTP {resp.status}"}
+        except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionRefusedError) as e:
+            return {"response": "", "model": model, "source": f"ollama:{self.name}", "error": str(e)}
+
+
+class OpenAIProvider(ProviderAdapter):
+    """OpenAI Chat Completions API provider. Also works for any OpenAI-compatible API."""
+    provider_type = "openai"
+
+    def __init__(self, name: str, config: Dict):
+        super().__init__(name, config)
+        self.api_key = config.get("api_key", "")
+        self.base_url = config.get("base_url", "https://api.openai.com/v1").rstrip("/")
+
+    async def query(self, session: aiohttp.ClientSession, model: str, prompt: str, timeout: int = 120) -> Dict:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+        payload = {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": False
+        }
+        try:
+            async with session.post(
+                f"{self.base_url}/chat/completions",
+                json=payload,
+                headers=headers,
+                timeout=aiohttp.ClientTimeout(total=timeout)
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                    usage = data.get("usage", {})
+                    return {
+                        "response": content,
+                        "model": model,
+                        "source": f"openai:{self.name}",
+                        "tokens_used": usage.get("total_tokens", 0)
+                    }
+                text = await resp.text()
+                return {"response": "", "model": model, "source": f"openai:{self.name}",
+                        "error": f"OpenAI {self.name}: HTTP {resp.status} {text[:200]}"}
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            return {"response": "", "model": model, "source": f"openai:{self.name}", "error": str(e)}
+
+
+class AnthropicProvider(ProviderAdapter):
+    """Anthropic Messages API provider."""
+    provider_type = "anthropic"
+
+    def __init__(self, name: str, config: Dict):
+        super().__init__(name, config)
+        self.api_key = config.get("api_key", "")
+        self.base_url = config.get("base_url", "https://api.anthropic.com").rstrip("/")
+
+    async def query(self, session: aiohttp.ClientSession, model: str, prompt: str, timeout: int = 120) -> Dict:
+        headers = {
+            "Content-Type": "application/json",
+            "x-api-key": self.api_key,
+            "anthropic-version": "2023-06-01"
+        }
+        payload = {
+            "model": model,
+            "max_tokens": 4096,
+            "messages": [{"role": "user", "content": prompt}]
+        }
+        try:
+            async with session.post(
+                f"{self.base_url}/v1/messages",
+                json=payload,
+                headers=headers,
+                timeout=aiohttp.ClientTimeout(total=timeout)
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    content = data.get("content", [{}])
+                    text = content[0].get("text", "") if content else ""
+                    usage = data.get("usage", {})
+                    return {
+                        "response": text,
+                        "model": model,
+                        "source": f"anthropic:{self.name}",
+                        "tokens_used": usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
+                    }
+                text = await resp.text()
+                return {"response": "", "model": model, "source": f"anthropic:{self.name}",
+                        "error": f"Anthropic {self.name}: HTTP {resp.status} {text[:200]}"}
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            return {"response": "", "model": model, "source": f"anthropic:{self.name}", "error": str(e)}
+
+
+class OpenAICompatibleProvider(OpenAIProvider):
+    """Alias for OpenAI provider — works with any OpenAI-compatible endpoint (LM Studio, vLLM, etc.)."""
+    provider_type = "openai_compatible"
+
+
+PROVIDER_TYPES = {
+    "ollama": OllamaProvider,
+    "openai": OpenAIProvider,
+    "anthropic": AnthropicProvider,
+    "openai_compatible": OpenAICompatibleProvider,
+}
+
+
 class ModelRouter:
     CODE_KEYWORDS = ['code', 'program', 'script', 'debug', 'implement', 'class ', 'def ', 'async ']
     REASONING_KEYWORDS = ['explain', 'why', 'how does', 'analyze', 'compare', 'what if']
@@ -781,6 +942,7 @@ def load_config(config_path: str = None) -> Dict:
         "ollama_host": "127.0.0.1",
         "ollama_port": 11434,
         "local_models": ["glm-5.1:cloud"],
+        "providers": {},
         "heartbeat_interval": 30,
         "auto_heal_interval": 120,
         "memory_max_size": 1000,
@@ -826,7 +988,7 @@ class UnityBrain:
     def __init__(self, config: Dict):
         self.config = config
         self.node_name = config["node_name"]
-        self.version = "4.0.1"
+        self.version = "4.1.0"
         self.host = config["host"]
         self.port = config["port"]
         self.ollama_host = config["ollama_host"]
@@ -837,6 +999,11 @@ class UnityBrain:
             logger.warning("⚠️  Using default p2p_secret — configure a strong secret in config or P2P_SECRET env var!")
         self.stealth_mode = config.get("stealth_mode", False)
         self.share_ai = config.get("share_ai", False)
+
+        # v4.1.0: Multi-LLM providers
+        self.providers: Dict[str, ProviderAdapter] = {}
+        self._model_provider_map: Dict[str, str] = {}  # model_name -> provider_name
+        self._init_providers(config)
 
         # v4.0: Node Identity (Ed25519 or HMAC fallback)
         self.identity = NodeIdentity(self.node_name, self.p2p_secret)
@@ -854,6 +1021,46 @@ class UnityBrain:
         self.router = ModelRouter()
         self.ensemble = EnsembleConsensus()
         self.history = QueryHistory()
+
+    def _init_providers(self, config: Dict):
+        """Initialize LLM providers from config. Falls back to Ollama-only if no providers."""
+        providers_config = config.get("providers", {})
+
+        if providers_config:
+            # v4.1.0: Multi-provider mode
+            for name, pconf in providers_config.items():
+                ptype = pconf.get("type", "ollama")
+                if not pconf.get("enabled", True):
+                    logger.info(f"Provider '{name}' disabled, skipping")
+                    continue
+                cls = PROVIDER_TYPES.get(ptype, OllamaProvider)
+                provider = cls(name, pconf)
+                self.providers[name] = provider
+                # Map models to provider
+                for model in provider.models:
+                    self._model_provider_map[model] = name
+                logger.info(f"Provider '{name}' ({ptype}): {len(provider.models)} models "
+                            f"- {', '.join(provider.models[:3])}{'...' if len(provider.models) > 3 else ''}")
+        else:
+            # v4.0 backward compat: create default Ollama provider from legacy config
+            ollama_conf = {
+                "type": "ollama",
+                "host": config.get("ollama_host", "127.0.0.1"),
+                "port": config.get("ollama_port", 11434),
+                "models": config.get("local_models", ["glm-5.1:cloud"]),
+                "enabled": True
+            }
+            self.providers["ollama"] = OllamaProvider("ollama", ollama_conf)
+            for model in self.local_models:
+                self._model_provider_map[model] = "ollama"
+            logger.info(f"No providers configured, using Ollama at {self.ollama_host}:{self.ollama_port}")
+
+        # Build complete local_models list from all providers
+        all_models = set(self.local_models) if self.local_models else set()
+        for provider in self.providers.values():
+            all_models.update(provider.models)
+        self.local_models = list(all_models)
+        logger.info(f"Available models ({len(self.local_models)}): {', '.join(sorted(self.local_models)[:5])}{'...' if len(self.local_models) > 5 else ''}")
 
         # v4.0: CRDT Memory
         self.memory = CRDTMemory(
@@ -1023,6 +1230,15 @@ class UnityBrain:
 
     async def _query_local(self, model: str, prompt: str) -> Dict:
         target = model or self.router.route(prompt, self.local_models)
+        # Route to the correct provider
+        provider_name = self._model_provider_map.get(target)
+        if provider_name and provider_name in self.providers:
+            provider = self.providers[provider_name]
+            result = await provider.query(self.session, target, prompt)
+            if not result.get("source"):
+                result["source"] = f"provider:{provider_name}"
+            return result
+        # Fallback: try Ollama directly if model not in any provider
         try:
             async with self.session.post(
                 f'http://{self.ollama_host}:{self.ollama_port}/api/generate',
@@ -1057,6 +1273,21 @@ class UnityBrain:
 
     def get_status(self) -> Dict:
         uptime = time.time() - self.start_time
+        # Build provider info
+        providers_info = {}
+        for name, provider in self.providers.items():
+            providers_info[name] = {
+                "type": provider.provider_type,
+                "models": provider.models,
+                "enabled": provider.enabled
+            }
+            if isinstance(provider, OllamaProvider):
+                providers_info[name]["host"] = provider.host
+                providers_info[name]["port"] = provider.port
+            elif isinstance(provider, (OpenAIProvider, OpenAICompatibleProvider)):
+                providers_info[name]["base_url"] = provider.base_url
+            elif isinstance(provider, AnthropicProvider):
+                providers_info[name]["base_url"] = provider.base_url
         return {
             "node": self.node_name,
             "version": self.version,
@@ -1071,6 +1302,7 @@ class UnityBrain:
                       "available": sum(1 for p in self.peers if p.available)},
             "ws_clients": len(self.ws_clients),
             "local_models": self.local_models,
+            "providers": providers_info,
             "web_of_trust": len(self.web_of_trust.trust_edges),
             "rate_limiter": self.rate_limiter.to_dict()
         }
@@ -1096,7 +1328,7 @@ class UnityBrain:
             'X-UnityBrain-Key': self.identity.public_key_hex,
             'X-UnityBrain-TS': ts,
             'X-UnityBrain-Auth': hmac_sig,
-            'X-UnityBrain-Version': '4.0.1'
+            'X-UnityBrain-Version': '4.1.0'
         }
 
     def _verify_auth(self, request: web.Request) -> Optional[Dict]:
@@ -1273,7 +1505,27 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         if not self.peers:
             html += "<div>No peers connected</div>"
 
-        html += """</div></body></html>"""
+        html += "</div>"
+
+        # Providers section
+        html += '<div class="card"><h2>Providers</h2>'
+        if self.providers:
+            for name, provider in self.providers.items():
+                status_icon = "\u2705" if provider.enabled else "\u274c"
+                model_list = ', '.join(provider.models[:5])
+                if len(provider.models) > 5:
+                    model_list += f'... (+{len(provider.models) - 5} more)'
+                extra = ""
+                if isinstance(provider, OllamaProvider):
+                    extra = f' @ {provider.host}:{provider.port}'
+                elif isinstance(provider, (OpenAIProvider, OpenAICompatibleProvider, AnthropicProvider)):
+                    extra = f' @ {provider.base_url}'
+                html += f'<div class="peer">{status_icon} <strong>{name}</strong> ({provider.provider_type}){extra}<br/><span class="label">Models:</span> {model_list}</div>'
+        else:
+            html += '<div>No providers configured</div>'
+        html += '</div>'
+
+        html += """</body></html>"""
         return web.Response(text=html, content_type='text/html')
 
     async def handle_status(self, request: web.Request) -> web.Response:
@@ -1927,5 +2179,5 @@ async def main():
 if __name__ == '__main__':
     import sys
     node = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    logger.info(f"Starting UnityBrain v4.0.1 as '{node}'")
+    logger.info(f"Starting UnityBrain v4.1.0 as '{node}'")
     asyncio.run(main())
