@@ -2133,8 +2133,10 @@ async def main():
     import signal
 
     node_name = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    script_dir = Path(__file__).parent.parent
-    config_path = script_dir / "config" / f"{node_name}.json"
+    # Search for config: ~/.unitybrain first, then relative to script
+    home_config = Path.home() / ".unitybrain" / "config" / f"{node_name}.json"
+    script_config = Path(__file__).parent.parent / "config" / f"{node_name}.json"
+    config_path = home_config if home_config.exists() else script_config
     config = load_config(str(config_path))
     if len(sys.argv) > 1:
         config["node_name"] = node_name

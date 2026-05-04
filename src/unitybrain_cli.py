@@ -436,23 +436,28 @@ def main():
     parser.add_argument("--ensemble", action="store_true", help="Use ensemble consensus")
     args = parser.parse_args()
 
-    # Try to load config for port/secret
+    # Try to load config — check ~/.unitybrain first, then relative to script
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_dir = os.path.join(os.path.dirname(script_dir), "config")
-    config_path = os.path.join(config_dir, f"{args.node}.json")
+    config_dirs = [
+        os.path.join(os.path.expanduser("~"), ".unitybrain", "config"),
+        os.path.join(os.path.dirname(script_dir), "config"),
+    ]
 
     host = args.host
     port = args.port
     secret = args.secret
 
-    if os.path.exists(config_path):
-        try:
-            with open(config_path) as f:
-                config = json.load(f)
-            port = config.get("port", port)
-            secret = config.get("p2p_secret", secret)
-        except:
-            pass
+    for config_dir in config_dirs:
+        config_path = os.path.join(config_dir, f"{args.node}.json")
+        if os.path.exists(config_path):
+            try:
+                with open(config_path) as f:
+                    config = json.load(f)
+                port = config.get("port", port)
+                secret = config.get("p2p_secret", secret)
+                break
+            except:
+                pass
 
     client = UnityBrainClient(host=host, port=port, secret=secret)
 

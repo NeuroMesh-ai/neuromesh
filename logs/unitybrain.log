@@ -526,3 +526,17 @@
 2026-05-04 21:26:33,114 [UnityBrain] INFO: 🌐 UnityBrain v4.1.0 on http://0.0.0.0:8080
 2026-05-04 21:26:33,114 [UnityBrain] INFO: 📤 AI sharing ENABLED — models available to the network
 2026-05-04 21:26:47,514 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 21:31:33,121 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 21:35:21,084 [UnityBrain] INFO: 🛑 UnityBrain shutting down...
+2026-05-04 21:35:21,084 [UnityBrain] INFO: Cleaning up...
+2026-05-04 21:35:41,136 [UnityBrain] INFO: UnityBrain stopped.
+2026-05-04 21:35:41,325 [UnityBrain] INFO: Starting UnityBrain v4.1.0 as 'bug'
+2026-05-04 21:35:41,326 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-05-04 21:35:41,326 [UnityBrain] INFO: Provider 'ollama' (ollama): 3 models - glm-5.1:cloud, deepseek-v3.1:671b-cloud, qwen3-coder-next:cloud
+2026-05-04 21:35:41,326 [UnityBrain] INFO: Available models (3): deepseek-v3.1:671b-cloud, glm-5.1:cloud, qwen3-coder-next:cloud
+2026-05-04 21:35:41,331 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 21:35:41,644 [UnityBrain] INFO: 🌐 UnityBrain v4.1.0 on http://0.0.0.0:8080
+2026-05-04 21:35:41,644 [UnityBrain] INFO: 📤 AI sharing ENABLED — models available to the network
+2026-05-04 21:35:54,239 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 21:36:33,740 [UnityBrain] INFO: WS disconnected from Pinky, will reconnect
+2026-05-04 21:37:16,468 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
