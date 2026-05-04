@@ -11,14 +11,14 @@ UB_DIR="$WORKSPACE/Unitybrain"
 
 # Arrêter les services existants
 echo "🛑 Arrêt des services existants..."
-pkill -f "unitybrain_v3_final.py" 2>/dev/null || true
+pkill -f "unitybrain_v4.py" 2>/dev/null || true
 pkill -f "bugbrain_v3_final.py" 2>/dev/null || true
 sleep 2
 
 # Démarrer UnityBrain
 echo "🌐 Démarrage d'UnityBrain..."
 cd "$UB_DIR"
-python3 src/unitybrain_v3_final.py &
+python3 src/unitybrain_v4.py &
 UNITYBRAIN_PID=$!
 echo $UNITYBRAIN_PID > logs/unitybrain.pid
 echo "✅ UnityBrain démarré (PID: $UNITYBRAIN_PID)"

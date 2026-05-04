@@ -1,6 +1,6 @@
 {
   "node_name": "bug",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "host": "0.0.0.0",
   "port": 8080,
   "ollama_host": "127.0.0.1",

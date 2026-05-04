@@ -109,14 +109,14 @@ echo "🚀 [3/4] Démarrage des services sur Bug..."
 
 # Arrêter les services existants
 echo "🛑 Arrêt des services existants..."
-pkill -f "unitybrain_v3_final.py" 2>/dev/null || true
+pkill -f "unitybrain_v4.py" 2>/dev/null || true
 pkill -f "bugbrain_v3_final.py" 2>/dev/null || true
 sleep 2
 
 # Démarrer UnityBrain
 echo "🌐 Démarrage d'UnityBrain..."
 cd "$UB_DIR"
-nohup python3 src/unitybrain_v3_final.py > logs/unitybrain.log 2>&1 &
+nohup python3 src/unitybrain_v4.py > logs/unitybrain.log 2>&1 &
 UNITYBRAIN_PID=$!
 echo $UNITYBRAIN_PID > logs/unitybrain.pid
 echo "✅ UnityBrain démarré (PID: $UNITYBRAIN_PID)"
@@ -143,13 +143,13 @@ echo "🚀 [4/4] Démarrage des services sur Pinky..."
 
 # Arrêter les services existants
 echo "🛑 Arrêt des services existants..."
-ssh "$PINKY_USER@$PINKY_HOST" "pkill -f 'unitybrain_v3_final.py' 2>/dev/null || true"
+ssh "$PINKY_USER@$PINKY_HOST" "pkill -f 'unitybrain_v4.py' 2>/dev/null || true"
 ssh "$PINKY_USER@$PINKY_HOST" "pkill -f 'bugbrain_v3_final.py' 2>/dev/null || true"
 sleep 2
 
 # Démarrer UnityBrain sur Pinky
 echo "🌐 Démarrage d'UnityBrain sur Pinky..."
-ssh "$PINKY_USER@$PINKY_HOST" "cd ~/Unitybrain && nohup python3 src/unitybrain_v3_final.py > logs/unitybrain.log 2>&1 & echo \$! > logs/unitybrain.pid"
+ssh "$PINKY_USER@$PINKY_HOST" "cd ~/Unitybrain && nohup python3 src/unitybrain_v4.py > logs/unitybrain.log 2>&1 & echo \$! > logs/unitybrain.pid"
 echo "✅ UnityBrain démarré sur Pinky"
 
 # Attendre un peu
@@ -191,7 +191,7 @@ echo "  Pinky: ssh $PINKY_USER@$PINKY_HOST 'tail -f ~/Unitybrain/logs/bugbrain.l
 echo ""
 echo "🛑 POUR ARRÊTER:"
 echo "  Bug: kill $UNITYBRAIN_PID $BUGBRAIN_PID"
-echo "  Pinky: ssh $PINKY_USER@$PINKY_HOST 'cd ~/Unitybrain && pkill -f unitybrain_v3_final.py && pkill -f bugbrain_v3_final.py'"
+echo "  Pinky: ssh $PINKY_USER@$PINKY_HOST 'cd ~/Unitybrain && pkill -f unitybrain_v4.py && pkill -f bugbrain_v3_final.py'"
 echo ""
 echo "🎉 UnityBrain & BugBrain v3.0 sont déployés et démarrés !"
 echo ""

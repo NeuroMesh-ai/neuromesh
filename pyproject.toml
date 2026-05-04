@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unitybrain"
-version = "3.5.0"
+version = "4.0.1"
 description = "UnityBrain & BugBrain v3.5 - Système d'IA 100% décentralisé et auto-émancipé"
 readme = "README.md"
 license = {text = "MIT"}

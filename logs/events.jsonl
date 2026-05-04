@@ -7,3 +7,368 @@
 {"time": "2026-05-04T00:36:00.540742", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
 {"time": "2026-05-04T00:37:14.209462", "type": "ws", "message": "WS connected 81ec9297 from 127.0.0.1 (1 total)", "level": "info"}
 {"time": "2026-05-04T00:37:14.209803", "type": "ws", "message": "WS disconnected 81ec9297 (0 total)", "level": "info"}
+{"time": "2026-05-04T00:41:00.660413", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T00:46:00.803256", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T00:51:00.933963", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T00:56:01.067762", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:01:01.206508", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:06:01.341295", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:11:01.589335", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:16:01.729528", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:21:01.912554", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:31:06.126945", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:36:06.266822", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:41:06.341907", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:46:06.430854", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:51:06.510576", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T01:56:06.597545", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:00:02.080519", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/memory/network:topology", "level": "warn"}
+{"time": "2026-05-04T02:00:02.186624", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/memory/network:services", "level": "warn"}
+{"time": "2026-05-04T02:00:02.261443", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/memory/project:intercult77", "level": "warn"}
+{"time": "2026-05-04T02:00:02.347477", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/memory/project:unitybrain", "level": "warn"}
+{"time": "2026-05-04T02:00:02.445103", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/memory/people:denis", "level": "warn"}
+{"time": "2026-05-04T02:00:02.528414", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/memory/rules:important", "level": "warn"}
+{"time": "2026-05-04T02:01:07.864913", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:06:07.996352", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:11:08.145570", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:16:08.274744", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:21:08.511111", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:26:08.656703", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:31:08.733284", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:36:08.816087", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:41:08.965007", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:46:09.089812", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:51:09.158347", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T02:56:09.234396", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:01:09.354625", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:06:09.430546", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:11:09.541522", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:16:09.804135", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:21:09.950583", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:26:10.078134", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:31:10.413585", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:36:10.576633", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:41:10.701030", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:46:10.834170", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:51:10.963638", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T03:56:11.106271", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:01:11.305979", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:06:11.678418", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:11:11.823569", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:16:12.263829", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:21:12.402559", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:26:12.640522", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:31:12.721288", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:36:12.909985", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:41:13.051529", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:46:13.183141", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:51:13.314652", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T04:56:13.455514", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:01:13.701716", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:06:13.779228", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:11:13.847895", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:16:13.914074", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:21:13.991438", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:26:14.065858", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:31:14.189485", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:36:14.266753", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:41:14.345735", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:46:14.429719", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:51:14.491706", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T05:56:14.563474", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:01:14.655644", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:06:14.851198", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:11:14.992577", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:16:15.124238", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:21:15.259673", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:26:15.396622", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:31:15.535891", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:36:15.769934", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:41:15.909818", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:46:16.047326", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:51:16.181413", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T06:56:16.319229", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T07:01:16.454756", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T07:06:16.593256", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T07:11:16.725327", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T07:16:18.908661", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T07:21:19.635263", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T07:21:50.307470", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:21:50.336197", "type": "init", "message": "UnityBrain v4.0.0 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:21:50.336954", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:21:56.431684", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:21:56.475011", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:21:56.475184", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-05-04T07:21:56.475413", "type": "auth", "message": "Token generated (key_id: 2ccb53e6)", "level": "info"}
+{"time": "2026-05-04T07:21:56.510602", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-05-04T07:21:56.511839", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:22:32.048347", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1 on /ws", "level": "warn"}
+{"time": "2026-05-04T07:22:41.065400", "type": "ws", "message": "WS connected 18efc44c from 127.0.0.1 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:22:46.071982", "type": "ws", "message": "WS disconnected 18efc44c (0 total)", "level": "info"}
+{"time": "2026-05-04T07:25:31.669478", "type": "auth_fail", "message": "Unauthorized POST from 127.0.0.1 on /api/query", "level": "warn"}
+{"time": "2026-05-04T07:26:48.723867", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1 on /api/memory/test_sync", "level": "warn"}
+{"time": "2026-05-04T07:26:51.801322", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1 on /api/memory/pinky_fact", "level": "warn"}
+{"time": "2026-05-04T07:26:56.557850", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-04T07:26:56.557998", "type": "discovery", "message": "Auto-discovered Bug via referral", "level": "info"}
+{"time": "2026-05-04T07:26:56.558091", "type": "peer_added", "message": "Peer azil added (100.101.143.118:8081)", "level": "info"}
+{"time": "2026-05-04T07:26:56.558166", "type": "discovery", "message": "Auto-discovered azil via referral", "level": "info"}
+{"time": "2026-05-04T07:27:29.057663", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1 on /api/memory/pinky_fact", "level": "warn"}
+{"time": "2026-05-04T07:27:30.431556", "type": "auth_fail", "message": "Unauthorized GET from 100.79.20.105 on /api/peers", "level": "warn"}
+{"time": "2026-05-04T07:28:40.122549", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:28:40.197388", "type": "init", "message": "UnityBrain v4.0.0 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:28:40.198606", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:28:46.928401", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:28:46.971019", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:28:46.971128", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-05-04T07:28:46.971259", "type": "auth", "message": "Token generated (key_id: ebba8d41)", "level": "info"}
+{"time": "2026-05-04T07:28:47.007661", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-05-04T07:28:47.008819", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:29:33.779575", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:29:33.849024", "type": "init", "message": "UnityBrain v4.0.0 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:29:33.850277", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:29:37.694416", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:29:37.737349", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:29:37.737505", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-05-04T07:29:37.737725", "type": "auth", "message": "Token generated (key_id: c76bfc5f)", "level": "info"}
+{"time": "2026-05-04T07:29:37.765483", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-05-04T07:29:37.766653", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:30:25.398322", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1 on /api/memory/pinky_msg", "level": "warn"}
+{"time": "2026-05-04T07:30:52.677458", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:30:52.713072", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:30:52.713176", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-05-04T07:30:52.713314", "type": "auth", "message": "Token generated (key_id: d5fd19fa)", "level": "info"}
+{"time": "2026-05-04T07:30:52.743457", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-05-04T07:30:52.744718", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:32:03.579354", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:32:03.647332", "type": "init", "message": "UnityBrain v4.0.0 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:32:03.648166", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:32:28.133875", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:32:28.195902", "type": "init", "message": "UnityBrain v4.0.0 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:32:28.197212", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:32:35.923290", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:32:35.980187", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:32:35.980302", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-05-04T07:32:35.980439", "type": "auth", "message": "Token generated (key_id: b06daa11)", "level": "info"}
+{"time": "2026-05-04T07:32:36.030633", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-05-04T07:32:36.031426", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:33:00.788876", "type": "auth_fail", "message": "Unauthorized GET from 127.0.0.1 on /api/memory/bug_msg", "level": "warn"}
+{"time": "2026-05-04T07:34:33.180364", "type": "init", "message": "UnityBrain v3.3.0 starting as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:34:33.381789", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:34:33.381954", "type": "discovery", "message": "Discovered Pinky via config", "level": "info"}
+{"time": "2026-05-04T07:34:33.382188", "type": "auth", "message": "Token generated (key_id: 583889f3)", "level": "info"}
+{"time": "2026-05-04T07:34:33.523964", "type": "init", "message": "Initialized with 1/1 peers", "level": "info"}
+{"time": "2026-05-04T07:34:33.525072", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:39:33.571107", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-04T07:39:33.571298", "type": "discovery", "message": "Auto-discovered Bug via referral", "level": "info"}
+{"time": "2026-05-04T07:55:21.702586", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T07:55:21.766910", "type": "init", "message": "UnityBrain v4.0.1 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T07:55:21.768148", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T07:55:49.030016", "type": "ws", "message": "WS connected 90b11b8b from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:55:49.044440", "type": "ws", "message": "WS disconnected 90b11b8b (0 total)", "level": "info"}
+{"time": "2026-05-04T07:56:04.044524", "type": "ws", "message": "WS connected 2ecf6906 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:56:04.059057", "type": "ws", "message": "WS disconnected 2ecf6906 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:56:19.082947", "type": "ws", "message": "WS connected 680de564 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:56:19.097592", "type": "ws", "message": "WS disconnected 680de564 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:56:34.096985", "type": "ws", "message": "WS connected e7404a6d from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:56:34.110803", "type": "ws", "message": "WS disconnected e7404a6d (0 total)", "level": "info"}
+{"time": "2026-05-04T07:56:49.143492", "type": "ws", "message": "WS connected a19e98ef from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:56:49.156964", "type": "ws", "message": "WS disconnected a19e98ef (0 total)", "level": "info"}
+{"time": "2026-05-04T07:57:04.156546", "type": "ws", "message": "WS connected 1f75f544 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:57:04.173320", "type": "ws", "message": "WS disconnected 1f75f544 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:57:19.294699", "type": "ws", "message": "WS connected b5991e05 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:57:19.311375", "type": "ws", "message": "WS disconnected b5991e05 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:57:34.310613", "type": "ws", "message": "WS connected b0bfe64e from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:57:34.325626", "type": "ws", "message": "WS disconnected b0bfe64e (0 total)", "level": "info"}
+{"time": "2026-05-04T07:57:49.336595", "type": "ws", "message": "WS connected edf895c2 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:57:49.349278", "type": "ws", "message": "WS disconnected edf895c2 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:58:04.349800", "type": "ws", "message": "WS connected 250056fc from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:58:04.363445", "type": "ws", "message": "WS disconnected 250056fc (0 total)", "level": "info"}
+{"time": "2026-05-04T07:58:19.400275", "type": "ws", "message": "WS connected c0e480e5 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:58:19.414668", "type": "ws", "message": "WS disconnected c0e480e5 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:58:34.413562", "type": "ws", "message": "WS connected 5e5ac013 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:58:34.429156", "type": "ws", "message": "WS disconnected 5e5ac013 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:58:49.594695", "type": "ws", "message": "WS connected a1c5b521 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:58:49.611593", "type": "ws", "message": "WS disconnected a1c5b521 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:59:04.610229", "type": "ws", "message": "WS connected 0ec87ab0 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:59:04.623566", "type": "ws", "message": "WS disconnected 0ec87ab0 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:59:19.718476", "type": "ws", "message": "WS connected d5d761de from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:59:19.734548", "type": "ws", "message": "WS disconnected d5d761de (0 total)", "level": "info"}
+{"time": "2026-05-04T07:59:34.755655", "type": "ws", "message": "WS connected 56083de5 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:59:34.771647", "type": "ws", "message": "WS disconnected 56083de5 (0 total)", "level": "info"}
+{"time": "2026-05-04T07:59:51.017674", "type": "ws", "message": "WS connected 89fd6f2b from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T07:59:51.175643", "type": "ws", "message": "WS disconnected 89fd6f2b (0 total)", "level": "info"}
+{"time": "2026-05-04T08:00:06.191918", "type": "ws", "message": "WS connected d16f2127 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:00:06.204261", "type": "ws", "message": "WS disconnected d16f2127 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:00:21.256968", "type": "ws", "message": "WS connected 6194b1f9 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:00:21.270867", "type": "ws", "message": "WS disconnected 6194b1f9 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:00:36.298235", "type": "ws", "message": "WS connected 984cf9f2 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:00:36.313051", "type": "ws", "message": "WS disconnected 984cf9f2 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:00:51.367201", "type": "ws", "message": "WS connected 222851a6 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:00:51.384014", "type": "ws", "message": "WS disconnected 222851a6 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:01:06.404669", "type": "ws", "message": "WS connected 81312ec3 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:01:06.423961", "type": "ws", "message": "WS disconnected 81312ec3 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:01:21.591978", "type": "ws", "message": "WS connected 7b78ba33 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:01:21.606478", "type": "ws", "message": "WS disconnected 7b78ba33 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:01:36.613190", "type": "ws", "message": "WS connected 94d2020f from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:01:36.634427", "type": "ws", "message": "WS disconnected 94d2020f (0 total)", "level": "info"}
+{"time": "2026-05-04T08:01:51.780056", "type": "ws", "message": "WS connected dc8682b6 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:01:51.795921", "type": "ws", "message": "WS disconnected dc8682b6 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:02:06.797828", "type": "ws", "message": "WS connected 551c1490 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:02:06.820895", "type": "ws", "message": "WS disconnected 551c1490 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:02:21.888799", "type": "ws", "message": "WS connected 0918f037 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:02:21.905452", "type": "ws", "message": "WS disconnected 0918f037 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:02:36.927601", "type": "ws", "message": "WS connected 9263be46 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:02:36.943119", "type": "ws", "message": "WS disconnected 9263be46 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:02:51.957171", "type": "ws", "message": "WS connected 8fda9f14 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:02:51.979434", "type": "ws", "message": "WS disconnected 8fda9f14 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:03:07.036647", "type": "ws", "message": "WS connected 6031d198 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:03:07.053838", "type": "ws", "message": "WS disconnected 6031d198 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:03:22.066899", "type": "ws", "message": "WS connected 028ac338 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:03:22.085943", "type": "ws", "message": "WS disconnected 028ac338 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:03:37.087755", "type": "ws", "message": "WS connected e72b245f from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:03:37.103010", "type": "ws", "message": "WS disconnected e72b245f (0 total)", "level": "info"}
+{"time": "2026-05-04T08:03:52.119764", "type": "ws", "message": "WS connected 4532a795 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:03:52.135531", "type": "ws", "message": "WS disconnected 4532a795 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:04:07.138859", "type": "ws", "message": "WS connected 55e37437 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:04:07.155652", "type": "ws", "message": "WS disconnected 55e37437 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:04:22.174267", "type": "ws", "message": "WS connected 6b9e1c27 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:04:22.198120", "type": "ws", "message": "WS disconnected 6b9e1c27 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:04:37.206708", "type": "ws", "message": "WS connected dabff5c7 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:04:37.221701", "type": "ws", "message": "WS disconnected dabff5c7 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:04:53.257008", "type": "ws", "message": "WS connected 8d49ccaa from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:04:53.275273", "type": "ws", "message": "WS disconnected 8d49ccaa (0 total)", "level": "info"}
+{"time": "2026-05-04T08:05:08.276073", "type": "ws", "message": "WS connected bbed45a7 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:05:08.293707", "type": "ws", "message": "WS disconnected bbed45a7 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:05:23.306167", "type": "ws", "message": "WS connected 876ed258 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:05:23.328988", "type": "ws", "message": "WS disconnected 876ed258 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:05:38.323501", "type": "ws", "message": "WS connected af84b260 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:05:38.339304", "type": "ws", "message": "WS disconnected af84b260 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:05:53.353797", "type": "ws", "message": "WS connected 71699678 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:05:53.375776", "type": "ws", "message": "WS disconnected 71699678 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:06:08.370071", "type": "ws", "message": "WS connected f152c664 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:06:08.389513", "type": "ws", "message": "WS disconnected f152c664 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:06:23.400919", "type": "ws", "message": "WS connected b7373a1d from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:06:23.416331", "type": "ws", "message": "WS disconnected b7373a1d (0 total)", "level": "info"}
+{"time": "2026-05-04T08:06:36.511956", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T08:06:36.576714", "type": "init", "message": "UnityBrain v4.0.1 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T08:06:36.577987", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T08:06:38.502543", "type": "ws", "message": "WS connected 5b16fab3 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:06:38.520766", "type": "ws", "message": "WS disconnected 5b16fab3 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:06:55.713816", "type": "ws", "message": "WS connected 8d417131 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:06:55.730503", "type": "ws", "message": "WS disconnected 8d417131 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:07:10.744083", "type": "ws", "message": "WS connected e9c874ae from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:07:10.760604", "type": "ws", "message": "WS disconnected e9c874ae (0 total)", "level": "info"}
+{"time": "2026-05-04T08:07:25.821612", "type": "ws", "message": "WS connected bdff245c from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:07:25.835703", "type": "ws", "message": "WS disconnected bdff245c (0 total)", "level": "info"}
+{"time": "2026-05-04T08:07:40.952495", "type": "ws", "message": "WS connected 337e0357 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:07:40.967516", "type": "ws", "message": "WS disconnected 337e0357 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:07:55.981944", "type": "ws", "message": "WS connected 2c91ed6c from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:07:55.998407", "type": "ws", "message": "WS disconnected 2c91ed6c (0 total)", "level": "info"}
+{"time": "2026-05-04T08:08:10.997684", "type": "ws", "message": "WS connected a316d61b from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:08:11.012644", "type": "ws", "message": "WS disconnected a316d61b (0 total)", "level": "info"}
+{"time": "2026-05-04T08:08:12.069509", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T08:08:12.134909", "type": "init", "message": "UnityBrain v4.0.1 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T08:08:12.135943", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T08:08:26.128819", "type": "ws", "message": "WS connected 30edaaed from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:08:26.144171", "type": "ws", "message": "WS disconnected 30edaaed (0 total)", "level": "info"}
+{"time": "2026-05-04T08:08:41.163302", "type": "ws", "message": "WS connected 20238dd6 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:08:41.179198", "type": "ws", "message": "WS disconnected 20238dd6 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:08:56.234085", "type": "ws", "message": "WS connected 57cda5a4 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:08:56.250704", "type": "ws", "message": "WS disconnected 57cda5a4 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:09:11.269858", "type": "ws", "message": "WS connected f94414a3 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:09:11.290975", "type": "ws", "message": "WS disconnected f94414a3 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:09:26.339081", "type": "ws", "message": "WS connected 610b00d0 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:09:26.357100", "type": "ws", "message": "WS disconnected 610b00d0 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:09:41.375867", "type": "ws", "message": "WS connected 79148132 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:09:41.392836", "type": "ws", "message": "WS disconnected 79148132 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:09:56.748660", "type": "ws", "message": "WS connected 7df4d7ec from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:09:56.764469", "type": "ws", "message": "WS disconnected 7df4d7ec (0 total)", "level": "info"}
+{"time": "2026-05-04T08:10:11.788086", "type": "ws", "message": "WS connected 48a93ff1 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:10:11.809252", "type": "ws", "message": "WS disconnected 48a93ff1 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:10:26.400975", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T08:10:26.477321", "type": "init", "message": "UnityBrain v4.0.1 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T08:10:26.478192", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T08:10:26.859643", "type": "ws", "message": "WS connected 793df788 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:10:26.876207", "type": "ws", "message": "WS disconnected 793df788 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:10:41.878696", "type": "ws", "message": "WS connected 03dfbe65 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:10:41.895425", "type": "ws", "message": "WS disconnected 03dfbe65 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:10:57.066669", "type": "ws", "message": "WS connected 7c585c84 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:10:57.083384", "type": "ws", "message": "WS disconnected 7c585c84 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:11:12.119493", "type": "ws", "message": "WS connected 3b9e3ba5 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:11:12.154356", "type": "ws", "message": "WS disconnected 3b9e3ba5 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:11:27.168629", "type": "ws", "message": "WS connected b35115fd from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:11:27.184209", "type": "ws", "message": "WS disconnected b35115fd (0 total)", "level": "info"}
+{"time": "2026-05-04T08:11:42.208913", "type": "ws", "message": "WS connected c3ba16e5 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:11:42.229152", "type": "ws", "message": "WS disconnected c3ba16e5 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:11:44.641612", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T08:11:44.707703", "type": "init", "message": "UnityBrain v4.0.1 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T08:11:44.708906", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T08:11:57.242773", "type": "ws", "message": "WS connected 15ce7be0 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:11:57.260575", "type": "ws", "message": "WS disconnected 15ce7be0 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:12:16.239704", "type": "ws", "message": "WS connected 86874526 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:12:16.254183", "type": "ws", "message": "WS disconnected 86874526 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:12:31.260898", "type": "ws", "message": "WS connected 41fadfe6 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:12:31.276464", "type": "ws", "message": "WS disconnected 41fadfe6 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:12:46.323739", "type": "ws", "message": "WS connected ec2e6428 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:12:46.340358", "type": "ws", "message": "WS disconnected ec2e6428 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:13:01.340683", "type": "ws", "message": "WS connected 5f6e8bfb from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:13:01.368501", "type": "ws", "message": "WS disconnected 5f6e8bfb (0 total)", "level": "info"}
+{"time": "2026-05-04T08:13:16.430984", "type": "ws", "message": "WS connected b82608b1 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:13:16.447466", "type": "ws", "message": "WS disconnected b82608b1 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:13:31.229963", "type": "sync", "message": "Merged 1 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:13:31.469967", "type": "ws", "message": "WS connected 91c1a36d from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:13:31.487561", "type": "ws", "message": "WS disconnected 91c1a36d (0 total)", "level": "info"}
+{"time": "2026-05-04T08:13:46.536564", "type": "ws", "message": "WS connected 3d558af6 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:13:46.551008", "type": "ws", "message": "WS disconnected 3d558af6 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:14:01.259664", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:14:01.577429", "type": "ws", "message": "WS connected c8562523 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:14:01.594885", "type": "ws", "message": "WS disconnected c8562523 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:14:16.651742", "type": "ws", "message": "WS connected 5bccd604 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:14:16.745333", "type": "ws", "message": "WS disconnected 5bccd604 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:14:31.305633", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:14:31.859775", "type": "ws", "message": "WS connected 4aef35a4 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:14:31.875346", "type": "ws", "message": "WS disconnected 4aef35a4 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:14:46.889302", "type": "ws", "message": "WS connected e4c0a469 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:14:46.904741", "type": "ws", "message": "WS disconnected e4c0a469 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:15:01.334628", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:15:01.904073", "type": "ws", "message": "WS connected d2e8dbb9 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:15:01.920640", "type": "ws", "message": "WS disconnected d2e8dbb9 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:15:17.064638", "type": "ws", "message": "WS connected 49e9c13c from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:15:17.084218", "type": "ws", "message": "WS disconnected 49e9c13c (0 total)", "level": "info"}
+{"time": "2026-05-04T08:15:31.394724", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:15:32.098749", "type": "ws", "message": "WS connected ee620e41 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:15:32.114238", "type": "ws", "message": "WS disconnected ee620e41 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:15:47.144641", "type": "ws", "message": "WS connected c8bbe5e2 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:15:47.171287", "type": "ws", "message": "WS disconnected c8bbe5e2 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:16:01.706758", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:16:02.175319", "type": "ws", "message": "WS connected d9fecae9 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:16:02.192430", "type": "ws", "message": "WS disconnected d9fecae9 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:16:17.271422", "type": "ws", "message": "WS connected dc19c629 from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:16:17.285503", "type": "ws", "message": "WS disconnected dc19c629 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:16:26.684594", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T08:16:26.749804", "type": "init", "message": "UnityBrain v4.0.1 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T08:16:26.750863", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T08:16:37.736899", "type": "ws", "message": "WS connected 0f4e967e from 100.79.20.105 (2 total)", "level": "info"}
+{"time": "2026-05-04T08:17:27.664987", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:17:27.678144", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:17:57.712855", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:18:27.665583", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:18:27.743577", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:18:57.775604", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:19:27.665476", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:19:27.812572", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:20:07.043477", "type": "ws", "message": "WS disconnected 0f4e967e (0 total)", "level": "info"}
+{"time": "2026-05-04T08:20:07.211113", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T08:20:07.278582", "type": "init", "message": "UnityBrain v4.0.1 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T08:20:07.279886", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T08:20:17.337628", "type": "ws_sync", "message": "Merged 1 entries from WS full sync", "level": "info"}
+{"time": "2026-05-04T08:20:51.424610", "type": "ws", "message": "WS connected 4fcda05c from 100.79.20.105 (1 total)", "level": "info"}
+{"time": "2026-05-04T08:21:11.573385", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:21:41.456266", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:21:41.610598", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:22:11.742520", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:22:41.529241", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:22:41.833557", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:23:11.905812", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:23:41.423889", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:23:41.938579", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}

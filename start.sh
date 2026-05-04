@@ -13,4 +13,4 @@ fi
 
 NODE=${1:-pinky}
 cd "$SCRIPT_DIR/src"
-exec python3 unitybrain_v3.py "$NODE"
+exec python3 unitybrain_v4.py "$NODE"

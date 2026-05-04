@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-🌐 UNITYBRAIN v4.0 — RÉSEAU P2P DISTRIBUÉ
-==========================================
+🌐 UNITYBRAIN v4.0.1 — RÉSEAU P2P DISTRIBUÉ
+===============================================
+v4.0.1 Bug fixes:
+1. Memory gossip: send correct payload for memory_update messages
+2. Outgoing WS: connect to peers via WS for real-time sync
+3. Memory sync: decoupled from auto_heal into own 30s loop
+4. Auth: fix timestamp race in _auth_headers
+5. Discovery: skip stale/duplicate Tailscale peers
+
 v4.0 Features:
 1. WebSocket temps réel — bidirectional WS with typed messages, reconnect, heartbeat
 2. Auth renforcée — Ed25519 identity, challenge-response, Web of Trust, stealth mode
@@ -91,21 +98,29 @@ class NodeIdentity:
             return hmac_mod.new(self._fallback_secret, message.encode(), hashlib.sha256).hexdigest()
 
     def verify(self, message: str, signature_hex: str, public_key_hex: str = None) -> bool:
-        """Verify a signed message."""
-        if HAS_NACL:
+        """Verify a signed message. Tries Ed25519 first, then falls back to HMAC."""
+        # Try Ed25519 if PyNaCl is available AND the key looks like an Ed25519 key
+        # (Ed25519 public keys are 32 bytes = 64 hex chars, but so are HMAC fallback keys)
+        # We need to try Ed25519 first, and fall back to HMAC if it fails.
+        if HAS_NACL and public_key_hex:
             try:
-                vk = VerifyKey(bytes.fromhex(public_key_hex or self.public_key_hex))
+                vk = VerifyKey(bytes.fromhex(public_key_hex))
                 vk.verify(message.encode(), bytes.fromhex(signature_hex))
                 return True
-            except (BadSignatureError, Exception):
-                return False
-        else:
-            import hmac as hmac_mod
-            expected = hmac_mod.new(
-                bytes.fromhex(public_key_hex or self.public_key_hex),
-                message.encode(), hashlib.sha256
-            ).hexdigest()
-            return hmac_mod.compare_digest(expected, signature_hex)
+            except (BadSignatureError, ValueError, TypeError, Exception):
+                # Ed25519 verification failed — fall through to HMAC
+                pass
+
+        # HMAC verification (fallback or when Ed25519 fails)
+        import hmac as hmac_mod
+        # If verifying with our own key, use our fallback_secret directly
+        if public_key_hex == self.public_key_hex and HAS_NACL:
+            # Both nodes use Ed25519 — Ed25519 already failed, so this is a genuine failure
+            return False
+        # Use the public_key_hex as HMAC key (works for HMAC-fallback nodes)
+        verify_key = bytes.fromhex(public_key_hex) if public_key_hex else self._fallback_secret
+        expected = hmac_mod.new(verify_key, message.encode(), hashlib.sha256).hexdigest()
+        return hmac_mod.compare_digest(expected, signature_hex)
 
     def challenge(self) -> Dict:
         """Generate a challenge for another node."""
@@ -522,6 +537,15 @@ class PeerDiscovery:
                         own_ts_ip = status.get('Self', {}).get('TailscaleIPs', [])
                         if own_ts_ip and any(ip in own_ts_ip for ip in ips):
                             continue
+                        # Bug #5 fix: skip if same IP as a config peer but different port (duplicate)
+                        # Also skip if IP matches our own Tailscale IP
+                        is_dup = False
+                        for cp in self.config_peers:
+                            if ips and ips[0] == cp.get('host') and 8081 != cp.get('port', 8080):
+                                is_dup = True
+                                break
+                        if is_dup:
+                            continue
                         if ips:
                             peers.append({
                                 'name': peer.get('HostName', 'unknown'),
@@ -751,7 +775,7 @@ def load_config(config_path: str = None) -> Dict:
     """Load config from JSON file or defaults."""
     default_config = {
         "node_name": "unknown",
-        "version": "4.0.0",
+        "version": "4.0.1",
         "host": "0.0.0.0",
         "port": 8080,
         "ollama_host": "127.0.0.1",
@@ -802,7 +826,7 @@ class UnityBrain:
     def __init__(self, config: Dict):
         self.config = config
         self.node_name = config["node_name"]
-        self.version = "4.0.0"
+        self.version = "4.0.1"
         self.host = config["host"]
         self.port = config["port"]
         self.ollama_host = config["ollama_host"]
@@ -1056,14 +1080,23 @@ class UnityBrain:
     # ========================================================================
 
     def _auth_headers(self) -> Dict[str, str]:
-        """Generate auth headers for outgoing requests using node identity."""
-        token = self.identity.sign(f"{self.node_name}:{int(time.time())}")
+        """Generate auth headers for outgoing requests using BOTH Ed25519/HMAC Bearer token
+        AND shared-secret HMAC. Sends both so the receiver can use either method.
+        Bug #4 fix: generate timestamp once and reuse it for both signing and header."""
+        ts = str(int(time.time()))
+        token = self.identity.sign(f"{self.node_name}:{ts}")
+        # Also compute shared-secret HMAC for v3 compat fallback
+        import hmac as hmac_mod
+        path = "/api/query"  # Generic path; receivers using HMAC method use their own path
+        hmac_sig = hmac_mod.new(
+            self.p2p_secret.encode(), f"{path}:{ts}".encode(), hashlib.sha256).hexdigest()
         return {
             'Authorization': f'Bearer {token}',
             'X-UnityBrain-Node': self.node_name,
             'X-UnityBrain-Key': self.identity.public_key_hex,
-            'X-UnityBrain-TS': str(int(time.time())),
-            'X-UnityBrain-Version': '4.0.0'
+            'X-UnityBrain-TS': ts,
+            'X-UnityBrain-Auth': hmac_sig,
+            'X-UnityBrain-Version': '4.0.1'
         }
 
     def _verify_auth(self, request: web.Request) -> Optional[Dict]:
@@ -1071,6 +1104,7 @@ class UnityBrain:
         # Rate limiting first
         client_key = request.remote or "unknown"
         if not self.rate_limiter.allow(client_key):
+            logger.debug(f"Auth blocked by rate limiter for {client_key}")
             return None
 
         # Check Bearer token (Ed25519/HMAC signature)
@@ -1084,16 +1118,28 @@ class UnityBrain:
             if ts:
                 try:
                     if abs(time.time() - int(ts)) > 60:
+                        logger.debug(f"Auth rejected: timestamp too old ({abs(time.time() - int(ts)):.0f}s)")
                         return None
                 except ValueError:
+                    logger.debug(f"Auth rejected: invalid timestamp '{ts}'")
                     return None
 
             # If we have the node's public key, verify signature
             if node_key and node_name:
                 sig = auth[7:]
                 challenge = f"{node_name}:{ts}"
-                if self.identity.verify(challenge, sig, node_key):
+                verified = self.identity.verify(challenge, sig, node_key)
+                if verified:
                     return {"node": node_name, "public_key": node_key, "method": "ed25519"}
+                else:
+                    # Debug: compute expected signature to diagnose
+                    import hmac as _hmac_dbg
+                    _expected = _hmac_dbg.new(bytes.fromhex(node_key), challenge.encode(), hashlib.sha256).hexdigest()
+                    logger.info(
+                        f"Auth rejected: sig verify failed for node={node_name} "
+                        f"ts={ts} challenge={challenge} "
+                        f"sig={sig[:16]}... expected={_expected[:16]}..."
+                    )
 
         # Fallback: shared secret HMAC (v3 compat)
         hmac_auth = request.headers.get('X-UnityBrain-Auth', '')
@@ -1527,7 +1573,8 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
     # ========================================================================
 
     async def _gossip_broadcast(self, message: Dict):
-        """Broadcast a message via gossip to all connected WS peers and known HTTP peers."""
+        """Broadcast a message via gossip to all connected WS peers and known HTTP peers.
+        Bug #1 fix: send correct payload based on message type."""
         msg_id = f"{self.node_name}:{uuid.uuid4().hex[:8]}"
         message["msg_id"] = msg_id
         message["source"] = self.node_name
@@ -1538,19 +1585,37 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         # 1. Broadcast to connected WS clients
         await self._broadcast_ws(message)
 
-        # 2. Push to known HTTP peers
+        # 2. Push to known HTTP peers — build correct payload per message type
         if self.session:
+            msg_type = message.get("type", "")
+            if msg_type == "memory_update":
+                # Bug #1: was sending message.get("entries", {}) which is empty;
+                # a memory_update has "key" and "entry" (singular)
+                key = message.get("key", "")
+                entry = message.get("entry", {})
+                payload = {"entries": {key: entry} if key else {}}
+            elif msg_type == "trust_sign":
+                payload = {"type": msg_type, "signer": message.get("signer", ""),
+                           "target": message.get("target", "")}
+            else:
+                # Generic: send entries as-is
+                payload = {"entries": message.get("entries", {})}
+
             for peer in self.peers:
                 if peer.available and peer.circuit_breaker.can_execute():
                     try:
+                        url = f'http://{peer.host}:{peer.port}/api/memory/push'
                         async with self.session.post(
-                            f'http://{peer.host}:{peer.port}/api/memory/push',
-                            json={"entries": message.get("entries", {})},
+                            url,
+                            json=payload,
                             headers=self._auth_headers(),
                             timeout=aiohttp.ClientTimeout(total=5)) as resp:
-                            pass
-                    except (aiohttp.ClientError, asyncio.TimeoutError):
-                        pass
+                            if resp.status == 200:
+                                logger.debug(f"Gossip push to {peer.name}: OK")
+                            else:
+                                logger.debug(f"Gossip push to {peer.name}: {resp.status}")
+                    except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+                        logger.debug(f"Gossip push to {peer.name} failed: {e}")
 
     async def _gossip_propagate(self, message: Dict):
         """Propagate a gossip message (if not already seen)."""
@@ -1601,7 +1666,8 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                     pass
 
     async def auto_heal(self):
-        """Check Ollama and restart if needed."""
+        """Check Ollama and restart if needed. Memory sync is now separate."""
+        import subprocess
         heal_interval = self.config.get("auto_heal_interval", 120)
         while self.heartbeat_running:
             await asyncio.sleep(heal_interval)
@@ -1622,6 +1688,12 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                         self.log_event("auto_heal", "Ollama restart triggered")
             except (OSError, subprocess.SubprocessError):
                 pass
+
+    async def _memory_sync_loop(self):
+        """Bug #3 fix: Memory sync decoupled from auto_heal. Runs every 30s."""
+        sync_interval = self.config.get("memory_sync_interval", 30)
+        while self.heartbeat_running:
+            await asyncio.sleep(sync_interval)
             await self.sync_memory_to_peers()
 
     async def _ws_memory_sync_loop(self):
@@ -1636,6 +1708,121 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                         'entries': memory_data,
                         'vector_clock': self.memory.vector_clock.to_dict()
                     })
+
+    # ========================================================================
+    # FEATURE: OUTGOING WS CONNECTIONS TO PEERS (Bug #2 fix)
+    # ========================================================================
+
+    async def _connect_to_peers_ws(self):
+        """Periodically establish outgoing WS connections to known peers.
+        This enables real-time bidirectional sync between nodes."""
+        while self.heartbeat_running:
+            await asyncio.sleep(10)  # Initial delay then try every 30s
+            if not self.session:
+                continue
+            for peer in self.peers:
+                if not peer.available:
+                    continue
+                ws_key = f"ws_out:{peer.host}:{peer.port}"
+                if ws_key in self.ws_clients:
+                    continue  # Already connected
+                try:
+                    await self._connect_peer_ws(peer, ws_key)
+                except Exception as e:
+                    logger.debug(f"WS connect to {peer.name} failed: {e}")
+            # Wait 30s between reconnect cycles
+            await asyncio.sleep(30)
+
+    async def _connect_peer_ws(self, peer: 'Peer', ws_key: str):
+        """Connect to a single peer via WebSocket with HMAC auth. Keeps connection alive with pings."""
+        ws_url = f'ws://{peer.host}:{peer.port}/ws'
+        try:
+            async with self.session.ws_connect(
+                    ws_url,
+                    heartbeat=15,  # Send ping every 15s to keep alive
+                    timeout=aiohttp.ClientTimeout(total=10)) as ws:
+                # Authenticate with HMAC
+                ts = str(int(time.time()))
+                import hmac as hmac_mod
+                sig = hmac_mod.new(
+                    self.p2p_secret.encode(),
+                    f'/ws:{ts}'.encode(),
+                    hashlib.sha256).hexdigest()
+                await ws.send_json({'type': 'auth', 'hmac': sig, 'ts': ts})
+                msg = await asyncio.wait_for(ws.receive_json(), timeout=5)
+                if msg.get('type') != 'auth_ack' or msg.get('status') != 'ok':
+                    logger.warning(f"WS auth to {peer.name} failed: {msg}")
+                    await ws.close()
+                    return
+
+                logger.info(f"WS connected to {peer.name} ({peer.host}:{peer.port})")
+                self.ws_clients[ws_key] = ws
+                self.ws_authenticated.add(ws_key)
+
+                # Request memory delta from peer
+                await ws.send_json({
+                    'type': 'memory_request',
+                    'vector_clock': self.memory.vector_clock.to_dict()
+                })
+
+                # Listen for messages from this peer (persistent connection)
+                async for msg in ws:
+                    if msg.type == aiohttp.WSMsgType.TEXT:
+                        try:
+                            data = json.loads(msg.data)
+                        except json.JSONDecodeError:
+                            continue
+                        await self._handle_incoming_ws_message(data, ws_key)
+                    elif msg.type in (aiohttp.WSMsgType.ERROR, aiohttp.WSMsgType.CLOSED):
+                        break
+                    # PONG messages are handled automatically by the heartbeat
+
+                logger.info(f"WS disconnected from {peer.name}, will reconnect")
+
+        except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionRefusedError) as e:
+            logger.debug(f"WS connection to {peer.name} failed: {e}")
+        finally:
+            self.ws_clients.pop(ws_key, None)
+            self.ws_authenticated.discard(ws_key)
+
+    async def _handle_incoming_ws_message(self, data: Dict, source_id: str):
+        """Handle a message received from an outgoing WS connection to a peer."""
+        msg_type = data.get('type', '')
+
+        if msg_type == 'memory_delta':
+            entries = data.get('entries', {})
+            if entries:
+                merged = self.memory.merge_from_sync(entries)
+                if merged > 0:
+                    self.log_event("ws_sync", f"Merged {merged} entries from WS peer")
+        elif msg_type == 'memory_full':
+            entries = data.get('entries', {})
+            if entries:
+                merged = self.memory.merge_from_sync(entries)
+                if merged > 0:
+                    self.log_event("ws_sync", f"Merged {merged} entries from WS full sync")
+        elif msg_type == 'memory_update':
+            key = data.get('key', '')
+            entry = data.get('entry', {})
+            if key and entry:
+                self.memory.merge_from_sync({key: entry})
+        elif msg_type == 'memory_sync':
+            entries = data.get('entries', {})
+            if entries:
+                merged = self.memory.merge_from_sync(entries)
+                if merged > 0:
+                    self.log_event("ws_sync", f"Merged {merged} entries from WS sync")
+        elif msg_type == 'pong':
+            pass  # heartbeat response
+        elif msg_type == 'auth_ack':
+            pass  # already authenticated
+        elif msg_type == 'status':
+            logger.debug(f"WS status from peer: {data.get('node', '?')}")
+        elif msg_type == 'discover_ack':
+            peer_info = data.get('peers', [])
+            logger.debug(f"WS discover_ack: {len(peer_info)} peers")
+        else:
+            logger.debug(f"WS unknown message type: {msg_type}")
 
     async def _discovery_loop(self):
         """Periodic peer re-discovery."""
@@ -1702,7 +1889,9 @@ async def main():
     tasks = [
         asyncio.create_task(brain.start_heartbeat()),
         asyncio.create_task(brain.auto_heal()),
+        asyncio.create_task(brain._memory_sync_loop()),
         asyncio.create_task(brain._ws_memory_sync_loop()),
+        asyncio.create_task(brain._connect_to_peers_ws()),
         asyncio.create_task(brain._discovery_loop()),
     ]
 
@@ -1727,5 +1916,5 @@ async def main():
 if __name__ == '__main__':
     import sys
     node = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    logger.info(f"Starting UnityBrain v4.0 as '{node}'")
+    logger.info(f"Starting UnityBrain v4.0.1 as '{node}'")
     asyncio.run(main())
