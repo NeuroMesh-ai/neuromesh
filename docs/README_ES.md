@@ -52,7 +52,7 @@ python3 src/unitybrain_v4.py
 python3 src/unitybrain_v4.py --config config/bug.json
 ```
 
-### Conectar dos nodos
+### Conectar tu red
 
 ```json
 {
@@ -72,7 +72,7 @@ python3 src/unitybrain_v4.py --config config/bug.json
 }
 ```
 
-Eso es todo. La sincronización de memoria, el compartir modelos y la comunicación en tiempo real ocurren automáticamente.
+Eso es todo. La sincronización ocurre automáticamente. Agrega más nodos — la red crece y se fortalece.
 
 ### Agregar OpenAI o Anthropic
 

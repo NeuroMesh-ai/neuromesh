@@ -17,7 +17,7 @@
 
 Every AI tool wants your email, your phone number, and $20/month. Cloud APIs lock you in. Self-hosted solutions need Kubernetes and a DevOps degree.
 
-**UnityBrain is the alternative.** Two machines, one config file each, and they're a distributed AI network. No Docker. No SaaS. No middleman. Your machines talk directly, share AI responses, and sync memory — if one goes down, the others keep working.
+**UnityBrain is the alternative.** Two or two thousand machines, one config file each, and they're a distributed AI network. No Docker. No SaaS. No middleman. Your machines talk directly, share AI responses, and sync memory — if one goes down, the others keep working. The more nodes, the stronger the network.
 
 ---
 
@@ -54,7 +54,7 @@ python3 src/unitybrain_v4.py
 python3 src/unitybrain_v4.py --config config/bug.json
 ```
 
-### Connect Two Nodes
+### Connect Your Network
 
 ```json
 {
@@ -74,7 +74,7 @@ python3 src/unitybrain_v4.py --config config/bug.json
 }
 ```
 
-That's it. Memory sync, model sharing, and real-time communication happen automatically.
+That's it. Memory sync, model sharing, and real-time communication happen automatically. Add more nodes — the network grows stronger.
 
 ### Add OpenAI or Anthropic
 

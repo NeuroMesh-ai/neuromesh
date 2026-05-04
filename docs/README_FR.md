@@ -39,7 +39,7 @@ python3 src/unitybrain_v4.py
 python3 src/unitybrain_v4.py --config config/bug.json
 ```
 
-### Connecter deux nœuds
+### Connecter votre réseau
 
 1. **Créer une config** pour chaque nœud (voir `config/bug.json` et `config/pinky.json`)
 2. **Définir un `p2p_secret` partagé** — c'est la clé HMAC que les nœuds utilisent pour s'authentifier
@@ -57,7 +57,7 @@ python3 src/unitybrain_v4.py --config config/bug.json
 }
 ```
 
-C'est tout. La synchronisation mémoire, le partage de modèles et la communication temps réel se font automatiquement.
+C'est tout. La synchronisation mémoire, le partage de modèles et la communication temps réel se font automatiquement. Ajoutez plus de nœuds — le réseau grandit et se renforce.
 
 ---
 

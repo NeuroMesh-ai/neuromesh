@@ -39,7 +39,7 @@ python3 src/unitybrain_v4.py
 python3 src/unitybrain_v4.py --config config/bug.json
 ```
 
-### Connect Two Nodes
+### Connect Your Network
 
 1. **Create a config** for each node (see `config/bug.json` and `config/pinky.json` as examples)
 2. **Set a shared `p2p_secret`** — this is the HMAC key nodes use to authenticate each other
@@ -57,7 +57,7 @@ python3 src/unitybrain_v4.py --config config/bug.json
 }
 ```
 
-That's it. Memory sync, model sharing, and real-time communication happen automatically.
+That's it. Memory sync, model sharing, and real-time communication happen automatically. Add more nodes — the network grows stronger.
 
 ---
 
