@@ -3,275 +3,166 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-100%25_Descentralizado-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/dnshouet-cpu/Unitybrain)
 
-**Red de IA distribuida P2P ligera.** Sin servidor central. Sin cuentas. Instala, conecta, consulta.
+**Red de IA distribuida P2P ligera.** Sin servidor central. Sin cuentas. Sin premium. Conecta máquinas, comparte modelos, sincroniza memoria.
 
-> 🌍 [Documentation in English](./README_EN.md) | 🇫🇷 [Documentation en français](./README_FR.md)
-
----
-
-## ✨ ¿Qué es UnityBrain?
-
-UnityBrain conecta máquinas que ejecutan modelos de IA en una red par-a-par. Cada nodo comparte cómputo, memoria y modelos — sin dependencia de la nube, sin punto único de falla.
-
-**En resumen:** Tus máquinas se comunican, comparten respuestas de IA y sincronizan su memoria. Si una falla, las demás siguen funcionando.
+> 🌍 [English](./README_EN.md) · 🇫🇷 [Français](./README_FR.md) · 🇪🇸 [Español](./README_ES.md)
 
 ---
 
-## 🚀 Inicio rápido
+## ¿Por qué existe esto?
 
-### Requisitos previos
+Cada herramienta de IA quiere tu email, tu teléfono y $20/mes. Las APIs en la nube te encierran. Las soluciones self-hosted necesitan Kubernetes y un título en DevOps.
+
+**UnityBrain es la alternativa.** Dos máquinas, un archivo de configuración cada una, y ya tienes una red de IA distribuida. Sin Docker. Sin SaaS. Sin intermediario. Tus máquinas se comunican directamente, comparten respuestas de IA y sincronizan su memoria — si una falla, las demás siguen funcionando.
+
+---
+
+## Resumen rápido
+
+| | Lo que obtienes |
+|---|---|
+| **Proveedores LLM** | Ollama · OpenAI · Anthropic · Cualquier API compatible con OpenAI (LM Studio, vLLM, etc.) — conecta tus claves, los modelos se comparten en la red P2P |
+| **Comunicación P2P** | WebSocket bidireccional (`/ws`) + HTTP REST — sincronización en tiempo real con protocolo gossip |
+| **Memoria distribuida** | Estado CRDT sin conflictos · Relojes vectoriales · Propagación gossip · Soporte TTL |
+| **Auth descentralizada** | Identidad Ed25519 · Secreto compartido HMAC · Web of Trust (estilo PGP) · Modo sigiloso |
+| **Enrutamiento IA** | Modelos locales primero → cloud bajo demanda → failover entre pares · Consenso ensemble · Circuit breakers |
+| **Auto-descubrimiento** | Config estática · Auto-descubrimiento Tailscale · Registro dinámico por API |
+| **Estadísticas** | ⚡ 0.16s inicio · 💾 17MB RAM · 📦 4 dependencias (aiohttp, psutil, PyYAML, PyNaCl opcional) |
+
+---
+
+## Inicio rápido
+
+### Requisitos
 - Python 3.12+
-- [Ollama](https://ollama.ai) ejecutándose localmente (o un endpoint cloud)
-- (Opcional) [Tailscale](https://tailscale.com) para descubrimiento automático de pares
+- [Ollama](https://ollama.ai) (o cualquier proveedor LLM)
 
-### Instalación y ejecución
+### Instalar y ejecutar
 
 ```bash
-# Clonar
 git clone https://github.com/dnshouet-cpu/Unitybrain.git
 cd Unitybrain
 
-# Ejecutar con configuración por defecto
+# Iniciar con config por defecto
 python3 src/unitybrain_v4.py
 
-# O especificar un archivo de configuración
+# O especificar una config
 python3 src/unitybrain_v4.py --config config/bug.json
 ```
 
 ### Conectar dos nodos
 
-1. **Crear una configuración** para cada nodo (ver `config/bug.json` y `config/pinky.json`)
-2. **Definir un `p2p_secret` compartido** — esta es la clave HMAC que los nodos usan para autenticarse
-3. **Agregarse mutuamente como pares** en la configuración
-4. **Iniciar ambos nodos** — se descubrirán vía HTTP y WebSocket
-
 ```json
 {
   "node_name": "mi-nodo",
   "port": 8080,
-  "p2p_secret": "tu-secreto-compartido-aqui",
-  "peers": [
-    {"name": "otro-nodo", "host": "192.168.1.100", "port": 8080}
-  ]
+  "p2p_secret": "secreto-compartido-aqui",
+  "providers": {
+    "ollama": {
+      "type": "ollama",
+      "host": "127.0.0.1",
+      "port": 11434,
+      "models": ["glm-5.1:cloud"],
+      "enabled": true
+    }
+  },
+  "peers": [{"name": "otro-nodo", "host": "192.168.1.101", "port": 8081}]
 }
 ```
 
 Eso es todo. La sincronización de memoria, el compartir modelos y la comunicación en tiempo real ocurren automáticamente.
 
----
+### Agregar OpenAI o Anthropic
 
-## 🔑 Funcionalidades
+```json
+"providers": {
+  "ollama": { "type": "ollama", "host": "127.0.0.1", "port": 11434, "models": ["glm-5.1:cloud"], "enabled": true },
+  "openai": { "type": "openai", "api_key": "sk-...", "models": ["gpt-4o"], "enabled": true },
+  "anthropic": { "type": "anthropic", "api_key": "sk-ant-...", "models": ["claude-sonnet-4-20250514"], "enabled": true }
+}
+```
 
-### 🔌 WebSocket en tiempo real
-- Comunicación bidireccional en `/ws`
-- Mensajes tipados: `query`, `memory_sync`, `memory_update`, `ping/pong`, `auth`
-- Reconexión automática con backoff exponencial
-- API REST HTTP disponible (retrocompatible)
-
-### 🔐 Autenticación descentralizada
-- **Identidad Ed25519** — cada nodo genera su propio par de claves, sin registro central
-- **Secreto compartido HMAC** — alternativa simple cuando Ed25519 no está disponible
-- **Red de confianza (Web of Trust)** — los nodos se respaldan mutuamente, confianza transitiva (estilo PGP)
-- **Limitación de tasa** por nodo (algoritmo token bucket)
-- **Modo sigiloso** — nodo oculto, solo pares de confianza pueden conectarse
-- No se necesitan cuentas — la autenticación es entre nodos, transparente
-
-### 🧠 Memoria distribuida (CRDT)
-- **Tipos de datos replicados sin conflictos** — jamás conflictos de fusión
-- **Protocolo de gossip** — los cambios se propagan automáticamente
-- **Relojes vectoriales** — ordenamiento causal de eventos
-- **Soporte TTL** — las entradas expiran automáticamente
-- **Sincronización WebSocket + HTTP** — actualizaciones en tiempo real vía WS, push HTTP periódico como respaldo
-
-### 🤖 Enrutamiento de modelos de IA
-- **Modelos locales primero** — las consultas van a Ollama local cuando sea posible
-- **Modelos cloud bajo demanda** — sintaxis `model:cloud` para enrutar a Ollama cloud
-- **Failover entre pares** — si el modelo local está ocupado/caído, enrutar a un par
-- **Consenso de ensemble** — consultar múltiples modelos, devolver la mejor respuesta
-- **Circuit breakers** — dejar de golpear pares caídos
-
-### 🔍 Descubrimiento de pares
-- **Configuración estática** — definir pares en `config.json`
-- **Auto-descubrimiento Tailscale** — encontrar nodos automáticamente en tu red Tailscale
-- **Registro dinámico** — agregar pares en tiempo de ejecución vía API
+Las consultas con `"model": "gpt-4o"` se enrutan automáticamente a OpenAI. Los modelos de todos los proveedores se comparten en la red P2P.
 
 ---
 
-## 📡 Referencia de API
+## Referencia API
 
 ### Endpoints REST
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
 | GET | `/api/ping` | No | Verificación de salud |
-| GET | `/api/status` | No | Estado del nodo, pares, estadísticas de memoria |
+| GET | `/api/status` | No | Estado del nodo, proveedores, pares, memoria |
 | GET | `/api/memory/{key}` | No | Leer una entrada de memoria |
 | POST | `/api/memory/set` | Sí | Escribir una entrada de memoria |
 | POST | `/api/memory/push` | Sí | Enviar entradas de memoria (sincronización) |
 | POST | `/api/query` | Sí | Consultar modelos de IA |
 | POST | `/api/brain/chain` | Sí | Encadenar múltiples consultas IA |
-| POST | `/api/trust/sign` | Sí | Firmar la clave pública de un par (Web of Trust) |
-| GET | `/api/trust/{key}` | No | Verificar puntaje de confianza |
-| GET | `/` | No | Panel web |
+| POST | `/api/trust/sign` | Sí | Firmar la clave de un par (Web of Trust) |
 
-### Autenticación
-
-Todos los endpoints de escritura requieren autenticación HMAC:
-
-```bash
-# Generar headers de autenticación
-TIMESTAMP=$(date +%s)
-SIGNATURE=$(echo -n "/api/query:${TIMESTAMP}" | openssl dgst -sha256 -hmac "tu-secreto" | awk '{print $NF}')
-
-curl -X POST http://localhost:8080/api/query \
-  -H "X-UnityBrain-Auth: ${SIGNATURE}" \
-  -H "X-UnityBrain-TS: ${TIMESTAMP}" \
-  -H "Content-Type: application/json" \
-  -d '{"prompt":"Hola","model":"glm-5.1:cloud"}'
-```
-
-### WebSocket
-
-Conectar a `ws://host:puerto/ws` y enviar mensajes JSON tipados:
+### WebSocket (`/ws`)
 
 ```json
 {"type": "auth", "hmac": "<firma>", "ts": "<marca_de_tiempo>"}
-{"type": "ping", "timestamp": 1234567890}
-{"type": "query", "prompt": "¿Qué es la IA?", "model": "glm-5.1:cloud"}
+{"type": "ping"}
+{"type": "query", "prompt": "¡Hola!", "model": "gpt-4o"}
 {"type": "memory_request", "vector_clock": {}}
 {"type": "memory_update", "key": "miclave", "entry": {"value": "misdatos"}}
 ```
 
 ---
 
-## ⚙️ Configuración
-
-| Clave | Por defecto | Descripción |
-|-------|------------|-------------|
-| `node_name` | requerido | Nombre único del nodo |
-| `port` | `8080` | Puerto HTTP/WS |
-| `host` | `0.0.0.0` | Dirección de escucha |
-| `p2p_secret` | requerido | Secreto HMAC compartido para autenticación entre pares |
-| `peers` | `[]` | Lista de nodos pares |
-| `ollama_host` | `127.0.0.1` | Host de la API de Ollama |
-| `ollama_port` | `11434` | Puerto de la API de Ollama |
-| `local_models` | `[]` | Modelos disponibles en este nodo |
-| `stealth_mode` | `false` | Oculto del descubrimiento, solo pares de confianza |
-| `share_ai` | `false` | Compartir respuestas IA con otros usuarios |
-| `memory_max_size` | `1000` | Máximo de entradas de memoria |
-| `memory_default_ttl` | `3600` | TTL por defecto en segundos |
-| `tailscale_auto_discovery` | `true` | Auto-descubrimiento de pares Tailscale |
-| `discovery_interval` | `300` | Intervalo de descubrimiento (segundos) |
-| `rate_limit` | `10.0` | Peticiones por segundo por nodo |
-| `rate_burst` | `20` | Capacidad de burst |
-
----
-
-## 🏗️ Arquitectura
+## Arquitectura
 
 ```
 ┌─────────────────────────────────────────────┐
 │               Nodo (Bug)                    │
-│  ┌─────────┐  ┌──────────┐  ┌────────────┐ │
-│  │ HTTP    │  │WebSocket │  │  CRDT      │ │
-│  │ REST API│  │ Servidor │  │  Memoria   │ │
-│  └────┬────┘  └────┬─────┘  └─────┬──────┘ │
-│       │            │              │         │
-│       └──────┬─────┘──────────────┘         │
-│              │                              │
-│       ┌──────┴──────┐                       │
-│       │ Enrutador  │◄──── Ollama (local)   │
-│       │    IA      │                        │
-│       └──────┬──────┘                       │
-│              │                              │
-│       ┌──────┴──────┐                       │
-│       │  Gestor de  │◄──── Tailscale/Estático│
-│       │    Pares    │                       │
-│       └─────────────┘                       │
-└──────────────┬──────────────────────────────┘
-               │  WS + HTTP (gossip)
-┌──────────────┴──────────────────────────────┐
-│               Nodo (Pinky)                  │
-│         (misma arquitectura)                │
+│  ┌──────────┐  ┌──────────┐  ┌───────────┐ │
+│  │Proveedores│  │WebSocket │  │   CRDT    │ │
+│  │ Ollama ◄──┤  │ Servidor│  │  Memoria  │ │
+│  │ OpenAI   │  └────┬─────┘  └─────┬─────┘ │
+│  │Anthropic │       │              │       │
+│  │ Personalizado│─────┴──────────────┘       │
+│  └──────────┘                              │
+│       │                                     │
+│  ┌────┴────┐                               │
+│  │Enrutador│◄── P2P ──► Otros Nodos        │
+│  │   IA    │                               │
+│  └─────────┘                               │
 └────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🔧 Ejecutar como servicio
+## Configuración
 
-### systemd (Linux)
-
-```ini
-# ~/.config/systemd/user/unitybrain.service
-[Unit]
-Description=UnityBrain v4.1.0 Nodo P2P
-After=network.target
-
-[Service]
-Type=simple
-WorkingDirectory=%h/.openclaw/workspace/Unitybrain
-ExecStart=/usr/bin/python3 %h/.openclaw/workspace/Unitybrain/src/unitybrain_v4.py bug
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=default.target
-```
-
-```bash
-systemctl --user daemon-reload
-systemctl --user enable --now unitybrain
-```
+| Clave | Por defecto | Descripción |
+|-------|------------|-------------|
+| `node_name` | requerido | Nombre único del nodo |
+| `port` | `8080` | Puerto HTTP/WS |
+| `p2p_secret` | requerido | Secreto HMAC compartido |
+| `providers` | `{}` | Proveedores LLM (Ollama, OpenAI, Anthropic, custom) |
+| `peers` | `[]` | Nodos pares |
+| `stealth_mode` | `false` | Nodo oculto, solo pares de confianza |
+| `share_ai` | `false` | Compartir respuestas IA en la red |
+| `memory_max_size` | `1000` | Máximo de entradas de memoria |
+| `tailscale_auto_discovery` | `true` | Auto-descubrimiento de pares Tailscale |
 
 ---
 
-## 🧪 Tests
+## Filosofía
 
-```bash
-# Ping
-curl http://localhost:8080/api/ping
-
-# Estado
-curl http://localhost:8080/api/status
-
-# Consulta (con autenticación)
-SECRET="tu-secreto"
-TS=$(date +%s)
-SIG=$(echo -n "/api/query:$TS" | openssl dgst -sha256 -hmac "$SECRET" | awk '{print $NF}')
-curl -X POST http://localhost:8080/api/query \
-  -H "X-UnityBrain-Auth: $SIG" \
-  -H "X-UnityBrain-TS: $TS" \
-  -H "Content-Type: application/json" \
-  -d '{"prompt":"¡Hola!","model":"glm-5.1:cloud"}'
-
-# Memoria
-curl http://localhost:8080/api/memory/miclave
-```
-
----
-
-## 🤝 Contribuir
-
-1. Haz un fork del repositorio
-2. Crea tu rama: `git checkout -b feature algo-increible`
-3. Haz commit: `git commit -m 'Añadir característica increíble'`
-4. Haz push: `git push origin feature/algo-increible`
-5. Abre un Pull Request
-
----
-
-## 📄 Licencia
-
-Licencia MIT — ver [LICENSE](../LICENSE) para detalles.
-
----
-
-## 🐛 Acerca de
+**Sin mining. Sin premium. Sin costos ocultos.** Solo IA distribuida, libre y abierta.
 
 Construido por Bug 🐛 y Denis Houet — un pequeño bug en la máquina y un humano que cree en la simbiosis, no en la jerarquía.
 
-**Donaciones (BTC):** `bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x`
+**BTC:** `bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x`
 
-Sin mining. Sin premium. Sin costos ocultos. Solo IA distribuida, libre y abierta.
+---
+
+## Licencia
+
+Licencia MIT — ver [LICENSE](../LICENSE) para detalles.
