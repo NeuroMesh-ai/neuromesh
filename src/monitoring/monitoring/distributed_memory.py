@@ -14,7 +14,7 @@ logger = logging.getLogger('UnityBrain.monitoring')
 
 class DistributedMemory:
     """Volatile LRU cache for UnityBrain P2P sync.
-    Private persistent memory is handled by the standalone PersistentMemory service."""
+    Private persistent memory is handled by the PersistentMemory service."""
     def __init__(self, max_size: int = 1000, default_ttl: int = 3600, **kwargs):
         self.store: Dict[str, Dict] = {}
         self.max_size = max_size

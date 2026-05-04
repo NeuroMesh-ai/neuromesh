@@ -950,7 +950,6 @@ def load_config(config_path: str = None) -> Dict:
         "memory_default_ttl": 3600,
         "p2p_secret": os.environ.get("P2P_SECRET", "changeme-configure-in-config"),
         "tailscale_auto_discovery": True,
-        "standalone": False,
         "circuit_breaker": {
             "failure_threshold": 3,
             "recovery_timeout": 60,
@@ -1001,10 +1000,6 @@ class UnityBrain:
             logger.warning("⚠️  Using default p2p_secret — configure a strong secret in config or P2P_SECRET env var!")
         self.stealth_mode = config.get("stealth_mode", False)
         self.share_ai = config.get("share_ai", False)
-        self.standalone = config.get("standalone", False)
-        if self.standalone:
-            logger.info("🏠 STANDALONE mode — no P2P discovery or peer connections")
-
         # v4.1.0: Multi-LLM providers
         self.providers: Dict[str, ProviderAdapter] = {}
         self._model_provider_map: Dict[str, str] = {}  # model_name -> provider_name
@@ -1160,8 +1155,8 @@ class UnityBrain:
         self.session = aiohttp.ClientSession()
         self.heartbeat_running = True
 
-        # Discover peers (skip in standalone mode)
-        if not self.standalone:
+        # Discover peers
+        if True:
             found_peers = await self.discovery.discover_all()
             for peer_info in found_peers:
                 peer = Peer(
@@ -1303,7 +1298,7 @@ class UnityBrain:
             "identity": self.identity.to_dict(),
                         "stealth_mode": self.stealth_mode,
             "share_ai": self.share_ai,
-            "standalone": self.standalone,
+
             "queries": {"total": self.queries, "success": self.successful,
                         "rate": round(self.successful / max(self.queries, 1) * 100, 1)},
             "memory": self.memory.stats(),
@@ -2169,9 +2164,7 @@ async def main():
         logger.info("🔒 Stealth mode ACTIVE — node is hidden from discovery")
     if brain.share_ai:
         logger.info("📤 AI sharing ENABLED — models available to the network")
-    if brain.standalone:
-        logger.info("🏠 STANDALONE mode — single-node, no P2P")
-    elif not brain.share_ai:
+    if not brain.share_ai:
         logger.info("🔇 AI sharing DISABLED — peers cannot use your models")
         logger.info("💡 Set share_ai: true to allow peers to use your CPU/RAM")
 
@@ -2181,13 +2174,12 @@ async def main():
         asyncio.create_task(brain._memory_sync_loop()),
     ]
 
-    # P2P tasks only if not in standalone mode
-    if not brain.standalone:
-        tasks.extend([
-            asyncio.create_task(brain._ws_memory_sync_loop()),
-            asyncio.create_task(brain._connect_to_peers_ws()),
-            asyncio.create_task(brain._discovery_loop()),
-        ])
+    # P2P tasks
+    tasks.extend([
+        asyncio.create_task(brain._ws_memory_sync_loop()),
+        asyncio.create_task(brain._connect_to_peers_ws()),
+        asyncio.create_task(brain._discovery_loop()),
+    ])
 
     await shutdown_event.wait()
 

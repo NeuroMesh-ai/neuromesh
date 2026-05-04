@@ -156,13 +156,10 @@ class UnityBrainShell:
         node = status.get("node", "?")
         version = status.get("version", "?")
         share_ai = status.get("share_ai", False)
-        standalone = status.get("standalone", False)
         peers_count = status.get("peers", {}).get("available", 0)
 
         print(f"✅ Connected to {node} (v{version})")
-        if standalone:
-            print("🏠 Standalone mode — single node, no P2P")
-        elif share_ai:
+        if share_ai:
             print(f"📤 Sharing CPU/RAM with network ({peers_count} peer(s))")
         else:
             print(f"🔇 AI sharing disabled — your models are private")
@@ -288,7 +285,6 @@ class UnityBrainShell:
         print(f"📊 UnityBrain v{status.get('version', '?')} — {status.get('node', '?')}")
         print("─" * 40)
         print(f"  Uptime:   {status.get('uptime', 0)/3600:.1f}h")
-        print(f"  Standalone: {'Yes' if status.get('standalone') else 'No'}")
         print(f"  Share AI:   {'Yes ✅' if status.get('share_ai') else 'No 🔇'}")
         print(f"  Stealth:    {'Yes 🔒' if status.get('stealth_mode') else 'No'}")
 
@@ -418,7 +414,6 @@ class UnityBrainShell:
         print("─" * 40)
         print(f"  Node:      {status.get('node', '?')}")
         print(f"  Version:  {status.get('version', '?')}")
-        print(f"  Standalone: {status.get('standalone', False)}")
         print(f"  Share AI:   {status.get('share_ai', False)}")
         print(f"  Stealth:    {status.get('stealth_mode', False)}")
         print(f"  Default model: {self.default_model or 'auto'}")

@@ -556,3 +556,7 @@
 {"time": "2026-05-04T20:21:16.655259", "type": "ws", "message": "WS connected 17b46ace from 100.79.20.105 (2 total)", "level": "info"}
 {"time": "2026-05-04T20:28:58.734530", "type": "ws", "message": "WS disconnected 17b46ace (0 total)", "level": "info"}
 {"time": "2026-05-04T20:36:00.415696", "type": "ws", "message": "WS connected c6fb1a4f from 100.79.20.105 (2 total)", "level": "info"}
+{"time": "2026-05-04T21:26:31.745504", "type": "ws", "message": "WS disconnected c6fb1a4f (0 total)", "level": "info"}
+{"time": "2026-05-04T21:26:31.954964", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T21:26:33.112776", "type": "init", "message": "UnityBrain v4.1.0 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T21:26:33.114160", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
