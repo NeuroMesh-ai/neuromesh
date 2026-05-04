@@ -492,3 +492,22 @@
 2026-05-04 19:58:30,382 [UnityBrain] INFO: 🌐 UnityBrain v4.1.0 on http://0.0.0.0:8080
 2026-05-04 19:58:30,382 [UnityBrain] INFO: 📤 AI sharing ENABLED — models available to the network
 2026-05-04 19:58:49,773 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 20:03:30,395 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:08:30,403 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:13:30,411 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:18:30,421 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:19:53,742 [UnityBrain] INFO: WS disconnected from Pinky, will reconnect
+2026-05-04 20:20:31,734 [UnityBrain] ERROR: WS error: No PONG received after 15.0 seconds
+2026-05-04 20:21:16,637 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 20:23:30,432 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:28:30,439 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:28:35,734 [UnityBrain] INFO: WS disconnected from Pinky, will reconnect
+2026-05-04 20:28:58,734 [UnityBrain] ERROR: WS error: No PONG received after 15.0 seconds
+2026-05-04 20:33:30,460 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:35:59,041 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 20:38:30,470 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:43:30,477 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:48:30,489 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:53:30,497 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 20:58:30,509 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 21:03:30,521 [UnityBrain] INFO: Discovery: found 1 potential peers

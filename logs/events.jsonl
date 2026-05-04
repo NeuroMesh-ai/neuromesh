@@ -550,3 +550,9 @@
 {"time": "2026-05-04T19:58:30.381575", "type": "init", "message": "UnityBrain v4.1.0 initialized as 'bug'", "level": "info"}
 {"time": "2026-05-04T19:58:30.382857", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
 {"time": "2026-05-04T19:59:04.837879", "type": "ws", "message": "WS connected ba11c6af from 100.79.20.105 (2 total)", "level": "info"}
+{"time": "2026-05-04T20:09:24.772026", "type": "ws", "message": "WS disconnected ba11c6af (1 total)", "level": "info"}
+{"time": "2026-05-04T20:10:04.678370", "type": "ws", "message": "WS connected 98eb6b3b from 100.79.20.105 (2 total)", "level": "info"}
+{"time": "2026-05-04T20:20:31.734243", "type": "ws", "message": "WS disconnected 98eb6b3b (0 total)", "level": "info"}
+{"time": "2026-05-04T20:21:16.655259", "type": "ws", "message": "WS connected 17b46ace from 100.79.20.105 (2 total)", "level": "info"}
+{"time": "2026-05-04T20:28:58.734530", "type": "ws", "message": "WS disconnected 17b46ace (0 total)", "level": "info"}
+{"time": "2026-05-04T20:36:00.415696", "type": "ws", "message": "WS connected c6fb1a4f from 100.79.20.105 (2 total)", "level": "info"}

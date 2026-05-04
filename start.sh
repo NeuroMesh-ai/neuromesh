@@ -13,4 +13,9 @@ fi
 
 NODE=${1:-pinky}
 cd "$SCRIPT_DIR/src"
+
+if [ "$2" = "cli" ]; then
+    exec python3 unitybrain_cli.py "$NODE"
+fi
+
 exec python3 unitybrain_v4.py "$NODE"
