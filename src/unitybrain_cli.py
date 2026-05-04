@@ -77,6 +77,10 @@ class UnityBrainClient:
     def status(self):
         return self._request("/api/status")
 
+    def quota(self, peer=None):
+        path = f"/api/quota/{peer}" if peer else "/api/quota"
+        return self._request(path)
+
     def query(self, prompt, model=None, strategy="auto"):
         return self._request("/api/query", {
             "prompt": prompt,
@@ -108,6 +112,7 @@ class UnityBrainShell:
         "status": "Show node status",
         "peers": "List connected peers",
         "models": "List available models",
+        "quota": "Show sharing quotas for peers",
         "memory": "Memory operations (set/get/search)",
         "history": "Show query history",
         "export": "Export history (json/txt)",
@@ -141,7 +146,7 @@ class UnityBrainShell:
     def run(self):
         """Main interactive loop."""
         print()
-        print("🖥️  UnityBrain CLI v4.1.0")
+        print("🖥️  UnityBrain CLI v4.1.5")
         print("   P2P Distributed AI Network")
         print()
 
@@ -228,6 +233,8 @@ class UnityBrainShell:
                 self._do_query(args, strategy="ensemble")
             else:
                 print("Usage: /ensemble <prompt>")
+        elif cmd == "quota":
+            self._show_quota(args)
         elif cmd == "config":
             self._show_config()
         elif cmd in ("quit", "exit", "q"):
@@ -406,6 +413,36 @@ class UnityBrainShell:
                 print(f"[{entry.get('timestamp')}] {entry.get('prompt')}")
                 print(f"  → {entry.get('response', '')[:200]}")
                 print()
+
+    def _show_quota(self, args=""):
+        peer = args.strip() if args else None
+        data = self.client.quota(peer)
+        if "error" in data:
+            print(f"\u274c {data['error']}")
+            return
+
+        print()
+        print("\u2696\ufe0f  Sharing Quotas:")
+        print("\u2500" * 50)
+
+        if peer and "peer" in data:
+            # Single peer detail
+            print(f"  Peer:          {data['peer']}")
+            print(f"  Score:         {data['score']}/100")
+            print(f"  Quota:         {data['quota_qpm']} queries/min")
+            print(f"  Models:        {data['models_hosted']}")
+            print(f"  Chunks:        {data['chunks_distributed']}")
+            print(f"  Uptime:        {data['uptime_hours']}h")
+            print(f"  Reputation:    {data['reputation']}")
+            print(f"  Served:        {data['queries_served']}")
+            print(f"  Made:          {data['queries_made']}")
+        else:
+            # All peers summary
+            if not data:
+                print("  No peer quotas yet (peers haven't connected)")
+            for name, info in data.items():
+                print(f"  {name:15s}  score={info['score']:5.1f}  quota={info['quota_qpm']:3d} q/m  models={info['models_hosted']}")
+        print()
 
     def _show_config(self):
         status = self.client.status()

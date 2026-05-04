@@ -540,3 +540,27 @@
 2026-05-04 21:35:54,239 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
 2026-05-04 21:36:33,740 [UnityBrain] INFO: WS disconnected from Pinky, will reconnect
 2026-05-04 21:37:16,468 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 21:40:03,740 [UnityBrain] INFO: WS disconnected from Pinky, will reconnect
+2026-05-04 21:40:41,660 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 21:41:01,736 [UnityBrain] ERROR: WS error: No PONG received after 15.0 seconds
+2026-05-04 21:42:05,405 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 21:45:24,739 [UnityBrain] INFO: WS disconnected from Pinky, will reconnect
+2026-05-04 21:45:41,667 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 21:46:06,439 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 21:50:41,677 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 21:55:41,691 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 22:00:41,704 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 22:03:47,402 [UnityBrain] INFO: 🛑 UnityBrain shutting down...
+2026-05-04 22:03:47,402 [UnityBrain] INFO: Cleaning up...
+2026-05-04 22:04:10,939 [UnityBrain] INFO: UnityBrain stopped.
+2026-05-04 22:04:11,123 [UnityBrain] INFO: Starting UnityBrain v4.1.5 as 'bug'
+2026-05-04 22:04:11,124 [UnityBrain] INFO: Config loaded from /home/kamizool/.unitybrain/config/bug.json
+2026-05-04 22:04:11,124 [UnityBrain] INFO: Provider 'ollama' (ollama): 3 models - glm-5.1:cloud, deepseek-v3.1:671b-cloud, qwen3-coder-next:cloud
+2026-05-04 22:04:11,124 [UnityBrain] INFO: Available models (3): deepseek-v3.1:671b-cloud, glm-5.1:cloud, qwen3-coder-next:cloud
+2026-05-04 22:04:11,131 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 22:04:11,306 [UnityBrain] INFO: 🌐 UnityBrain v4.1.0 on http://0.0.0.0:8080
+2026-05-04 22:04:11,306 [UnityBrain] INFO: 📤 AI sharing ENABLED — models available to the network
+2026-05-04 22:04:21,427 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 22:05:14,132 [UnityBrain] INFO: 🛑 UnityBrain shutting down...
+2026-05-04 22:05:14,132 [UnityBrain] INFO: Cleaning up...
+2026-05-04 22:05:30,916 [UnityBrain] INFO: UnityBrain stopped.

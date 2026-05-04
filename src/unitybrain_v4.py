@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-🌐 UNITYBRAIN v4.1.0 — RÉSEAU P2P DISTRIBUÉ
+🌐 UNITYBRAIN v4.1.5 — RÉSEAU P2P DISTRIBUÉ
 ===============================================
-v4.1.0 Multi-LLM provider support:
+v4.1.5 Multi-LLM provider support:
 1. ProviderAdapter base class — OllamaProvider, OpenAIProvider, AnthropicProvider
 2. Config `providers` section — connect any LLM API alongside Ollama
 3. _query_local() routes to correct provider based on model name
@@ -248,6 +248,148 @@ class RateLimiter:
 
     def to_dict(self) -> Dict:
         return {"rate": self.rate, "burst": self.burst, "active_nodes": len(self._buckets)}
+
+
+# ============================================================================
+# SHARING QUOTA — Plus tu partages, plus tu peux utiliser
+# ============================================================================
+
+class SharingQuota:
+    """Track contribution and enforce query quotas per peer.
+    
+    Score factors (from docs/SHARING_PARITY.md):
+      - Models hosted: 40%
+      - Chunks distributed (memory entries shared): 30%
+      - Uptime: 20%
+      - Reputation: 10%
+    
+    Score → queries/minute mapping:
+      <10 → 1 q/m
+      <20 → 5 q/m
+      <40 → 20 q/m
+      <60 → 50 q/m
+      <80 → 100 q/m
+      >=80 → 200 q/m
+    """
+
+    QUOTA_TIERS = [
+        (10, 1),
+        (20, 5),
+        (40, 20),
+        (60, 50),
+        (80, 100),
+        (float('inf'), 200),
+    ]
+
+    def __init__(self):
+        # Per-peer tracking
+        self._peer_stats: Dict[str, Dict] = {}
+        # Per-peer token buckets (queries/minute)
+        self._buckets: Dict[str, Dict] = {}
+
+    def get_or_create(self, peer_name: str) -> Dict:
+        """Get or create stats for a peer."""
+        if peer_name not in self._peer_stats:
+            self._peer_stats[peer_name] = {
+                "models_hosted": 0,
+                "chunks_distributed": 0,
+                "uptime_start": time.time(),
+                "reputation": 50,  # default
+                "queries_served": 0,
+                "queries_made": 0,
+            }
+        return self._peer_stats[peer_name]
+
+    def update_models(self, peer_name: str, model_count: int):
+        """Update model count for a peer."""
+        stats = self.get_or_create(peer_name)
+        stats["models_hosted"] = model_count
+
+    def record_chunk(self, peer_name: str, count: int = 1):
+        """Record distributed memory chunks."""
+        stats = self.get_or_create(peer_name)
+        stats["chunks_distributed"] += count
+
+    def record_query_served(self, peer_name: str):
+        """This peer served a query (reputation+)."""
+        stats = self.get_or_create(peer_name)
+        stats["queries_served"] += 1
+        # Increase reputation slowly
+        stats["reputation"] = min(100, stats["reputation"] + 0.1)
+
+    def record_query_made(self, peer_name: str):
+        """This peer made a query to us (consumes quota)."""
+        stats = self.get_or_create(peer_name)
+        stats["queries_made"] += 1
+
+    def calculate_score(self, peer_name: str) -> float:
+        """Calculate sharing score (0-100)."""
+        stats = self.get_or_create(peer_name)
+
+        # Models (40%): max 40 points
+        models_score = min(stats["models_hosted"] * 8, 40)
+
+        # Chunks (30%): max 30 points
+        chunks_score = min(stats["chunks_distributed"] / 100, 30)
+
+        # Uptime (20%): max 20 points
+        uptime_hours = (time.time() - stats["uptime_start"]) / 3600
+        uptime_score = min(uptime_hours / 24, 1.0) * 20
+
+        # Reputation (10%): max 10 points
+        rep_score = stats["reputation"] / 10
+
+        total = models_score + chunks_score + uptime_score + rep_score
+        return round(total, 2)
+
+    def get_quota(self, peer_name: str) -> int:
+        """Get queries/minute allowed for this peer."""
+        score = self.calculate_score(peer_name)
+        for threshold, quota in self.QUOTA_TIERS:
+            if score < threshold:
+                return quota
+        return 1  # fallback
+
+    def allow_query(self, peer_name: str) -> bool:
+        """Check if a peer can make a query right now (token bucket)."""
+        qpm = self.get_quota(peer_name)
+        # Token bucket: 1 token = 1 query, refill at qpm/60 per second
+        refill_rate = qpm / 60.0
+        burst = max(qpm, 3)  # allow small burst
+
+        if peer_name not in self._buckets:
+            self._buckets[peer_name] = {"tokens": float(burst), "last": time.time()}
+
+        bucket = self._buckets[peer_name]
+        now = time.time()
+        elapsed = now - bucket["last"]
+        bucket["tokens"] = min(burst, bucket["tokens"] + elapsed * refill_rate)
+        bucket["last"] = now
+
+        if bucket["tokens"] >= 1.0:
+            bucket["tokens"] -= 1.0
+            return True
+        return False
+
+    def get_peer_info(self, peer_name: str) -> Dict:
+        """Get full quota info for a peer."""
+        score = self.calculate_score(peer_name)
+        stats = self.get_or_create(peer_name)
+        return {
+            "peer": peer_name,
+            "score": score,
+            "quota_qpm": self.get_quota(peer_name),
+            "models_hosted": stats["models_hosted"],
+            "chunks_distributed": stats["chunks_distributed"],
+            "uptime_hours": round((time.time() - stats["uptime_start"]) / 3600, 1),
+            "reputation": round(stats["reputation"], 1),
+            "queries_served": stats["queries_served"],
+            "queries_made": stats["queries_made"],
+        }
+
+    def to_dict(self) -> Dict:
+        """Serialize all peer quotas."""
+        return {name: self.get_peer_info(name) for name in self._peer_stats}
 
 
 # ============================================================================
@@ -989,7 +1131,7 @@ class UnityBrain:
     def __init__(self, config: Dict):
         self.config = config
         self.node_name = config["node_name"]
-        self.version = "4.1.0"
+        self.version = "4.1.5"
         self.host = config["host"]
         self.port = config["port"]
         self.ollama_host = config["ollama_host"]
@@ -1000,7 +1142,7 @@ class UnityBrain:
             logger.warning("⚠️  Using default p2p_secret — configure a strong secret in config or P2P_SECRET env var!")
         self.stealth_mode = config.get("stealth_mode", False)
         self.share_ai = config.get("share_ai", False)
-        # v4.1.0: Multi-LLM providers
+        # v4.1.5: Multi-LLM providers
         self.providers: Dict[str, ProviderAdapter] = {}
         self._model_provider_map: Dict[str, str] = {}  # model_name -> provider_name
         self._init_providers(config)
@@ -1016,6 +1158,7 @@ class UnityBrain:
             rate=config.get("rate_limit", 10.0),
             burst=config.get("rate_burst", 20)
         )
+        self.sharing_quota = SharingQuota()  # v4.1.5: query quotas per peer
 
         # Components
         self.router = ModelRouter()
@@ -1027,7 +1170,7 @@ class UnityBrain:
         providers_config = config.get("providers", {})
 
         if providers_config:
-            # v4.1.0: Multi-provider mode
+            # v4.1.5: Multi-provider mode
             for name, pconf in providers_config.items():
                 ptype = pconf.get("type", "ollama")
                 if not pconf.get("enabled", True):
@@ -1156,24 +1299,23 @@ class UnityBrain:
         self.heartbeat_running = True
 
         # Discover peers
-        if True:
-            found_peers = await self.discovery.discover_all()
-            for peer_info in found_peers:
-                peer = Peer(
-                    name=peer_info.get('name', 'unknown'),
-                    host=peer_info['host'],
-                    port=peer_info.get('port', 8081),
-                    models=peer_info.get('models', []),
-                    public_key_hex=peer_info.get('public_key', '')
-                )
-                await self.add_peer(peer)
+        found_peers = await self.discovery.discover_all()
+        for peer_info in found_peers:
+            peer = Peer(
+                name=peer_info.get('name', 'unknown'),
+                host=peer_info['host'],
+                port=peer_info.get('port', 8081),
+                models=peer_info.get('models', []),
+                public_key_hex=peer_info.get('public_key', '')
+            )
+            await self.add_peer(peer)
+            # v4.1.5: Update sharing quota model count
+            self.sharing_quota.update_models(peer.name, len(peer.models))
 
-            # Ping all peers
-            if self.peers:
-                tasks = [p.ping(self.session) for p in self.peers]
-                await asyncio.gather(*tasks, return_exceptions=True)
-        else:
-            logger.info("🏠 Standalone mode — skipping peer discovery")
+        # Ping all peers
+        if self.peers:
+            tasks = [p.ping(self.session) for p in self.peers]
+            await asyncio.gather(*tasks, return_exceptions=True)
 
         # Start brain_llm if available
         if self.brain_llm:
@@ -1308,7 +1450,8 @@ class UnityBrain:
             "local_models": self.local_models,
             "providers": providers_info,
             "web_of_trust": len(self.web_of_trust.trust_edges),
-            "rate_limiter": self.rate_limiter.to_dict()
+            "rate_limiter": self.rate_limiter.to_dict(),
+            "sharing_quota": self.sharing_quota.to_dict()
         }
 
     # ========================================================================
@@ -1436,6 +1579,8 @@ class UnityBrain:
         app.router.add_get('/api/brain/models', self.handle_brain_models)
         app.router.add_post('/api/brain/query', self._auth_required(self.handle_brain_query))
         app.router.add_post('/api/brain/consensus', self.handle_brain_consensus)
+        app.router.add_get('/api/quota', self.handle_quota)
+        app.router.add_get('/api/quota/{peer}', self.handle_quota)
         app.router.add_post('/api/brain/chain', self._auth_required(self.handle_brain_chain))
         app.router.add_post('/api/trust/sign', self._auth_required(self.handle_trust_sign))
         app.router.add_get('/api/trust/score/{key}', self.handle_trust_score)
@@ -1558,6 +1703,21 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                 "share_ai": False
             }, status=403)
         
+        # v4.1.5: Quota check for peer requests
+        if is_peer_request:
+            peer_name = auth_info.get('node', 'unknown')
+            self.sharing_quota.record_query_made(peer_name)
+            if not self.sharing_quota.allow_query(peer_name):
+                score = self.sharing_quota.calculate_score(peer_name)
+                quota = self.sharing_quota.get_quota(peer_name)
+                return web.json_response({
+                    "error": "Quota exceeded",
+                    "peer": peer_name,
+                    "score": score,
+                    "quota_queries_per_minute": quota,
+                    "hint": "Share more models or increase uptime to raise your quota"
+                }, status=429)
+        
         result = await self.query(prompt, model, strategy)
         return web.json_response(result)
 
@@ -1610,6 +1770,14 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
     async def handle_peers(self, request: web.Request) -> web.Response:
         peer_list = [p.to_dict() for p in self.peers]
         return web.json_response(peer_list)
+
+    async def handle_quota(self, request: web.Request) -> web.Response:
+        """Get sharing quota info for all peers or a specific peer."""
+        peer_name = request.match_info.get('peer')
+        if peer_name:
+            info = self.sharing_quota.get_peer_info(peer_name)
+            return web.json_response(info)
+        return web.json_response(self.sharing_quota.to_dict())
 
     async def handle_monitor(self, request: web.Request) -> web.Response:
         cpu = psutil.cpu_percent(interval=0.5)
@@ -2204,5 +2372,5 @@ async def main():
 if __name__ == '__main__':
     import sys
     node = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    logger.info(f"Starting UnityBrain v4.1.0 as '{node}'")
+    logger.info(f"Starting UnityBrain v4.1.5 as '{node}'")
     asyncio.run(main())

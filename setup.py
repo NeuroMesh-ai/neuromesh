@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-UnityBrain v4.1.0 — Setup & Install
+UnityBrain v4.1.5 — Setup & Install
 
 Installe UnityBrain sur n'importe quelle machine Linux/macOS.
 Pas besoin d'OpenClaw. Juste Python 3.8+ et Ollama.
@@ -243,7 +243,7 @@ def create_bin_wrapper(node_name):
     # unitybrain command
     wrapper = BIN_DIR / "unitybrain"
     wrapper.write_text(f"""#!/bin/bash
-# UnityBrain v4.1.0 — CLI
+# UnityBrain v4.1.5 — CLI
 DIR="{INSTALL_DIR}"
 PYTHON="$DIR/venv/bin/python3"
 [ ! -x "$PYTHON" ] && PYTHON="python3"
@@ -316,7 +316,7 @@ def print_success(node_name):
     """Print success message with next steps"""
     print()
     print(c("bold", "═" * 50))
-    print(c("green", c("bold", "  🐛 UnityBrain v4.1.0 installed!")))
+    print(c("green", c("bold", "  🐛 UnityBrain v4.1.5 installed!")))
     print(c("bold", "═" * 50))
     print()
     print(c("cyan", "  Quick start:"))
@@ -396,7 +396,7 @@ def main():
         return
 
     print()
-    print(c("bold", c("cyan", "🐛 UnityBrain v4.1.0 — Installer")))
+    print(c("bold", c("cyan", "🐛 UnityBrain v4.1.5 — Installer")))
     print(c("dim", "   P2P Distributed AI Network"))
     print()
 
