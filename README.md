@@ -1,10 +1,12 @@
-# 🌐 UnityBrain v4.0
+# 🌐 UnityBrain v4.0.1
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-100%25_Decentralized-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
 
 **Lightweight P2P distributed AI network.** No central server. No accounts. Install, connect, query.
+
+> 🌍 [English](./docs/README_EN.md) | 🇫🇷 [Français](./docs/README_FR.md) | 🇪🇸 [Español](./docs/README_ES.md)
 
 ---
 

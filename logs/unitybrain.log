@@ -148,3 +148,28 @@
 2026-05-04 08:20:17,323 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
 2026-05-04 08:20:40,737 [UnityBrain] INFO: WS disconnected from Pinky, will reconnect
 2026-05-04 08:21:20,786 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 08:25:07,286 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 08:30:07,294 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 08:35:07,300 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 08:40:07,306 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 08:45:07,313 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 08:47:26,367 [UnityBrain] INFO: 🛑 UnityBrain shutting down...
+2026-05-04 08:47:26,367 [UnityBrain] INFO: Cleaning up...
+2026-05-04 08:47:48,902 [UnityBrain] INFO: UnityBrain stopped.
+2026-05-04 08:47:49,061 [UnityBrain] INFO: Starting UnityBrain v4.0.1 as 'bug'
+2026-05-04 08:47:49,061 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-05-04 08:47:49,069 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 08:47:49,128 [UnityBrain] INFO: 🌐 UnityBrain v4.0.1 on http://0.0.0.0:8080
+2026-05-04 08:47:59,166 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 08:52:16,682 [UnityBrain] INFO: 🛑 UnityBrain shutting down...
+2026-05-04 08:52:16,682 [UnityBrain] INFO: Cleaning up...
+2026-05-04 08:52:28,969 [UnityBrain] INFO: UnityBrain stopped.
+2026-05-04 08:52:29,128 [UnityBrain] INFO: Starting UnityBrain v4.0.1 as 'bug'
+2026-05-04 08:52:29,129 [UnityBrain] INFO: Config loaded from /home/kamizool/.openclaw/workspace/Unitybrain/config/bug.json
+2026-05-04 08:52:29,135 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 08:52:29,200 [UnityBrain] INFO: 🌐 UnityBrain v4.0.1 on http://0.0.0.0:8080
+2026-05-04 08:52:39,246 [UnityBrain] INFO: WS connected to Pinky (100.79.20.105:8081)
+2026-05-04 08:57:29,207 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:02:29,214 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:07:29,220 [UnityBrain] INFO: Discovery: found 1 potential peers
+2026-05-04 09:12:29,227 [UnityBrain] INFO: Discovery: found 1 potential peers

@@ -1551,11 +1551,14 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         return False
 
     async def _broadcast_ws(self, data: Dict, exclude: str = None):
-        """Broadcast data to all WS clients except excluded one."""
+        """Broadcast data to all authenticated WS clients except excluded one."""
         msg = json.dumps(data)
         dead = []
         for cid, client in list(self.ws_clients.items()):
             if cid == exclude:
+                continue
+            # Only broadcast to authenticated clients
+            if cid not in self.ws_authenticated:
                 continue
             if client.closed:
                 dead.append(cid)
@@ -1749,9 +1752,17 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                     f'/ws:{ts}'.encode(),
                     hashlib.sha256).hexdigest()
                 await ws.send_json({'type': 'auth', 'hmac': sig, 'ts': ts})
-                msg = await asyncio.wait_for(ws.receive_json(), timeout=5)
-                if msg.get('type') != 'auth_ack' or msg.get('status') != 'ok':
-                    logger.warning(f"WS auth to {peer.name} failed: {msg}")
+                # Wait for auth_ack, ignoring any pre-auth broadcast messages
+                auth_ok = False
+                for _ in range(10):
+                    msg = await asyncio.wait_for(ws.receive_json(), timeout=5)
+                    if msg.get('type') == 'auth_ack':
+                        auth_ok = msg.get('status') == 'ok'
+                        break
+                    # Ignore pre-auth broadcasts (memory_update, memory_sync, etc.)
+                    logger.debug(f"WS pre-auth message from {peer.name}: {msg.get('type', '?')}")
+                if not auth_ok:
+                    logger.warning(f"WS auth to {peer.name} failed: no auth_ack received")
                     await ws.close()
                     return
 

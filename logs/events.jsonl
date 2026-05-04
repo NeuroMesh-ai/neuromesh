@@ -372,3 +372,64 @@
 {"time": "2026-05-04T08:23:11.905812", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
 {"time": "2026-05-04T08:23:41.423889", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
 {"time": "2026-05-04T08:23:41.938579", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:24:13.013270", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:24:41.422864", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:24:43.055685", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:25:13.096600", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:25:41.425348", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:25:43.130541", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:26:13.169541", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:26:41.424846", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:26:43.265696", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:27:13.537625", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:27:41.429572", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:27:43.576196", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:28:13.614773", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:28:41.427624", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:28:43.650881", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:29:13.692793", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:29:41.428886", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:29:43.731132", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:30:13.769646", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:30:41.428514", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:30:43.804085", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:31:13.844570", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:31:41.433362", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:31:43.881628", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:46:21.090305", "type": "ws", "message": "WS connected 4c03200b from 127.0.0.1 (3 total)", "level": "info"}
+{"time": "2026-05-04T08:46:21.090847", "type": "ws", "message": "WS disconnected 4c03200b (2 total)", "level": "info"}
+{"time": "2026-05-04T08:47:48.901716", "type": "ws", "message": "WS disconnected 4fcda05c (0 total)", "level": "info"}
+{"time": "2026-05-04T08:47:49.069112", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T08:47:49.127641", "type": "init", "message": "UnityBrain v4.0.1 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T08:47:49.128887", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T08:48:28.939893", "type": "ws", "message": "WS connected 708fcc91 from 100.79.20.105 (2 total)", "level": "info"}
+{"time": "2026-05-04T08:48:41.222300", "type": "ws", "message": "WS connected 95959a59 from 127.0.0.1 (3 total)", "level": "info"}
+{"time": "2026-05-04T08:48:44.226883", "type": "ws", "message": "WS disconnected 95959a59 (2 total)", "level": "info"}
+{"time": "2026-05-04T08:50:41.453699", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:50:43.951902", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:51:13.977300", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:51:41.454025", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:51:44.003291", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:52:14.032039", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:52:28.968914", "type": "ws", "message": "WS disconnected 708fcc91 (0 total)", "level": "info"}
+{"time": "2026-05-04T08:52:29.135546", "type": "peer_added", "message": "Peer Pinky added (100.79.20.105:8081)", "level": "info"}
+{"time": "2026-05-04T08:52:29.199607", "type": "init", "message": "UnityBrain v4.0.1 initialized as 'bug'", "level": "info"}
+{"time": "2026-05-04T08:52:29.200691", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
+{"time": "2026-05-04T08:52:47.912006", "type": "ws", "message": "WS connected 7e76e576 from 100.79.20.105 (2 total)", "level": "info"}
+{"time": "2026-05-04T08:53:05.121968", "type": "ws", "message": "WS connected 42a5af32 from 127.0.0.1 (3 total)", "level": "info"}
+{"time": "2026-05-04T08:53:05.122479", "type": "ws", "message": "WS disconnected 42a5af32 (2 total)", "level": "info"}
+{"time": "2026-05-04T08:54:37.898063", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:54:37.910753", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:55:07.938610", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:55:37.897271", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:55:37.965195", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:56:08.002873", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:56:37.901056", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:56:38.029003", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:57:08.056064", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:57:37.898882", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:57:38.083370", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:58:08.109881", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:58:37.901509", "type": "ws_sync", "message": "Merged 0 entries via WS", "level": "info"}
+{"time": "2026-05-04T08:58:38.154538", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
+{"time": "2026-05-04T08:59:08.180771", "type": "sync", "message": "Merged 0 entries via HTTP push", "level": "info"}
