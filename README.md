@@ -1,6 +1,8 @@
 # 🌐 UnityBrain
 
-<p align="center"><img src="assets/logo.svg" alt="UnityBrain Logo" width="120" /></p>
+<p align="center">
+  <img src="assets/banner.png" alt="UnityBrain — P2P Distributed AI Network" width="100%" />
+</p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
@@ -75,6 +77,10 @@ python3 src/unitybrain_v4.py --config config/bug.json
 ```
 
 That's it. Memory sync, model sharing, and real-time communication happen automatically. Add more nodes — the network grows stronger.
+
+<p align="center">
+  <img src="assets/screenshots/dashboard.png" alt="UnityBrain Dashboard" width="80%" />
+</p>
 
 ### Add OpenAI or Anthropic
 
