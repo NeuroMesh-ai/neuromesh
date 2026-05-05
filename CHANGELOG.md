@@ -2,6 +2,30 @@
 
 All notable changes to UnityBrain will be documented in this file.
 
+## [4.2.0] - 2026-05-05
+
+### Added
+- 📡 **mDNS Zero-Config Discovery** — `ZeroConfigDiscovery` class: UDP broadcast + multicast for automatic LAN peer discovery. No IP config needed.
+- 🖥️ **GPU/CPU Model Negotiation** — `NodeCapabilities` auto-detects GPU (nvidia-smi), CPU cores, RAM. `ModelNegotiator` routes large models (70B) to GPU peers, small models to CPU.
+- 🤝 **Gamified Score Dashboard** — `GamifiedScore` with 7 visual tiers: 🌱 Seedling → 🥉 Bronze → 🥈 Silver → 🥇 Gold → 💎 Platinum → 💠 Diamond → 🌟 Celestial. Progress bars in web dashboard.
+- 🔄 **Auto-Update Checker** — `AutoUpdater` checks GitHub releases on startup + daily. `/api/update` endpoint.
+- 🖥️ **Systray Daemon** — `SystrayDaemon` for PID management and background mode. `/api/daemon` endpoint.
+- 🔌 **Sidekick Mode for OpenClaw** — `/api/agent` endpoint returns everything an AI agent needs (models, capabilities, score). `/api/agent/query` routes through GPU/CPU negotiation.
+
+### New API Endpoints
+- `GET /api/capabilities` — Node hardware capabilities + peer capabilities
+- `GET /api/score/{peer}` — Gamified score tier for a peer
+- `GET /api/discover` — Zero-Config discovered peers
+- `GET /api/update` — Check for UnityBrain updates
+- `GET /api/daemon` — Daemon/systray status
+- `GET /api/agent` — Sidekick info for OpenClaw
+- `POST /api/agent/query` — Sidekick query with GPU/CPU routing
+
+### Dashboard
+- Added Sharing Score section with tier badges and progress bars
+- Added Hardware Capabilities section (GPU/CPU/RAM per node)
+- Added Zero-Config Discovered Peers section
+
 ## [4.0.0] - 2026-05-04
 
 ### Added

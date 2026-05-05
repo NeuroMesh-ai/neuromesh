@@ -1,6 +1,6 @@
 ---
 name: unitybrain
-description: "UnityBrain P2P distributed AI network — deploy, query, and manage peer-to-peer AI nodes with WebSocket sync, CRDT memory, and decentralized auth."
+description: "UnityBrain P2P distributed AI network — Plug & Play Sidekick mode. OpenClaw auto-discovers UnityBrain API and routes queries through the P2P mesh."
 metadata:
   openclaw:
     requires:
@@ -11,40 +11,103 @@ metadata:
       - id: git-clone
         kind: shell
         cmd: "git clone https://github.com/dnshouet-cpu/Unitybrain.git ${UNITYBRAIN_PATH:-$HOME/Unitybrain}"
+    auto-discover:
+      - kind: http
+        method: GET
+        url: "http://localhost:${UNITYBRAIN_PORT:-8080}/api/status"
+        expect:
+          status: 200
+          body_contains: "UnityBrain"
+        on_found:
+          set_env:
+            UNITYBRAIN_URL: "http://localhost:${UNITYBRAIN_PORT:-8080}"
+          notify: "🌐 UnityBrain detected on localhost! P2P AI available."
 ---
 
-# UnityBrain Skill
+# UnityBrain Skill — Sidekick Mode 🐛🤝🌐
 
-Deploy and manage UnityBrain P2P AI nodes.
+UnityBrain as a **Sidekick** for OpenClaw agents: zero-config P2P AI augmentation.
 
-## What it does
+## The Two Modes
 
-- Start/stop UnityBrain nodes
-- Query AI models through the P2P network
-- Read/write distributed CRDT memory
-- Check node status and peer connections
-- Push memory sync between nodes
+### 🖥️ Standalone Mode
+```bash
+python3 start.sh --config config/bug.json
+```
+UnityBrain runs independently. OpenClaw skill can query it.
 
-## Setup
+### 🔌 Sidekick Mode (Plug & Play)
+When UnityBrain is running locally (or on the network), OpenClaw **auto-discovers** it:
+1. On heartbeat, check `localhost:8080/api/status`
+2. If found → P2P AI is available, no config needed
+3. Agent can route queries to any model on the mesh
+4. Memory syncs across all agents automatically
 
-1. Clone the repo: `git clone https://github.com/dnshouet-cpu/Unitybrain.git`
-2. Configure your node: edit `config/your_node.json`
-3. Set `UNITYBRAIN_CONFIG` env var to your config path (or use `--config` flag)
+**That's it.** Install UnityBrain, start it, and OpenClaw becomes instantly smarter.
 
-## Usage
+## What the Agent Can Do
 
-Ask Bug to:
-- "Start UnityBrain with my config"
-- "Query the P2P network for [question]"
-- "Check UnityBrain status"
-- "Sync memory between Bug and Pinky"
-- "Set memory key X to value Y"
+### Query Models on the Mesh
+```
+Ask Bug: "Ask the P2P network about quantum entanglement"
+```
+→ Bug queries UnityBrain, which routes to the best available model (local or peer)
+
+### Distributed Memory
+```
+Ask Bug: "Remember on the mesh that the server port is 8080"
+```
+→ Bug writes to UnityBrain CRDT memory, synced to all peers
+
+### Status Check
+```
+Ask Bug: "How's the P2P network?"
+```
+→ Bug checks `/api/status`, `/api/capabilities`, `/api/score/bug`
+
+### Model Negotiation
+```
+Ask Bug: "Run llama-3-70b on the network"
+```
+→ UnityBrain routes to the GPU peer automatically
+
+## Sidekick Auto-Discovery
+
+The skill checks these locations in order:
+1. `UNITYBRAIN_URL` env var (explicit override)
+2. `http://localhost:8080` (default Bug port)
+3. `http://localhost:8081` (default Pinky port)
+4. Zero-Config discovered peers (mDNS)
+5. Tailscale peers in config
+
+## API Reference
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/status` | GET | Node status, peers, models, uptime |
+| `/api/query` | POST | Send AI query (requires auth) |
+| `/api/memory/{key}` | GET | Read CRDT memory key |
+| `/api/memory/set` | POST | Write CRDT memory key |
+| `/api/peers` | GET | List connected peers |
+| `/api/capabilities` | GET | Node hardware capabilities (v4.2) |
+| `/api/score/{peer}` | GET | Gamified score tier (v4.2) |
+| `/api/discover` | GET | Zero-Config discovered peers (v4.2) |
+| `/api/update` | GET | Check for updates (v4.2) |
+| `/api/daemon` | GET | Daemon/systray status (v4.2) |
 
 ## Config
 
-Your `config.json` needs:
-- `node_name`: unique node name
-- `port`: HTTP/WS port (default 8080)
-- `p2p_secret`: HMAC shared secret for peer auth
-- `peers`: list of peer nodes (name, host, port)
-- `local_models`: available AI models
+Minimal config for Sidekick mode:
+```json
+{
+  "node_name": "bug",
+  "port": 8080,
+  "p2p_secret": "bug-pinky-2026-unity",
+  "share_ai": true,
+  "peers": [
+    {"name": "pinky", "host": "100.79.20.105", "port": 8081}
+  ]
+}
+```
+
+Or just start it and let Zero-Config discover peers automatically (v4.2+).

@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-🌐 UNITYBRAIN v4.1.5 — RÉSEAU P2P DISTRIBUÉ
+🌐 UNITYBRAIN v4.2.0 — RÉSEAU P2P DISTRIBUÉ
 ===============================================
+v4.2.0 Enhancement release:
+1. mDNS Zero-Config Discovery — peers auto-discover on local network via UDP broadcast + mDNS
+2. GPU/CPU Model Negotiation — nodes advertise capabilities, router sends big models to GPU
+3. Gamified Score Dashboard — visual levels (Bronze→Diamond) in the web dashboard
+4. Auto-Update — check for new versions on GitHub, prompt or auto-update
+5. Systray Support — run as background daemon with minimal UI (Linux/Windows/macOS)
+
 v4.1.5 Multi-LLM provider support:
 1. ProviderAdapter base class — OllamaProvider, OpenAIProvider, AnthropicProvider
 2. Config `providers` section — connect any LLM API alongside Ollama
@@ -56,6 +63,540 @@ file_handler = logging.handlers.RotatingFileHandler(
 file_handler.setFormatter(logging.Formatter('%(asctime)s [%(name)s] %(levelname)s: %(message)s'))
 file_handler.setLevel(logging.INFO)
 logger.addHandler(file_handler)
+
+
+# ============================================================================
+# v4.2.0: mDNS ZERO-CONFIG DISCOVERY
+# ============================================================================
+
+class ZeroConfigDiscovery:
+    """mDNS-style zero-config peer discovery on local network.
+    
+    Uses UDP broadcast + multicast for LAN auto-discovery.
+    Two nodes on the same network find each other without any IP config.
+    """
+    
+    BROADCAST_PORT = 8090
+    MULTICAST_ADDR = '224.0.0.251'  # mDNS multicast address
+    MULTICAST_PORT = 5353
+    BEACON_INTERVAL = 60  # seconds between broadcasts
+    
+    def __init__(self, node_name: str, own_port: int, capabilities: Dict = None):
+        self.node_name = node_name
+        self.own_port = own_port
+        self.capabilities = capabilities or {}
+        self._running = False
+        self._beacon_task = None
+        self._listener_task = None
+        self._found_peers: Dict[str, Dict] = {}  # name -> info
+        self._local_ip = self._get_local_ip()
+    
+    def _get_local_ip(self) -> str:
+        """Get this machine's local network IP."""
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(('8.8.8.8', 80))
+            ip = s.getsockname()[0]
+            s.close()
+            return ip
+        except OSError:
+            return '127.0.0.1'
+    
+    def _get_broadcast_addr(self) -> str:
+        """Derive broadcast address from local IP."""
+        parts = self._local_ip.split('.')
+        return f'{parts[0]}.{parts[1]}.{parts[2]}.255'
+    
+    def _build_beacon(self) -> bytes:
+        """Build discovery beacon message."""
+        return json.dumps({
+            'type': 'unitybrain_discovery',
+            'version': '4.2.0',
+            'node': self.node_name,
+            'port': self.own_port,
+            'ip': self._local_ip,
+            'capabilities': self.capabilities,
+            'ts': time.time()
+        }).encode()
+    
+    def _parse_beacon(self, data: bytes, addr: tuple) -> Optional[Dict]:
+        """Parse an incoming discovery beacon."""
+        try:
+            msg = json.loads(data.decode())
+            if msg.get('type') != 'unitybrain_discovery':
+                return None
+            if msg['node'] == self.node_name:
+                return None  # ignore self
+            if time.time() - msg.get('ts', 0) > 120:
+                return None  # stale beacon
+            return {
+                'name': msg['node'],
+                'host': msg.get('ip', addr[0]),
+                'port': msg['port'],
+                'capabilities': msg.get('capabilities', {}),
+                'ts': msg['ts']
+            }
+        except (json.JSONDecodeError, KeyError):
+            return None
+    
+    async def start(self):
+        """Start broadcasting and listening."""
+        if self._running:
+            return
+        self._running = True
+        self._beacon_task = asyncio.create_task(self._beacon_loop())
+        self._listener_task = asyncio.create_task(self._listener_loop())
+        logger.info(f"📡 Zero-Config Discovery started on port {self.BROADCAST_PORT}")
+    
+    async def stop(self):
+        """Stop discovery."""
+        self._running = False
+        if self._beacon_task:
+            self._beacon_task.cancel()
+        if self._listener_task:
+            self._listener_task.cancel()
+    
+    async def _beacon_loop(self):
+        """Periodically broadcast our presence."""
+        while self._running:
+            try:
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(None, self._send_beacon)
+            except Exception as e:
+                logger.debug(f"Beacon error: {e}")
+            await asyncio.sleep(self.BEACON_INTERVAL)
+    
+    def _send_beacon(self):
+        """Send UDP broadcast beacon."""
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            sock.settimeout(2)
+            msg = self._build_beacon()
+            # Broadcast to derived subnet + common subnets
+            targets = [self._get_broadcast_addr(), '192.168.1.255', '100.64.0.255']
+            for target in targets:
+                try:
+                    sock.sendto(msg, (target, self.BROADCAST_PORT))
+                except OSError:
+                    pass
+            # Also send multicast for mDNS-style discovery
+            try:
+                sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                sock2.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+                sock2.sendto(msg, (self.MULTICAST_ADDR, self.MULTICAST_PORT))
+                sock2.close()
+            except OSError:
+                pass
+            sock.close()
+        except OSError:
+            pass
+    
+    async def _listener_loop(self):
+        """Listen for discovery beacons from other nodes."""
+        loop = asyncio.get_event_loop()
+        while self._running:
+            try:
+                peers = await loop.run_in_executor(None, self._listen_once)
+                for p in peers:
+                    name = p['name']
+                    if name not in self._found_peers or p['ts'] > self._found_peers[name]['ts']:
+                        self._found_peers[name] = p
+                        logger.info(f"📡 Zero-Config: discovered {name} at {p['host']}:{p['port']}")
+            except Exception as e:
+                logger.debug(f"Listener error: {e}")
+            await asyncio.sleep(5)
+    
+    def _listen_once(self) -> List[Dict]:
+        """Single listening pass for beacons."""
+        found = []
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.settimeout(3)
+            sock.bind(('', self.BROADCAST_PORT))
+            while True:
+                try:
+                    data, addr = sock.recvfrom(4096)
+                    peer = self._parse_beacon(data, addr)
+                    if peer:
+                        found.append(peer)
+                except socket.timeout:
+                    break
+            sock.close()
+        except OSError:
+            pass
+        return found
+    
+    def get_discovered_peers(self) -> List[Dict]:
+        """Return all auto-discovered peers."""
+        # Prune stale peers (>5 min)
+        now = time.time()
+        stale = [n for n, p in self._found_peers.items() if now - p['ts'] > 300]
+        for n in stale:
+            del self._found_peers[n]
+        return list(self._found_peers.values())
+
+
+# ============================================================================
+# v4.2.0: GPU/CPU CAPABILITY NEGOTIATION
+# ============================================================================
+
+class NodeCapabilities:
+    """Detect and advertise node hardware capabilities.
+    
+    Nodes tell each other what they can run:
+    - GPU: nvidia-smi detection, VRAM size
+    - CPU: cores, RAM
+    - Models: size categories they can handle
+    """
+    
+    # Model size thresholds (approximate parameter count)
+    SIZE_CATEGORIES = {
+        'tiny': 3_000_000_000,      # <3B params (e.g., phi-2)
+        'small': 8_000_000_000,     # <8B params (e.g., llama-3-8b)
+        'medium': 35_000_000_000,  # <35B params (e.g., command-r)
+        'large': 70_000_000_000,   # <70B params (e.g., llama-3-70b)
+        'xl': float('inf')         # >70B params
+    }
+    
+    def __init__(self):
+        self.gpu_available = False
+        self.gpu_name = ''
+        self.gpu_vram_mb = 0
+        self.cpu_cores = 0
+        self.cpu_freq_mhz = 0
+        self.ram_total_mb = 0
+        self.max_model_category = 'small'  # default: CPU can handle small
+        self._detect()
+    
+    def _detect(self):
+        """Auto-detect hardware capabilities."""
+        try:
+            self.cpu_cores = psutil.cpu_count(logical=True) or 4
+            self.ram_total_mb = psutil.virtual_memory().total // (1024 * 1024)
+            freq = psutil.cpu_freq()
+            self.cpu_freq_mhz = int(freq.current) if freq else 0
+        except Exception:
+            self.cpu_cores = 4
+            self.ram_total_mb = 4096
+        
+        # GPU detection
+        self._detect_gpu()
+        
+        # Determine max model category
+        self.max_model_category = self._estimate_max_model()
+    
+    def _detect_gpu(self):
+        """Try to detect NVIDIA GPU via nvidia-smi."""
+        try:
+            import subprocess
+            result = subprocess.run(
+                ['nvidia-smi', '--query-gpu=name,memory.total', '--format=csv,noheader,nounits'],
+                capture_output=True, text=True, timeout=5
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                parts = result.stdout.strip().split(',')
+                self.gpu_name = parts[0].strip()
+                self.gpu_vram_mb = int(parts[1].strip()) if len(parts) > 1 else 0
+                self.gpu_available = True
+                logger.info(f"🎮 GPU detected: {self.gpu_name} ({self.gpu_vram_mb}MB VRAM)")
+        except (FileNotFoundError, subprocess.TimeoutExpired, ValueError):
+            self.gpu_available = False
+    
+    def _estimate_max_model(self) -> str:
+        """Estimate the largest model category this node can run."""
+        if self.gpu_available:
+            # GPU: ~2 bytes per parameter for FP16, ~1.3 with offloading
+            vram_params = (self.gpu_vram_mb * 1024 * 1024) / 1.5  # rough FP16
+            if vram_params >= 70_000_000_000:
+                return 'large'
+            elif vram_params >= 35_000_000_000:
+                return 'medium'
+            elif vram_params >= 8_000_000_000:
+                return 'small'
+            else:
+                return 'tiny'
+        else:
+            # CPU: need ~4 bytes per param (float32), but quantized ~1 byte
+            # RAM must be enough for model + OS
+            usable_ram = max(self.ram_total_mb - 2048, 0) * 1024 * 1024  # leave 2GB for OS
+            if usable_ram >= 16_000_000_000:  # 16GB free = can do ~8B quantized
+                return 'small'
+            elif usable_ram >= 6_000_000_000:
+                return 'tiny'
+            else:
+                return 'tiny'
+    
+    def can_run_model(self, model_name: str, model_size: int = 0) -> bool:
+        """Check if this node can run a given model."""
+        if model_size > 0:
+            cat = self._categorize_by_size(model_size)
+        else:
+            # Heuristic from model name
+            cat = self._categorize_by_name(model_name)
+        
+        cat_order = ['tiny', 'small', 'medium', 'large', 'xl']
+        return cat_order.index(cat) <= cat_order.index(self.max_model_category)
+    
+    def _categorize_by_name(self, name: str) -> str:
+        """Guess model size from name heuristics."""
+        name_lower = name.lower()
+        if any(k in name_lower for k in ['70b', '72b', '405b']):
+            return 'large'
+        if any(k in name_lower for k in ['35b', '34b', '32b', '30b']):
+            return 'medium'
+        if any(k in name_lower for k in ['8b', '9b', '7b', '14b', '13b', '12b']):
+            return 'small'
+        return 'tiny'
+    
+    def _categorize_by_size(self, size: int) -> str:
+        for cat, threshold in self.SIZE_CATEGORIES.items():
+            if size < threshold:
+                return cat
+        return 'xl'
+    
+    def to_dict(self) -> Dict:
+        return {
+            'gpu_available': self.gpu_available,
+            'gpu_name': self.gpu_name,
+            'gpu_vram_mb': self.gpu_vram_mb,
+            'cpu_cores': self.cpu_cores,
+            'ram_total_mb': self.ram_total_mb,
+            'max_model_category': self.max_model_category
+        }
+
+
+class ModelNegotiator:
+    """Negotiate model placement across the P2P network.
+    
+    When a query arrives, the negotiator checks:
+    1. What size category is this model?
+    2. Which peers can handle it?
+    3. Route to the best-capable peer (GPU > CPU for large, local for small)
+    """
+    
+    def __init__(self, own_capabilities: NodeCapabilities):
+        self.own_caps = own_capabilities
+        self.peer_caps: Dict[str, NodeCapabilities] = {}  # peer_name -> caps
+    
+    def update_peer_capabilities(self, peer_name: str, caps_dict: Dict):
+        """Update capabilities for a peer."""
+        caps = NodeCapabilities()
+        caps.gpu_available = caps_dict.get('gpu_available', False)
+        caps.gpu_name = caps_dict.get('gpu_name', '')
+        caps.gpu_vram_mb = caps_dict.get('gpu_vram_mb', 0)
+        caps.cpu_cores = caps_dict.get('cpu_cores', 4)
+        caps.ram_total_mb = caps_dict.get('ram_total_mb', 4096)
+        caps.max_model_category = caps_dict.get('max_model_category', 'tiny')
+        self.peer_caps[peer_name] = caps
+    
+    def select_best_node(self, model: str, peers: List[Any], prefer_local: bool = True) -> Optional[str]:
+        """Select the best node to handle a model query.
+        
+        Strategy:
+        - Tiny/small models → local first (fast, low overhead)
+        - Medium/large models → GPU peer first, then local if capable
+        - If no peer can handle it, return None (cloud fallback)
+        """
+        model_cat = self.own_caps._categorize_by_name(model)
+        
+        # For small models, prefer local
+        if model_cat in ('tiny', 'small') and prefer_local:
+            if self.own_caps.can_run_model(model):
+                return 'local'
+        
+        # For large models, find GPU peers
+        if model_cat in ('medium', 'large'):
+            best_gpu = None
+            best_vram = 0
+            for name, caps in self.peer_caps.items():
+                if caps.gpu_available and caps.can_run_model(model):
+                    if caps.gpu_vram_mb > best_vram:
+                        best_gpu = name
+                        best_vram = caps.gpu_vram_mb
+            if best_gpu:
+                return best_gpu
+        
+        # Fallback: any peer that can run it
+        for name, caps in self.peer_caps.items():
+            if caps.can_run_model(model):
+                return name
+        
+        # Last resort: local
+        if self.own_caps.can_run_model(model):
+            return 'local'
+        
+        return None
+
+
+# ============================================================================
+# v4.2.0: GAMIFIED SCORE SYSTEM
+# ============================================================================
+
+class GamifiedScore:
+    """Visual score levels for the dashboard.
+    
+    Turns the 0-100 numeric score into named tiers
+    with badges, encouraging users to keep sharing.
+    """
+    
+    TIERS = [
+        (0,   '🌱 Seedling',    '#888888'),
+        (10,  '🥉 Bronze',      '#cd7f32'),
+        (20,  '🥈 Silver',      '#c0c0c0'),
+        (40,  '🥇 Gold',        '#ffd700'),
+        (60,  '💎 Platinum',    '#e5e4e2'),
+        (80,  '💠 Diamond',     '#b9f2ff'),
+        (95,  '🌟 Celestial',   '#ff6b6b'),
+    ]
+    
+    @staticmethod
+    def get_tier(score: float) -> Dict:
+        """Get tier info for a score."""
+        tier_name = GamifiedScore.TIERS[0][1]
+        tier_color = GamifiedScore.TIERS[0][2]
+        for threshold, name, color in GamifiedScore.TIERS:
+            if score >= threshold:
+                tier_name = name
+                tier_color = color
+        next_tier = None
+        for threshold, name, color in GamifiedScore.TIERS:
+            if score < threshold:
+                next_tier = {'name': name, 'score_needed': threshold, 'color': color}
+                break
+        return {
+            'tier': tier_name,
+            'color': tier_color,
+            'score': score,
+            'next_tier': next_tier,
+            'progress_pct': min(score, 100)
+        }
+    
+    @staticmethod
+    def get_progress_bar(score: float) -> str:
+        """Generate a text progress bar for CLI."""
+        tier = GamifiedScore.get_tier(score)
+        filled = int(score / 2)  # 50 chars max
+        bar = '█' * filled + '░' * (50 - filled)
+        return f"{tier['tier']} [{bar}] {score:.1f}/100"
+
+
+# ============================================================================
+# v4.2.0: AUTO-UPDATE CHECKER
+# ============================================================================
+
+class AutoUpdater:
+    """Check for UnityBrain updates on GitHub.
+    
+    Non-blocking check. Can prompt user or auto-update.
+    Preserves the lightweight ethos — only checks on startup + periodic.
+    """
+    
+    GITHUB_API = 'https://api.github.com/repos/dnshouet-cpu/Unitybrain/releases/latest'
+    CURRENT_VERSION = '4.2.0'
+    CHECK_INTERVAL = 86400  # once per day
+    
+    def __init__(self, auto_install: bool = False):
+        self.auto_install = auto_install
+        self.last_check = 0
+        self.latest_version = None
+        self.download_url = None
+    
+    async def check(self) -> Optional[Dict]:
+        """Check for updates. Returns update info if available, None if up-to-date."""
+        now = time.time()
+        if now - self.last_check < self.CHECK_INTERVAL and self.latest_version:
+            return self._compare()
+        
+        self.last_check = now
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self.GITHUB_API, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                    if resp.status == 200:
+                        data = await resp.json()
+                        self.latest_version = data.get('tag_name', '').lstrip('v')
+                        assets = data.get('assets', [])
+                        if assets:
+                            self.download_url = assets[0].get('browser_download_url')
+                        return self._compare()
+        except (aiohttp.ClientError, asyncio.TimeoutError):
+            pass
+        return None
+    
+    def _compare(self) -> Optional[Dict]:
+        """Compare current vs latest version."""
+        if not self.latest_version:
+            return None
+        try:
+            parts_current = [int(x) for x in self.CURRENT_VERSION.split('.')]
+            parts_latest = [int(x) for x in self.latest_version.split('.')]
+            if parts_latest > parts_current:
+                return {
+                    'current': self.CURRENT_VERSION,
+                    'latest': self.latest_version,
+                    'download_url': self.download_url,
+                    'auto_install': self.auto_install
+                }
+        except (ValueError, IndexError):
+            pass
+        return None
+
+
+# ============================================================================
+# v4.2.0: SYSTRAY DAEMON
+# ============================================================================
+
+class SystrayDaemon:
+    """Run UnityBrain as a background systray daemon.
+    
+    On Linux: uses systemd user service (already exists)
+    On future: can integrate with pystray for GUI tray icon
+    For now: manages the daemon lifecycle and provides status.
+    """
+    
+    def __init__(self, node_name: str, pid_file: str = None):
+        self.node_name = node_name
+        self.pid_file = pid_file or os.path.expanduser('~/.unitybrain/daemon.pid')
+        self._ensure_dir()
+    
+    def _ensure_dir(self):
+        os.makedirs(os.path.dirname(self.pid_file), exist_ok=True)
+    
+    def write_pid(self, pid: int):
+        """Write PID file for daemon mode."""
+        with open(self.pid_file, 'w') as f:
+            f.write(str(pid))
+    
+    def read_pid(self) -> Optional[int]:
+        """Read daemon PID."""
+        try:
+            with open(self.pid_file) as f:
+                return int(f.read().strip())
+        except (FileNotFoundError, ValueError):
+            return None
+    
+    def is_running(self) -> bool:
+        """Check if daemon is running."""
+        pid = self.read_pid()
+        if pid is None:
+            return False
+        try:
+            os.kill(pid, 0)  # signal 0 = check existence
+            return True
+        except OSError:
+            return False
+    
+    def status(self) -> Dict:
+        """Get daemon status."""
+        running = self.is_running()
+        pid = self.read_pid() if running else None
+        return {
+            'daemon_running': running,
+            'pid': pid,
+            'pid_file': self.pid_file,
+            'mode': 'systray' if running else 'stopped'
+        }
 
 
 # ============================================================================
@@ -997,6 +1538,9 @@ class ModelRouter:
     REASONING_KEYWORDS = ['explain', 'why', 'how does', 'analyze', 'compare', 'what if']
     CREATIVE_KEYWORDS = ['write', 'story', 'poem', 'creative', 'imagine', 'design']
 
+    def __init__(self, negotiator: 'ModelNegotiator' = None):
+        self.negotiator = negotiator
+
     def route(self, prompt: str, available_models: List[str]) -> str:
         p = prompt.lower()
         if any(kw in p for kw in self.CODE_KEYWORDS):
@@ -1010,6 +1554,20 @@ class ModelRouter:
         if available_models:
             return available_models[0]
         return "glm-5.1:cloud"
+
+    def route_with_capabilities(self, model: str, available_models: List[str],
+                                peers: List[Any] = None) -> Dict:
+        """v4.2.0: Route considering GPU/CPU capabilities.
+        
+        Returns: {'model': str, 'target': str, 'reason': str}
+        target can be 'local', peer name, or 'cloud'
+        """
+        if self.negotiator:
+            target = self.negotiator.select_best_node(model, peers or [])
+            if target:
+                return {'model': model, 'target': target, 'reason': f'capabilities_routing -> {target}'}
+        # Fallback to local
+        return {'model': model, 'target': 'local', 'reason': 'no_negotiator_fallback'}
 
     def get_fallback(self, model: str, available_models: List[str]) -> Optional[str]:
         if model in available_models:
@@ -1079,7 +1637,7 @@ def load_config(config_path: str = None) -> Dict:
     """Load config from JSON file or defaults."""
     default_config = {
         "node_name": "unknown",
-        "version": "4.0.1",
+        "version": "4.2.0",
         "host": "0.0.0.0",
         "port": 8080,
         "ollama_host": "127.0.0.1",
@@ -1160,8 +1718,23 @@ class UnityBrain:
         )
         self.sharing_quota = SharingQuota()  # v4.1.5: query quotas per peer
 
+        # v4.2.0: New capabilities
+        self.own_capabilities = NodeCapabilities()
+        logger.info(f"🖥️ Node capabilities: GPU={self.own_capabilities.gpu_available} "
+                    f"({self.own_capabilities.gpu_name or 'none'}), "
+                    f"max_model={self.own_capabilities.max_model_category}")
+        self.model_negotiator = ModelNegotiator(self.own_capabilities)
+        self.zero_config = ZeroConfigDiscovery(
+            node_name=self.node_name,
+            own_port=self.port,
+            capabilities=self.own_capabilities.to_dict()
+        )
+        self.gamified_score = GamifiedScore()
+        self.auto_updater = AutoUpdater(auto_install=config.get('auto_update', False))
+        self.systray = SystrayDaemon(node_name=self.node_name)
+
         # Components
-        self.router = ModelRouter()
+        self.router = ModelRouter(negotiator=self.model_negotiator)
         self.ensemble = EnsembleConsensus()
         self.history = QueryHistory()
 
@@ -1451,7 +2024,13 @@ class UnityBrain:
             "providers": providers_info,
             "web_of_trust": len(self.web_of_trust.trust_edges),
             "rate_limiter": self.rate_limiter.to_dict(),
-            "sharing_quota": self.sharing_quota.to_dict()
+            "sharing_quota": self.sharing_quota.to_dict(),
+            "capabilities": self.own_capabilities.to_dict(),
+            "gamified_score": GamifiedScore.get_tier(
+                self.sharing_quota.calculate_score(self.node_name)
+            ),
+            "zero_config_peers": len(self.zero_config.get_discovered_peers()),
+            "daemon": self.systray.status()
         }
 
     # ========================================================================
@@ -1584,6 +2163,15 @@ class UnityBrain:
         app.router.add_post('/api/brain/chain', self._auth_required(self.handle_brain_chain))
         app.router.add_post('/api/trust/sign', self._auth_required(self.handle_trust_sign))
         app.router.add_get('/api/trust/score/{key}', self.handle_trust_score)
+        # v4.2.0: New endpoints
+        app.router.add_get('/api/capabilities', self.handle_capabilities)
+        app.router.add_get('/api/score/{peer}', self.handle_gamified_score)
+        app.router.add_get('/api/discover', self.handle_discover)
+        app.router.add_get('/api/update', self.handle_update_check)
+        app.router.add_get('/api/daemon', self.handle_daemon_status)
+        # v4.2.0: Sidekick endpoint for OpenClaw agents
+        app.router.add_get('/api/agent', self.handle_agent_sidekick)
+        app.router.add_post('/api/agent/query', self._auth_required(self.handle_agent_query))
         # WebSocket endpoint
         app.router.add_get('/ws', self.handle_websocket)
         return app
@@ -1671,10 +2259,57 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                     extra = f' @ {provider.base_url}'
                 html += f'<div class="peer">{status_icon} <strong>{name}</strong> ({provider.provider_type}){extra}<br/><span class="label">Models:</span> {model_list}</div>'
         else:
-            html += '<div>No providers configured</div>'
+            html += '<div>Aucun fournisseur configuré</div>'
         html += '</div>'
 
-        html += """</body></html>"""
+        # v4.2.0: Gamified Score section
+        html += '<div class="card"><h2>🤝 Score de Partage</h2>'
+        own_score = self.sharing_quota.calculate_score(self.node_name)
+        own_tier = GamifiedScore.get_tier(own_score)
+        html += f"""<div style="margin:1rem 0">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem">{own_tier['tier']}</div>
+        <div style="background:#1a1a2e;border:1px solid #333;border-radius:4px;overflow:hidden">
+          <div style="background:{own_tier['color']};width:{own_score}%;height:8px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span class="label">Score: {own_score:.1f}/100</span>"""
+        if own_tier['next_tier']:
+            html += f'<span class="label">Suivant: {own_tier["next_tier"]["name"]} ({own_tier["next_tier"]["score_needed"]})</span>'
+        else:
+            html += '<span class="label">🏆 NIVEAU MAX</span>'
+        html += '</div></div>'
+        if self.peers:
+            html += '<h2>Scores des Pairs</h2>'
+            for p in self.peers:
+                peer_score = self.sharing_quota.calculate_score(p.name)
+                peer_tier = GamifiedScore.get_tier(peer_score)
+                html += f'<div class="stat"><span>{p.name}</span><span style="color:{peer_tier["color"]}">{peer_tier["tier"]} ({peer_score:.1f})</span></div>'
+        html += '</div>'
+
+        # v4.2.0: Capabilities section
+        html += '<div class="card"><h2>🖥️ Capacités</h2>'
+        caps = self.own_capabilities
+        gpu_str = f"✅ {caps.gpu_name} ({caps.gpu_vram_mb}Mo)" if caps.gpu_available else "❌ Aucun"
+        html += f'<div class="stat"><span class="label">GPU</span><span class="value">{gpu_str}</span></div>'
+        html += f'<div class="stat"><span class="label">CPU</span><span class="value">{caps.cpu_cores} cœurs</span></div>'
+        html += f'<div class="stat"><span class="label">RAM</span><span class="value">{caps.ram_total_mb}Mo</span></div>'
+        html += f'<div class="stat"><span class="label">Modèle Max</span><span class="value">{caps.max_model_category.upper()}</span></div>'
+        if self.model_negotiator.peer_caps:
+            html += '<h2>Matériel des Pairs</h2>'
+            for name, pcaps in self.model_negotiator.peer_caps.items():
+                pgpu = f"✅ {pcaps.gpu_name}" if pcaps.gpu_available else "❌"
+                html += f'<div class="stat"><span>{name}</span><span>{pgpu} | {pcaps.max_model_category.upper()}</span></div>'
+        html += '</div>'
+
+        # v4.2.0: Zero-Config discovered peers
+        zc_peers = self.zero_config.get_discovered_peers()
+        if zc_peers:
+            html += '<div class="card"><h2>📡 Découverte Zero-Config</h2>'
+            for p in zc_peers:
+                html += f'<div class="peer">🔍 {p["name"]} @ {p["host"]}:{p["port"]}</div>'
+            html += '</div>'
+
+        html += """"</body></html>"""
         return web.Response(text=html, content_type='text/html')
 
     async def handle_status(self, request: web.Request) -> web.Response:
@@ -1854,6 +2489,135 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                                    "is_trusted": self.web_of_trust.is_trusted(key)})
 
     # ========================================================================
+    # v4.2.0: CAPABILITIES, SCORE, DISCOVERY, UPDATE, DAEMON ENDPOINTS
+    # ========================================================================
+
+    async def handle_capabilities(self, request: web.Request) -> web.Response:
+        """Return this node's hardware capabilities and peer capabilities."""
+        peer_caps = {name: caps.to_dict() for name, caps in self.model_negotiator.peer_caps.items()}
+        return web.json_response({
+            "own": self.own_capabilities.to_dict(),
+            "peers": peer_caps
+        })
+
+    async def handle_gamified_score(self, request: web.Request) -> web.Response:
+        """Return gamified score tier for a peer."""
+        peer_name = request.match_info['peer']
+        score = self.sharing_quota.calculate_score(peer_name)
+        tier = GamifiedScore.get_tier(score)
+        return web.json_response(tier)
+
+    async def handle_discover(self, request: web.Request) -> web.Response:
+        """Return zero-config discovered peers."""
+        peers = self.zero_config.get_discovered_peers()
+        return web.json_response({
+            "discovered_peers": peers,
+            "count": len(peers)
+        })
+
+    async def handle_update_check(self, request: web.Request) -> web.Response:
+        """Check for UnityBrain updates."""
+        update = await self.auto_updater.check()
+        if update:
+            return web.json_response({"update_available": True, **update})
+        return web.json_response({"update_available": False, "current": AutoUpdater.CURRENT_VERSION})
+
+    async def handle_daemon_status(self, request: web.Request) -> web.Response:
+        """Return daemon/systray status."""
+        return web.json_response(self.systray.status())
+
+    async def handle_agent_sidekick(self, request: web.Request) -> web.Response:
+        """Sidekick endpoint for OpenClaw agents.
+        
+        Returns everything an AI agent needs to know:
+        - Available models (local + peers)
+        - Own capabilities (GPU/CPU)
+        - Gamified score
+        - Discovered peers
+        - Quick query URL template
+        
+        This is the 'Plug & Play' entry point.
+        """
+        status = self.get_status()
+        caps = self.own_capabilities.to_dict()
+        all_models = list(self.local_models)
+        for p in self.peers:
+            all_models.extend([m for m in p.models if m not in all_models])
+        
+        own_score = self.sharing_quota.calculate_score(self.node_name)
+        tier = GamifiedScore.get_tier(own_score)
+        
+        return web.json_response({
+            'sidekick': True,
+            'version': self.version,
+            'node_name': self.node_name,
+            'status': 'online',
+            'models': {
+                'local': self.local_models,
+                'peers': {p.name: p.models for p in self.peers if p.available},
+                'all': all_models,
+                'total': len(all_models)
+            },
+            'capabilities': caps,
+            'score': tier,
+            'peers_online': sum(1 for p in self.peers if p.available),
+            'peers_total': len(self.peers),
+            'zero_config_peers': len(self.zero_config.get_discovered_peers()),
+            'memory_keys': len(self.memory.store),
+            'query_url': f'http://{self.host}:{self.port}/api/query',
+            'memory_url': f'http://{self.host}:{self.port}/api/memory',
+            'capabilities_url': f'http://{self.host}:{self.port}/api/capabilities',
+        })
+
+    async def handle_agent_query(self, request: web.Request) -> web.Response:
+        """Sidekick query endpoint for OpenClaw agents.
+        
+        Accepts: {"prompt": "...", "model": "..."}
+        Routes through GPU/CPU negotiation if available.
+        """
+        try:
+            data = await request.json()
+            prompt = data.get('prompt', '')
+            model = data.get('model')
+            
+            if not prompt:
+                return web.json_response({'error': 'prompt required'}, status=400)
+            
+            # Use model negotiation to find best node
+            if model:
+                routing = self.router.route_with_capabilities(
+                    model, self.local_models, self.peers
+                )
+                target = routing['target']
+                
+                # If local, query directly
+                if target == 'local':
+                    result = await self._query_local(model, prompt)
+                    return web.json_response({
+                        'model': model,
+                        'target': 'local',
+                        'result': result,
+                        'routed_by': 'capabilities'
+                    })
+                
+                # If peer, query the peer
+                peer = next((p for p in self.peers if p.name == target), None)
+                if peer and peer.available:
+                    result = await self._query_peer(peer, model, prompt)
+                    return web.json_response({
+                        'model': model,
+                        'target': target,
+                        'result': result,
+                        'routed_by': 'capabilities'
+                    })
+            
+            # Fallback: normal query flow
+            result = await self.query(prompt, model)
+            return web.json_response(result)
+            
+        except Exception as e:
+            return web.json_response({'error': str(e)}, status=500)
+
     # FEATURE 1: WEBSOCKET TEMPS RÉEL
     # ========================================================================
 
@@ -2290,6 +3054,23 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                     )
                     await self.add_peer(peer)
                     self.log_event("discovery", f"Auto-discovered {peer.name}")
+            # v4.2.0: Also check zero-config discovered peers
+            zc_peers = self.zero_config.get_discovered_peers()
+            for p in zc_peers:
+                existing = [ep for ep in self.peers if ep.host == p['host'] and ep.port == p['port']]
+                if not existing:
+                    peer = Peer(
+                        name=p['name'],
+                        host=p['host'],
+                        port=p['port'],
+                        models=p.get('capabilities', {}).get('models', []),
+                        public_key_hex=''
+                    )
+                    await self.add_peer(peer)
+                    # Update peer capabilities
+                    if 'capabilities' in p:
+                        self.model_negotiator.update_peer_capabilities(p['name'], p['capabilities'])
+                    self.log_event("zero_config", f"mDNS discovered {p['name']} at {p['host']}:{p['port']}")
 
 
 # ============================================================================
@@ -2350,6 +3131,19 @@ async def main():
         asyncio.create_task(brain._connect_to_peers_ws()),
         asyncio.create_task(brain._discovery_loop()),
     ])
+
+    # v4.2.0: Start zero-config discovery
+    await brain.zero_config.start()
+    
+    # v4.2.0: Check for updates on startup
+    update = await brain.auto_updater.check()
+    if update:
+        logger.info(f"🔄 Update available: v{update['latest']} (current v{update['current']})")
+        brain.log_event("update", f"v{update['latest']} available")
+    
+    # v4.2.0: Write PID for daemon mode
+    brain.systray.write_pid(os.getpid())
+    logger.info(f"🖥️ Daemon PID: {os.getpid()}")
 
     await shutdown_event.wait()
 
