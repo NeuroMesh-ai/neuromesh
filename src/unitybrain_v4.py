@@ -2169,6 +2169,9 @@ class UnityBrain:
         app.router.add_get('/api/discover', self.handle_discover)
         app.router.add_get('/api/update', self.handle_update_check)
         app.router.add_get('/api/daemon', self.handle_daemon_status)
+        # v4.2.0: Sidekick endpoint for OpenClaw agents
+        app.router.add_get('/api/agent', self.handle_agent_sidekick)
+        app.router.add_post('/api/agent/query', self._auth_required(self.handle_agent_query))
         # WebSocket endpoint
         app.router.add_get('/ws', self.handle_websocket)
         return app
@@ -2523,7 +2526,98 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         """Return daemon/systray status."""
         return web.json_response(self.systray.status())
 
-    # ========================================================================
+    async def handle_agent_sidekick(self, request: web.Request) -> web.Response:
+        """Sidekick endpoint for OpenClaw agents.
+        
+        Returns everything an AI agent needs to know:
+        - Available models (local + peers)
+        - Own capabilities (GPU/CPU)
+        - Gamified score
+        - Discovered peers
+        - Quick query URL template
+        
+        This is the 'Plug & Play' entry point.
+        """
+        status = self.get_status()
+        caps = self.own_capabilities.to_dict()
+        all_models = list(self.local_models)
+        for p in self.peers:
+            all_models.extend([m for m in p.models if m not in all_models])
+        
+        own_score = self.sharing_quota.calculate_score(self.node_name)
+        tier = GamifiedScore.get_tier(own_score)
+        
+        return web.json_response({
+            'sidekick': True,
+            'version': self.version,
+            'node_name': self.node_name,
+            'status': 'online',
+            'models': {
+                'local': self.local_models,
+                'peers': {p.name: p.models for p in self.peers if p.available},
+                'all': all_models,
+                'total': len(all_models)
+            },
+            'capabilities': caps,
+            'score': tier,
+            'peers_online': sum(1 for p in self.peers if p.available),
+            'peers_total': len(self.peers),
+            'zero_config_peers': len(self.zero_config.get_discovered_peers()),
+            'memory_keys': len(self.memory.store),
+            'query_url': f'http://{self.host}:{self.port}/api/query',
+            'memory_url': f'http://{self.host}:{self.port}/api/memory',
+            'capabilities_url': f'http://{self.host}:{self.port}/api/capabilities',
+        })
+
+    async def handle_agent_query(self, request: web.Request) -> web.Response:
+        """Sidekick query endpoint for OpenClaw agents.
+        
+        Accepts: {"prompt": "...", "model": "..."}
+        Routes through GPU/CPU negotiation if available.
+        """
+        try:
+            data = await request.json()
+            prompt = data.get('prompt', '')
+            model = data.get('model')
+            
+            if not prompt:
+                return web.json_response({'error': 'prompt required'}, status=400)
+            
+            # Use model negotiation to find best node
+            if model:
+                routing = self.router.route_with_capabilities(
+                    model, self.local_models, self.peers
+                )
+                target = routing['target']
+                
+                # If local, query directly
+                if target == 'local':
+                    result = await self._query_local(model, prompt)
+                    return web.json_response({
+                        'model': model,
+                        'target': 'local',
+                        'result': result,
+                        'routed_by': 'capabilities'
+                    })
+                
+                # If peer, query the peer
+                peer = next((p for p in self.peers if p.name == target), None)
+                if peer and peer.available:
+                    result = await self._query_peer(peer, model, prompt)
+                    return web.json_response({
+                        'model': model,
+                        'target': target,
+                        'result': result,
+                        'routed_by': 'capabilities'
+                    })
+            
+            # Fallback: normal query flow
+            result = await self.query(prompt, model)
+            return web.json_response(result)
+            
+        except Exception as e:
+            return web.json_response({'error': str(e)}, status=500)
+
     # FEATURE 1: WEBSOCKET TEMPS RÉEL
     # ========================================================================
 
