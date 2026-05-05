@@ -66,8 +66,10 @@ Every AI tool wants your email, your phone number, and $20/month. Cloud APIs loc
 | **Distributed Memory** | CRDT-based conflict-free state · Vector clocks · Gossip propagation · TTL support |
 | **Decentralized Auth** | Ed25519 identity · HMAC shared secret · Web of Trust (PGP-like) · Stealth mode |
 | **AI Routing** | Local models first → cloud on demand → peer failover · Ensemble consensus · Circuit breakers |
-| **Sharing Quotas** | Score-based query limits — **the more you share, the more you can use** |
-| **Auto-Discovery** | Static config · Tailscale auto-discovery · Dynamic API registration |
+| **GPU/CPU Negotiation** | Auto-detect hardware · Route 70B models to GPU nodes · Small models on CPU · Smart peer selection |
+| **Sharing Quotas** | Score-based query limits — **the more you share, the more you can use** · Gamified tiers (🌱 → 🌟) |
+| **Auto-Discovery** | Static config · Tailscale auto-discovery · **mDNS Zero-Config** · Dynamic API registration |
+| **OpenClaw Sidekick** | Plug & Play — UnityBrain detected automatically · `/api/agent` endpoint for AI agents |
 | **Interactive CLI** | `unitybrain` command — chat with AI, manage memory, check peers and quotas |
 | **Stats** | ⚡ 0.16s startup · 💾 17MB RAM · 📦 4 dependencies (aiohttp, psutil, PyYAML, PyNaCl optional) |
 
