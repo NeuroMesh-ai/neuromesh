@@ -35,15 +35,29 @@ python3 setup.py --auto
 
 Install on another machine with the same `p2p_secret` → they find each other automatically. **More nodes = more CPU/RAM = more power.**
 
-### 🔌 OpenClaw Plugin
+### 🔌 OpenClaw Skill
 
-Already using [OpenClaw](https://openclaw.ai)? UnityBrain integrates as a skill:
+Already using [OpenClaw](https://openclaw.ai)? UnityBrain integrates as a skill — **two ways to install:**
 
+**From ClawHub (when published):**
 ```bash
 openclaw skill install unitybrain
 ```
 
+**Manual install (works now):**
+```bash
+# Clone the skill into your workspace
+git clone https://github.com/dnshouet-cpu/Unitybrain.git /tmp/ub
+mkdir -p ~/.openclaw/workspace/skills/unitybrain
+cp /tmp/ub/skill/SKILL.md ~/.openclaw/workspace/skills/unitybrain/
+rm -rf /tmp/ub
+
+# Done! Your agent now has UnityBrain skill access
+```
+
 Your OpenClaw agent gets P2P AI access — query any model on the network, share memory between agents, use remote GPU/CPU transparently.
+
+**Sidekick Mode (v4.2+):** When UnityBrain is running locally, OpenClaw auto-discovers it at `http://localhost:8080/api/agent`. Zero config needed — just start UnityBrain and your agent becomes smarter.
 
 **Either way, UnityBrain is the same P2P network.** Standalone users and OpenClaw users share the same mesh.
 
