@@ -37,7 +37,7 @@ class TestInitialization:
     def test_data_quota_clamped_max(self):
         """Hard max is 0 (unlimited), so 500GB is accepted as-is."""
         bq = BandwidthQuota({"monthly_data_gb": 500})
-        assert bq.monthly_data_gb == 500.0  # no hard cap, accepted
+        assert bq.monthly_data_gb == 500.0  # under 3TB cap, accepted
 
     def test_bandwidth_clamped_min(self):
         """En dessous de 1 Mbps, clampé à 1 Mbps."""
@@ -166,7 +166,7 @@ class TestConfigUpdate:
     def test_update_clamps_data_max(self):
         bq = BandwidthQuota()
         bq.update_config(monthly_data_gb=999)
-        assert bq.monthly_data_gb == 999.0  # no hard cap, accepted
+        assert bq.monthly_data_gb == 999.0  # under 3TB cap, accepted
 
     def test_update_clamps_bandwidth_min(self):
         bq = BandwidthQuota()
@@ -255,7 +255,7 @@ class TestHardCaps:
     """Tests des hard caps de sécurité."""
 
     def test_hard_max_data(self):
-        assert BandwidthQuota.HARD_MAX_MONTHLY_DATA_GB == 0  # 0 = unlimited
+        assert BandwidthQuota.HARD_MAX_MONTHLY_DATA_GB == 3072  # 3 TB max
 
     def test_hard_min_data(self):
         assert BandwidthQuota.HARD_MIN_MONTHLY_DATA_MB == 500
@@ -268,7 +268,17 @@ class TestHardCaps:
 
     def test_cannot_override_data_max(self):
         bq = BandwidthQuota({"monthly_data_gb": 999})
-        assert bq.monthly_data_gb == 999.0  # no hard cap
+        assert bq.monthly_data_gb == 999.0  # under 3TB cap
+
+    def test_data_3tb_hard_cap(self):
+        """Over 3TB should be clamped to 3TB."""
+        bq = BandwidthQuota({"monthly_data_gb": 5000})
+        assert bq.monthly_data_gb == 3072.0  # clamped to 3TB
+
+    def test_data_exactly_3tb(self):
+        """3TB should be accepted."""
+        bq = BandwidthQuota({"monthly_data_gb": 3072})
+        assert bq.monthly_data_gb == 3072.0
 
     def test_cannot_override_bandwidth_max(self):
         bq = BandwidthQuota({"bandwidth_limit_kbps": 999999})

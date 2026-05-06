@@ -88,7 +88,7 @@ class BandwidthQuota:
 
     # ── Hard caps (non overridables) ───────────────────────────
     HARD_MIN_MONTHLY_DATA_MB = 500       # 500 MB minimum (0 = unlimited)
-    HARD_MAX_MONTHLY_DATA_GB = 0         # 0 = no hard cap (unlimited possible for dedicated mode)
+    HARD_MAX_MONTHLY_DATA_GB = 3072     # 3 TB max — limite actuelle, 0 = unlimited
     HARD_MIN_BANDWIDTH_KBPS = 1000       # 1 Mbps minimum
     HARD_MAX_BANDWIDTH_KBPS = 0          # 0 = no hard cap (unlimited possible for dedicated mode)
 
@@ -107,13 +107,11 @@ class BandwidthQuota:
             self.monthly_data_gb = 0
         else:
             monthly_mb = monthly_gb * 1024
-            if self.HARD_MAX_MONTHLY_DATA_GB == 0:
-                self.monthly_data_mb = max(self.HARD_MIN_MONTHLY_DATA_MB, monthly_mb)
-            else:
-                self.monthly_data_mb = max(
-                    self.HARD_MIN_MONTHLY_DATA_MB,
-                    min(monthly_mb, self.HARD_MAX_MONTHLY_DATA_GB * 1024)
-                )
+            # Clamp: min 500MB, max 3TB (HARD_MAX_MONTHLY_DATA_GB)
+            self.monthly_data_mb = max(
+                self.HARD_MIN_MONTHLY_DATA_MB,
+                min(monthly_mb, self.HARD_MAX_MONTHLY_DATA_GB * 1024)
+            )
             self.monthly_data_gb = round(self.monthly_data_mb / 1024, 1)
 
         # ── Limite bande passante instantanée ──
@@ -239,10 +237,7 @@ class BandwidthQuota:
                     self.monthly_data_gb = 0
                 else:
                     mb = monthly_data_gb * 1024
-                    if self.HARD_MAX_MONTHLY_DATA_GB == 0:
-                        mb = max(self.HARD_MIN_MONTHLY_DATA_MB, mb)
-                    else:
-                        mb = max(self.HARD_MIN_MONTHLY_DATA_MB, min(mb, self.HARD_MAX_MONTHLY_DATA_GB * 1024))
+                    mb = max(self.HARD_MIN_MONTHLY_DATA_MB, min(mb, self.HARD_MAX_MONTHLY_DATA_GB * 1024))
                     self.monthly_data_mb = mb
                     self.monthly_data_gb = round(mb / 1024, 1)
                 logger.info(f"📡 Quota données mis à jour: {self.monthly_data_gb} GB/{self.period.value}")
@@ -294,7 +289,7 @@ class BandwidthQuota:
                 "period_start": self._current_period.period_start,
                 "period_end": self._current_period.period_end,
                 # Hard caps (info pour le UI)
-                "hard_max_data_gb": self.HARD_MAX_MONTHLY_DATA_GB or "unlimited",
+                "hard_max_data_gb": self.HARD_MAX_MONTHLY_DATA_GB,  # 3 TB
                 "hard_min_data_mb": self.HARD_MIN_MONTHLY_DATA_MB,
                 "hard_max_bandwidth_kbps": self.HARD_MAX_BANDWIDTH_KBPS or "unlimited",
                 "hard_min_bandwidth_kbps": self.HARD_MIN_BANDWIDTH_KBPS,

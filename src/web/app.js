@@ -524,8 +524,11 @@
             const gb = parseInt(dataSlider.value);
             if (gb === 0) {
                 $('#dataValue').textContent = '∞ Illimité';
+            } else if (gb >= 1024) {
+                const tb = (gb / 1024).toFixed(1);
+                $('#dataValue').textContent = `${tb} TB`;
             } else {
-                $('#dataValue').textContent = gb >= 1 ? `${gb} GB` : `${gb * 1000} MB`;
+                $('#dataValue').textContent = `${gb} GB`;
             }
         });
 
