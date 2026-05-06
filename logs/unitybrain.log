@@ -1412,3 +1412,51 @@
 2026-05-06 14:56:59,677 [UnityBrain] ERROR: ⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'
 2026-05-06 14:56:59,699 [UnityBrain] ERROR: ⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.
 2026-05-06 14:56:59,699 [UnityBrain] ERROR: ⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'
+2026-05-06 15:11:28,367 [UnityBrain.AdaptiveScheduler] WARNING: Node bad_node banned: too many failures
+2026-05-06 15:11:28,368 [UnityBrain.AdaptiveScheduler] WARNING: Node liar banned: false capability claims
+2026-05-06 15:11:28,370 [UnityBrain.AdaptiveScheduler] WARNING: Node node1 banned: too many failures
+2026-05-06 15:11:28,392 [UnityBrain.AdaptiveScheduler] WARNING: Node node1 banned: too many failures
+2026-05-06 15:11:28,393 [UnityBrain.AdaptiveScheduler] WARNING: Node node2 banned: too many failures
+2026-05-06 15:11:28,425 [UnityBrain.AdaptiveScheduler] WARNING: Invalid strategy name: invalid_strategy
+2026-05-06 15:11:28,485 [UnityBrain.AdaptiveScheduler] WARNING: Node banned banned: too many failures
+2026-05-06 15:11:28,514 [UnityBrain.AdaptiveScheduler] WARNING: Node bad_node banned: too many failures
+2026-05-06 15:11:28,516 [UnityBrain.AdaptiveScheduler] WARNING: Node liar banned: false capability claims
+2026-05-06 15:11:28,532 [UnityBrain.AdaptiveScheduler] WARNING: Node attacker banned: too many failures
+2026-05-06 15:11:28,561 [UnityBrain] ERROR: ⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.
+2026-05-06 15:11:28,561 [UnityBrain] ERROR: ⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'
+2026-05-06 15:11:28,610 [UnityBrain.BandwidthQuota] WARNING: 📡 Quota mensuel dépassé: 500MB + 0.0MB > 500MB
+2026-05-06 15:11:28,624 [UnityBrain.BandwidthQuota] WARNING: 📡 Période invalide: invalid
+2026-05-06 15:11:28,647 [UnityBrain] ERROR: ⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.
+2026-05-06 15:11:28,647 [UnityBrain] ERROR: ⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'
+2026-05-06 15:11:28,809 [UnityBrain.ConversationStore] WARNING: Unknown privacy level 'unknown_level', defaulting to PRIVATE
+2026-05-06 15:11:34,404 [UnityBrain.ModelShareManager] WARNING: Model nonexistent-model not found in Ollama
+2026-05-06 15:11:34,425 [UnityBrain.ModelShareManager] WARNING: Broken symlink in shared_models/: broken-model → /tmp/tmpo034i2zz/nonexistent_target
+2026-05-06 15:11:34,515 [UnityBrain.ModelShareManager] WARNING: Removing entry with invalid name: model;rm -rf
+2026-05-06 15:11:34,683 [UnityBrain.Specialist] WARNING: 🎯 No model matching 'totally-unknown-model'
+2026-05-06 15:11:34,712 [UnityBrain.Specialist] WARNING: 🎯 Query to fail-model failed: Unavailable
+2026-05-06 15:11:34,737 [UnityBrain.Specialist] WARNING: 🎯 Query to a failed: All down
+2026-05-06 15:11:34,737 [UnityBrain.Specialist] WARNING: 🎯 Query to b failed: All down
+2026-05-06 15:11:34,750 [UnityBrain] ERROR: ⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.
+2026-05-06 15:11:34,750 [UnityBrain] ERROR: ⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'
+2026-05-06 15:11:34,772 [UnityBrain] ERROR: ⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.
+2026-05-06 15:11:34,772 [UnityBrain] ERROR: ⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'
+2026-05-06 15:11:34,956 [UnityBrain.ResourceGuard] ERROR: Resource Guard: psutil unavailable — all public requests will be refused
+2026-05-06 15:11:34,999 [UnityBrain.ResourceGuard] ERROR: Resource Guard: psutil unavailable — all public requests will be refused
+2026-05-06 15:11:35,342 [UnityBrain.ResourceGuard] WARNING: Resource Guard: rejecting request with prompt_length=60000 (max 50000)
+2026-05-06 15:11:35,362 [UnityBrain.ResourceGuard] WARNING: Resource Guard: rejecting request with context_length=300000 (max 200000)
+2026-05-06 15:11:35,505 [UnityBrain.ResourceGuard] ERROR: Resource Guard: psutil unavailable — all public requests will be refused
+2026-05-06 15:11:35,776 [UnityBrain.ResourceGuard] ERROR: Resource Guard: snapshot error: psutil broken
+2026-05-06 15:11:35,941 [UnityBrain.ResourceGuard] WARNING: Resource Guard: rejecting request with prompt_length=1000000 (max 50000)
+2026-05-06 15:11:35,962 [UnityBrain.ResourceGuard] WARNING: Resource Guard: rejecting request with context_length=500000 (max 200000)
+2026-05-06 15:11:36,190 [UnityBrain.TrackerClient] WARNING: Tracker returned 150 nodes, capping to 100
+2026-05-06 15:11:36,207 [UnityBrain.TrackerClient] WARNING: Tracker URL must be HTTPS, skipping: http://insecure.example.com
+2026-05-06 15:11:36,583 [UnityBrain.TrackerClient] WARNING: Invalid announce response from https://tracker.example.com
+2026-05-06 15:11:36,694 [UnityBrain.TrackerClient] WARNING: Tracker URL must be HTTPS, skipping: http://insecure.example.com
+2026-05-06 15:11:36,727 [UnityBrain.TrackerClient] WARNING: Tracker URL must be HTTPS, skipping: http://bad.example.com
+2026-05-06 15:11:36,728 [UnityBrain.TrackerClient] WARNING: Tracker URL must be HTTPS, skipping: ftp://also.bad.com
+2026-05-06 15:11:36,774 [UnityBrain] ERROR: ⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.
+2026-05-06 15:11:36,774 [UnityBrain] ERROR: ⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'
+2026-05-06 15:11:36,796 [UnityBrain] ERROR: ⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.
+2026-05-06 15:11:36,796 [UnityBrain] ERROR: ⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'
+2026-05-06 15:11:36,817 [UnityBrain] ERROR: ⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.
+2026-05-06 15:11:36,818 [UnityBrain] ERROR: ⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'
