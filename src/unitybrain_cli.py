@@ -1,8 +1,29 @@
 #!/usr/bin/env python3
 """
-🖥️ UnityBrain CLI — Client interactif
+🖥️ UnityBrain CLI — Client interactif v5
 Utilise UnityBrain comme application, avec ou sans réseau P2P.
 Partage CPU/RAM avec le réseau quand share_ai=true.
+
+Commands:
+  serve              Start headless service
+  app                Start application (opens browser)
+  sidekick           Start system tray sidekick
+  chat               Interactive terminal chat (REPL)
+  ask "question"     Single query
+  status             Show node status
+  peers              List connected peers
+  share <model>      Share a model with the mesh
+  unshare <model>    Stop sharing a model
+  shared             List shared models
+  download <model>   Download a model from the mesh
+  mesh join          Join the public mesh
+  mesh leave         Leave the public mesh
+  mesh status        Show mesh status
+  conversations      List conversations
+  conversations <id> Show a conversation
+  conversations <id> export  Export a conversation
+  install-service    Install as systemd service
+  uninstall-service  Uninstall systemd service
 """
 
 import sys
@@ -99,8 +120,9 @@ class UnityBrainClient:
     def peers(self):
         return self._request("/api/peers")
 
+
 # ============================================================================
-# INTERACTIVE SHELL
+# INTERACTIVE SHELL (unchanged — used by `unitybrain chat`)
 # ============================================================================
 
 class UnityBrainShell:
@@ -146,7 +168,7 @@ class UnityBrainShell:
     def run(self):
         """Main interactive loop."""
         print()
-        print("🖥️  UnityBrain CLI v4.1.5")
+        print("🖥️  UnityBrain CLI v5")
         print("   P2P Distributed AI Network")
         print()
 
@@ -154,7 +176,7 @@ class UnityBrainShell:
         status = self.client.status()
         if "error" in status:
             print(f"❌ Cannot connect to UnityBrain at {self.client.base}")
-            print(f"   Make sure UnityBrain is running: python3 unitybrain_v4.py <node>")
+            print(f"   Start it with: unitybrain serve")
             print()
             return
 
@@ -458,34 +480,19 @@ class UnityBrainShell:
 
 
 # ============================================================================
-# MAIN
+# HELPER: Load config & create client
 # ============================================================================
 
-def main():
-    import argparse
-    parser = argparse.ArgumentParser(description="UnityBrain CLI — Interactive client")
-    parser.add_argument("node", nargs="?", default="bug", help="Node name (default: bug)")
-    parser.add_argument("--host", default=DEFAULT_HOST, help="UnityBrain host")
-    parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="UnityBrain port")
-    parser.add_argument("--secret", help="P2P secret for auth")
-    parser.add_argument("--query", "-q", help="Single query (non-interactive)")
-    parser.add_argument("--model", "-m", help="Model to use")
-    parser.add_argument("--ensemble", action="store_true", help="Use ensemble consensus")
-    args = parser.parse_args()
-
-    # Try to load config — check ~/.unitybrain first, then relative to script
+def _load_config_and_client(node, host, port, secret):
+    """Load node config and return a UnityBrainClient."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
     config_dirs = [
         os.path.join(os.path.expanduser("~"), ".unitybrain", "config"),
         os.path.join(os.path.dirname(script_dir), "config"),
     ]
 
-    host = args.host
-    port = args.port
-    secret = args.secret
-
     for config_dir in config_dirs:
-        config_path = os.path.join(config_dir, f"{args.node}.json")
+        config_path = os.path.join(config_dir, f"{node}.json")
         if os.path.exists(config_path):
             try:
                 with open(config_path) as f:
@@ -496,22 +503,663 @@ def main():
             except:
                 pass
 
-    client = UnityBrainClient(host=host, port=port, secret=secret)
+    return UnityBrainClient(host=host, port=port, secret=secret)
 
-    # Single query mode
+
+# ============================================================================
+# SUBCOMMAND HANDLERS
+# ============================================================================
+
+def cmd_serve(args):
+    """Start UnityBrain as a headless service (no GUI)."""
+    node = args.node
+    client = _load_config_and_client(node, args.host, args.port, args.secret)
+    status = client.status()
+    if "error" not in status:
+        print(f"✅ UnityBrain service already running at {client.base}")
+        print(f"   Node: {status.get('node', '?')}, v{status.get('version', '?')}")
+        return
+
+    # Service not running — try to start it
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    server_script = os.path.join(script_dir, "unitybrain_v4.py")
+    if not os.path.exists(server_script):
+        print(f"❌ Cannot find server script: {server_script}")
+        sys.exit(1)
+
+    import subprocess
+    cmd = [sys.executable, server_script, node]
+    if args.host != DEFAULT_HOST:
+        cmd.extend(["--host", args.host])
+    if args.port != DEFAULT_PORT:
+        cmd.extend(["--port", str(args.port)])
+
+    print(f"🔧 Starting UnityBrain service (node: {node})...")
+    if args.daemon:
+        proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"✅ Service started in background (PID: {proc.pid})")
+        print(f"   API: {client.base}")
+    else:
+        print(f"   Starting in foreground. Press Ctrl+C to stop.")
+        try:
+            subprocess.run(cmd)
+        except KeyboardInterrupt:
+            print("\n🛑 Service stopped.")
+
+
+def cmd_app(args):
+    """Start UnityBrain application (opens browser)."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+
+    # Ensure server is running
+    status = client.status()
+    if "error" in status:
+        print("⚠️  UnityBrain not running. Starting service...")
+        import subprocess
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        server_script = os.path.join(script_dir, "unitybrain_v4.py")
+        subprocess.Popen([sys.executable, server_script, args.node],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        import time as _t
+        for _ in range(10):
+            _t.sleep(1)
+            status = client.status()
+            if "error" not in status:
+                break
+
+    url = f"{client.base}"
+    if args.native:
+        try:
+            import pywebview
+            webview.create_window("UnityBrain", url)
+            webview.start()
+        except ImportError:
+            print("⚠️  pywebview not installed. Opening in browser instead.")
+            import webbrowser
+            webbrowser.open(url)
+    else:
+        import webbrowser
+        print(f"🌐 Opening UnityBrain at {url}")
+        if not args.no_open:
+            webbrowser.open(url)
+        print("   Press Ctrl+C to stop.")
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("\n👋 UnityBrain app closed.")
+
+
+def cmd_sidekick(args):
+    """Start UnityBrain as a system tray sidekick."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+
+    # Ensure server is running
+    status = client.status()
+    if "error" in status:
+        print("⚠️  UnityBrain not running. Starting service...")
+        import subprocess
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        server_script = os.path.join(script_dir, "unitybrain_v4.py")
+        subprocess.Popen([sys.executable, server_script, args.node],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        import time as _t
+        for _ in range(10):
+            _t.sleep(1)
+            status = client.status()
+            if "error" not in status:
+                break
+
+    if args.install:
+        _install_sidekick_autostart()
+        return
+    elif args.uninstall:
+        _uninstall_sidekick_autostart()
+        return
+
+    try:
+        import pystray
+        _run_tray_icon(client)
+    except ImportError:
+        print("⚠️  pystray not installed. Install with: pip install pystray Pillow")
+        print("   Running in minimal mode (no tray icon).")
+        print("   Press Ctrl+C to stop.")
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("\n👋 UnityBrain sidekick stopped.")
+
+
+def _run_tray_icon(client):
+    """Run the system tray icon."""
+    from PIL import Image, ImageDraw
+
+    def create_icon_image():
+        img = Image.new('RGB', (64, 64), color=(0, 0, 0, 0))
+        dc = ImageDraw.Draw(img)
+        dc.ellipse([8, 8, 56, 56], fill='#4CAF50')
+        return img
+
+    def on_open(icon, item):
+        import webbrowser
+        webbrowser.open(client.base)
+
+    def on_status(icon, item):
+        status = client.status()
+        if "error" in status:
+            icon.notify("UnityBrain: Disconnected", "UnityBrain")
+        else:
+            peers = status.get("peers", {}).get("available", 0)
+            icon.notify(f"UnityBrain: {peers} peer(s)", "UnityBrain")
+
+    def on_quit(icon, item):
+        icon.stop()
+
+    icon = pystray.Icon(
+        "UnityBrain",
+        create_icon_image(),
+        "UnityBrain",
+        menu=pystray.Menu(
+            pystray.MenuItem("💬 Open Chat", on_open),
+            pystray.MenuItem("📊 Status", on_status),
+            pystray.Menu.SEPARATOR,
+            pystray.MenuItem("❌ Quit", on_quit),
+        ),
+    )
+    icon.run()
+
+
+def _install_sidekick_autostart():
+    """Install sidekick as autostart entry."""
+    autostart_dir = os.path.expanduser("~/.config/autostart")
+    os.makedirs(autostart_dir, exist_ok=True)
+    desktop_path = os.path.join(autostart_dir, "unitybrain-sidekick.desktop")
+    content = f"""[Desktop Entry]
+Type=Application
+Name=UnityBrain Sidekick
+Comment=UnityBrain P2P AI Network - System Tray
+Exec={sys.executable} {os.path.abspath(sys.argv[0])} sidekick
+Icon=unitybrain
+Terminal=false
+Categories=Network;AI;
+"""
+    with open(desktop_path, "w") as f:
+        f.write(content)
+    print(f"✅ Sidekick autostart installed: {desktop_path}")
+
+
+def _uninstall_sidekick_autostart():
+    """Remove sidekick autostart entry."""
+    desktop_path = os.path.expanduser("~/.config/autostart/unitybrain-sidekick.desktop")
+    if os.path.exists(desktop_path):
+        os.remove(desktop_path)
+        print("✅ Sidekick autostart removed.")
+    else:
+        print("ℹ️  No sidekick autostart found.")
+
+
+def cmd_chat(args):
+    """Start interactive terminal chat (REPL)."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    shell = UnityBrainShell(client)
+    if args.model:
+        shell.default_model = args.model
+    shell.run()
+
+
+def cmd_ask(args):
+    """Send a single query and print the response."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    strategy = "ensemble" if args.ensemble else "auto"
+    result = client.query(args.question, model=args.model, strategy=strategy)
+    if "error" in result:
+        print(f"❌ {result['error']}")
+        sys.exit(1)
+    print(result.get("response", ""))
+
+
+def cmd_status(args):
+    """Show node status."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    status = client.status()
+    if "error" in status:
+        print(f"❌ Cannot connect to UnityBrain at {client.base}")
+        print(f"   Make sure UnityBrain is running: unitybrain serve")
+        sys.exit(1)
+
+    print(f"📊 UnityBrain v{status.get('version', '?')} — {status.get('node', '?')}")
+    print("─" * 50)
+    print(f"  Uptime:     {status.get('uptime', 0)/3600:.1f}h")
+    print(f"  Share AI:   {'Yes ✅' if status.get('share_ai') else 'No 🔇'}")
+    print(f"  Stealth:    {'Yes 🔒' if status.get('stealth_mode') else 'No'}")
+    peers = status.get("peers", {})
+    print(f"  Peers:      {peers.get('available', 0)}/{peers.get('total', 0)} available")
+    queries = status.get("queries", {})
+    print(f"  Queries:    {queries.get('total', 0)} ({queries.get('rate', 0):.1f}% success)")
+    memory = status.get("memory", {})
+    print(f"  Memory:     {memory.get('active_entries', 0)}/{memory.get('total_entries', 0)} entries")
+    models = status.get("local_models", [])
+    if models:
+        print(f"  Models:     {', '.join(models[:5])}")
+
+
+def cmd_peers(args):
+    """List connected peers."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    peers = client.peers()
+    if isinstance(peers, dict) and "error" in peers:
+        print(f"❌ {peers['error']}")
+        sys.exit(1)
+    if not peers:
+        print("No peers connected.")
+        return
+
+    print("🌐 Connected Peers:")
+    print("─" * 50)
+    for p in peers:
+        name = p.get("name", "?")
+        host = p.get("host", "?")
+        port = p.get("port", "?")
+        models = p.get("models", [])
+        latency = p.get("latency_ms", "?")
+        status_icon = "✅" if p.get("available") else "❌"
+        print(f"  {status_icon} {name} ({host}:{port}) {latency}ms")
+        if models:
+            print(f"     Models: {', '.join(models[:4])}")
+
+
+def cmd_share(args):
+    """Share a model with the public mesh."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    result = client._request(f"/api/models/{args.model}/share", method="POST")
+    if "error" in result:
+        print(f"❌ {result['error']}")
+        sys.exit(1)
+    print(f"✅ Model '{args.model}' is now shared with the public mesh.")
+
+
+def cmd_unshare(args):
+    """Stop sharing a model with the public mesh."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    result = client._request(f"/api/models/{args.model}/unshare", method="POST")
+    if "error" in result:
+        print(f"❌ {result['error']}")
+        sys.exit(1)
+    print(f"✅ Model '{args.model}' is no longer shared.")
+
+
+def cmd_shared(args):
+    """List models currently shared with the public mesh."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    result = client._request("/api/models")
+    if "error" in result:
+        print(f"❌ {result['error']}")
+        sys.exit(1)
+
+    shared = [m for m in result if isinstance(m, dict) and m.get("shared")]
+    if not shared:
+        print("No models currently shared with the mesh.")
+        return
+
+    print("🌐 Shared Models:")
+    print("─" * 40)
+    for m in shared:
+        name = m.get("name", "?")
+        size = m.get("size_mb", "?")
+        print(f"  🟢 {name} ({size} MB)")
+
+
+def cmd_download(args):
+    """Download a model from the mesh."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    result = client._request(f"/api/models/{args.model}/download", method="POST")
+    if "error" in result:
+        print(f"❌ {result['error']}")
+        sys.exit(1)
+    print(f"⬇️  Downloading model '{args.model}' from the mesh...")
+    # Poll for status
+    import time as _t
+    while True:
+        status = client._request(f"/api/models/{args.model}/download/status")
+        if isinstance(status, dict) and status.get("done"):
+            print(f"✅ Model '{args.model}' downloaded successfully.")
+            break
+        elif isinstance(status, dict) and "error" in status:
+            print(f"❌ Download failed: {status['error']}")
+            sys.exit(1)
+        progress = status.get("progress", "?") if isinstance(status, dict) else "?"
+        print(f"   Progress: {progress}%...", end="\r")
+        _t.sleep(2)
+
+
+def cmd_mesh_join(args):
+    """Join the public mesh."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    data = {"tracker_url": args.tracker} if args.tracker else {}
+    result = client._request("/api/network/mesh/join", data=data, method="POST")
+    if "error" in result:
+        print(f"❌ {result['error']}")
+        sys.exit(1)
+    print("✅ Joined the public mesh!")
+    if result.get("tracker"):
+        print(f"   Tracker: {result['tracker']}")
+    if result.get("nodes"):
+        print(f"   Discovered {result['nodes']} node(s)")
+
+
+def cmd_mesh_leave(args):
+    """Leave the public mesh."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    result = client._request("/api/network/mesh/leave", method="POST")
+    if "error" in result:
+        print(f"❌ {result['error']}")
+        sys.exit(1)
+    print("✅ Left the public mesh.")
+
+
+def cmd_mesh_status(args):
+    """Show public mesh status."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+    result = client._request("/api/network/mesh/nodes")
+    if "error" in result:
+        print(f"❌ {result['error']}")
+        sys.exit(1)
+
+    if not result or (isinstance(result, list) and len(result) == 0):
+        print("No mesh nodes discovered.")
+        return
+
+    nodes = result if isinstance(result, list) else result.get("nodes", [])
+    print(f"🌐 Public Mesh — {len(nodes)} node(s)")
+    print("─" * 50)
+    for n in nodes:
+        name = n.get("node_id", n.get("name", "?"))[:16]
+        caps = n.get("capabilities", {})
+        models = n.get("models", caps.get("models", []))
+        latency = n.get("latency_ms", "?")
+        score = n.get("score", "?")
+        print(f"  🟢 {name}")
+        if models:
+            print(f"     Models: {', '.join(models[:3])}")
+        print(f"     Latency: {latency}ms | Score: {score}")
+
+
+def cmd_conversations(args):
+    """List or inspect conversations."""
+    client = _load_config_and_client(args.node, args.host, args.port, args.secret)
+
+    if args.id:
+        # Get specific conversation
+        result = client._request(f"/api/conversations/{args.id}")
+        if "error" in result:
+            print(f"❌ {result['error']}")
+            sys.exit(1)
+
+        if args.export:
+            export_result = client._request(f"/api/conversations/{args.id}/export", method="POST")
+            if "error" in export_result:
+                print(f"❌ Export failed: {export_result['error']}")
+                sys.exit(1)
+            print(export_result.get("content", json.dumps(export_result, indent=2)))
+            return
+
+        # Show conversation details
+        messages = result.get("messages", [])
+        print(f"💬 Conversation: {args.id}")
+        print("─" * 50)
+        for msg in messages:
+            role = msg.get("role", "?")
+            content = msg.get("content", "")[:200]
+            icon = "🧑" if role == "user" else "🤖"
+            print(f"  {icon} {content}")
+            print()
+    else:
+        # List conversations
+        result = client._request("/api/conversations")
+        if "error" in result:
+            print(f"❌ {result['error']}")
+            sys.exit(1)
+
+        conversations = result if isinstance(result, list) else result.get("conversations", [])
+        if not conversations:
+            print("No conversations yet.")
+            return
+
+        print(f"💬 Conversations ({len(conversations)}):")
+        print("─" * 50)
+        for conv in conversations:
+            conv_id = conv.get("id", "?")
+            created = conv.get("created", "?")
+            metadata = conv.get("metadata", {})
+            model = metadata.get("model", "?")
+            tags = metadata.get("tags", [])
+            msg_count = len(conv.get("messages", []))
+            tag_str = f" [{', '.join(tags)}]" if tags else ""
+            print(f"  📝 {conv_id}  ({msg_count} msgs, {model}){tag_str}")
+
+
+def cmd_install_service(args):
+    """Install UnityBrain as a systemd service."""
+    service_content = """[Unit]
+Description=UnityBrain P2P AI Network
+After=network.target ollama.service
+Wants=ollama.service
+
+[Service]
+Type=simple
+User={user}
+Group={user}
+WorkingDirectory={workdir}
+ExecStart={python} {server} {node}
+Restart=always
+RestartSec=5
+Environment=OLLAMA_HOST=127.0.0.1:11434
+
+[Install]
+WantedBy=multi-user.target
+""".format(
+        user=os.environ.get("USER", "unitybrain"),
+        workdir=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        python=sys.executable,
+        server=os.path.abspath(os.path.join(os.path.dirname(__file__), "unitybrain_v4.py")),
+        node=args.node,
+    )
+
+    print("📝 Service file content:")
+    print(service_content)
+    print()
+    print("To install, run:")
+    print(f"  sudo tee /etc/systemd/system/unitybrain.service << 'EOF'\n{service_content}EOF")
+    print("  sudo systemctl daemon-reload")
+    print("  sudo systemctl enable unitybrain")
+    print("  sudo systemctl start unitybrain")
+
+
+def cmd_uninstall_service(args):
+    """Uninstall UnityBrain systemd service."""
+    print("To uninstall the service, run:")
+    print("  sudo systemctl stop unitybrain")
+    print("  sudo systemctl disable unitybrain")
+    print("  sudo rm /etc/systemd/system/unitybrain.service")
+    print("  sudo systemctl daemon-reload")
+
+
+# ============================================================================
+# MAIN
+# ============================================================================
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="UnityBrain CLI — P2P Distributed AI Network",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""\
+Modes:
+  unitybrain serve              Start headless service
+  unitybrain app                Start application (opens browser)
+  unitybrain sidekick           Start system tray sidekick
+  unitybrain chat               Interactive terminal chat (REPL)
+  unitybrain ask "question"     Single query
+
+Models:
+  unitybrain share <model>      Share a model with the mesh
+  unitybrain unshare <model>    Stop sharing a model
+  unitybrain shared             List shared models
+  unitybrain download <model>   Download a model from the mesh
+
+Mesh:
+  unitybrain mesh join          Join the public mesh
+  unitybrain mesh leave         Leave the public mesh
+  unitybrain mesh status        Show mesh status
+
+Conversations:
+  unitybrain conversations           List conversations
+  unitybrain conversations <id>      Show a conversation
+  unitybrain conversations <id> export  Export a conversation
+
+Service:
+  unitybrain status              Show node status
+  unitybrain peers               List connected peers
+  unitybrain install-service     Install as systemd service
+  unitybrain uninstall-service   Uninstall systemd service
+"""
+    )
+
+    # Global options
+    parser.add_argument("--host", default=DEFAULT_HOST, help="UnityBrain host (default: %(default)s)")
+    parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="UnityBrain port (default: %(default)s)")
+    parser.add_argument("--secret", help="P2P secret for auth")
+
+    subparsers = parser.add_subparsers(dest="command", help="Command to run")
+
+    # --- serve ---
+    p_serve = subparsers.add_parser("serve", help="Start as headless service")
+    p_serve.add_argument("node", nargs="?", default="bug", help="Node name (default: bug)")
+    p_serve.add_argument("--daemon", action="store_true", help="Run in background")
+    p_serve.set_defaults(func=cmd_serve)
+
+    # --- app ---
+    p_app = subparsers.add_parser("app", help="Start application (opens browser)")
+    p_app.add_argument("node", nargs="?", default="bug", help="Node name (default: bug)")
+    p_app.add_argument("--native", action="store_true", help="Use native window (pywebview)")
+    p_app.add_argument("--no-open", action="store_true", help="Don't open browser")
+    p_app.set_defaults(func=cmd_app)
+
+    # --- sidekick ---
+    p_sidekick = subparsers.add_parser("sidekick", help="Start system tray sidekick")
+    p_sidekick.add_argument("node", nargs="?", default="bug", help="Node name (default: bug)")
+    p_sidekick.add_argument("--install", action="store_true", help="Install sidekick as autostart")
+    p_sidekick.add_argument("--uninstall", action="store_true", help="Uninstall sidekick autostart")
+    p_sidekick.set_defaults(func=cmd_sidekick)
+
+    # --- chat ---
+    p_chat = subparsers.add_parser("chat", help="Interactive terminal chat (REPL)")
+    p_chat.add_argument("node", nargs="?", default="bug", help="Node name (default: bug)")
+    p_chat.add_argument("--model", "-m", help="Default model to use")
+    p_chat.set_defaults(func=cmd_chat)
+
+    # --- ask ---
+    p_ask = subparsers.add_parser("ask", help="Send a single query")
+    p_ask.add_argument("question", help="Question to ask")
+    p_ask.add_argument("--model", "-m", help="Model to use")
+    p_ask.add_argument("--ensemble", action="store_true", help="Use ensemble consensus")
+    p_ask.set_defaults(func=cmd_ask)
+
+    # --- status ---
+    p_status = subparsers.add_parser("status", help="Show node status")
+    p_status.add_argument("node", nargs="?", default="bug", help="Node name (default: bug)")
+    p_status.set_defaults(func=cmd_status)
+
+    # --- peers ---
+    p_peers = subparsers.add_parser("peers", help="List connected peers")
+    p_peers.add_argument("node", nargs="?", default="bug", help="Node name (default: bug)")
+    p_peers.set_defaults(func=cmd_peers)
+
+    # --- share ---
+    p_share = subparsers.add_parser("share", help="Share a model with the mesh")
+    p_share.add_argument("model", help="Model name to share")
+    p_share.set_defaults(func=cmd_share)
+
+    # --- unshare ---
+    p_unshare = subparsers.add_parser("unshare", help="Stop sharing a model")
+    p_unshare.add_argument("model", help="Model name to unshare")
+    p_unshare.set_defaults(func=cmd_unshare)
+
+    # --- shared ---
+    p_shared = subparsers.add_parser("shared", help="List shared models")
+    p_shared.set_defaults(func=cmd_shared)
+
+    # --- download ---
+    p_download = subparsers.add_parser("download", help="Download a model from the mesh")
+    p_download.add_argument("model", help="Model name to download")
+    p_download.set_defaults(func=cmd_download)
+
+    # --- mesh subcommands ---
+    p_mesh = subparsers.add_parser("mesh", help="Public mesh commands")
+    mesh_sub = p_mesh.add_subparsers(dest="mesh_command", help="Mesh subcommand")
+
+    p_mesh_join = mesh_sub.add_parser("join", help="Join the public mesh")
+    p_mesh_join.add_argument("--tracker", help="Tracker URL")
+    p_mesh_join.set_defaults(func=cmd_mesh_join)
+
+    p_mesh_leave = mesh_sub.add_parser("leave", help="Leave the public mesh")
+    p_mesh_leave.set_defaults(func=cmd_mesh_leave)
+
+    p_mesh_status = mesh_sub.add_parser("status", help="Show mesh status")
+    p_mesh_status.set_defaults(func=cmd_mesh_status)
+
+    # --- conversations ---
+    p_conv = subparsers.add_parser("conversations", help="List or inspect conversations")
+    p_conv.add_argument("id", nargs="?", default=None, help="Conversation ID")
+    p_conv.add_argument("--export", action="store_true", help="Export conversation")
+    p_conv.set_defaults(func=cmd_conversations)
+
+    # --- install-service ---
+    p_install = subparsers.add_parser("install-service", help="Install as systemd service")
+    p_install.add_argument("node", nargs="?", default="bug", help="Node name (default: bug)")
+    p_install.set_defaults(func=cmd_install_service)
+
+    # --- uninstall-service ---
+    p_uninstall = subparsers.add_parser("uninstall-service", help="Uninstall systemd service")
+    p_uninstall.set_defaults(func=cmd_uninstall_service)
+
+    # --- Legacy positional args for backward compat ---
+    parser.add_argument("legacy_node", nargs="?", default=None, help=argparse.SUPPRESS)
+    parser.add_argument("--query", "-q", help="Single query (legacy mode)")
+    parser.add_argument("--model-legacy", "-m", dest="model_legacy", help=argparse.SUPPRESS)
+    parser.add_argument("--ensemble", action="store_true", help=argparse.SUPPRESS)
+
+    args = parser.parse_args()
+
+    # If a subcommand was given, run it
+    if hasattr(args, "func") and args.func:
+        # For subcommands that need node, inject --host/--port/--secret
+        args.host = args.host if hasattr(args, 'host') else DEFAULT_HOST
+        args.port = args.port if hasattr(args, 'port') else DEFAULT_PORT
+        args.secret = args.secret if hasattr(args, 'secret') else None
+        args.func(args)
+        return
+
+    # Legacy fallback: no subcommand
+    node = args.legacy_node or "bug"
+    client = _load_config_and_client(node, args.host, args.port, args.secret)
+
     if args.query:
+        model = args.model_legacy
         strategy = "ensemble" if args.ensemble else "auto"
-        result = client.query(args.query, model=args.model, strategy=strategy)
+        result = client.query(args.query, model=model, strategy=strategy)
         if "error" in result:
             print(f"❌ {result['error']}")
             sys.exit(1)
         print(result.get("response", ""))
         sys.exit(0)
 
-    # Interactive mode
+    # Default: interactive chat
     shell = UnityBrainShell(client)
-    if args.model:
-        shell.default_model = args.model
+    if args.model_legacy:
+        shell.default_model = args.model_legacy
     shell.run()
 
 

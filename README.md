@@ -8,8 +8,12 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-100%25_Decentralized-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
 [![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![Specialist](https://img.shields.io/badge/specialist-12_schemas-orange.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![Website](https://img.shields.io/badge/website-unitybrain.ai-blue.svg)](https://dnshouet-cpu.github.io/Unitybrain)
 
-**Lightweight P2P distributed AI network.** No central server. No accounts. No premium tier. Connect machines, share models, sync memory.
+**Lightweight P2P distributed AI network.** No central server. No accounts. No premium tier. Connect machines, share models, sync memory. **v5.1: Multi-LLM specialist routing — auto-detect prompt type, route to the best model.**
+
+🌐 **[Website & Live Demo →](https://dnshouet-cpu.github.io/Unitybrain)**
 
 > 🌍 [English](./docs/README_EN.md) · 🇫🇷 [Français](./docs/README_FR.md) · 🇪🇸 [Español](./docs/README_ES.md) · 🇩🇪 [Deutsch](./docs/README_DE.md) · 🇯🇵 [日本語](./docs/README_JA.md) · 🇷🇺 [Русский](./docs/README_RU.md) · 🇨🇳 [简体中文](./docs/README_ZH.md)
 
@@ -76,13 +80,16 @@ Every AI tool wants your email, your phone number, and $20/month. Cloud APIs loc
 | | What you get |
 |---|---|
 | **LLM Providers** | Ollama · OpenAI · Anthropic · Any OpenAI-compatible API (LM Studio, vLLM, etc.) — plug in your keys, models are shared across the P2P network |
+| **Specialist Router** | 12 specialty schemas (code, reasoning, creative, math, etc.) — auto-detect prompt type → best model · 6 multi-LLM modes (single, vote, chain, fuse, compare, specialist) |
 | **P2P Communication** | Bidirectional WebSocket (`/ws`) + HTTP REST — real-time sync with gossip protocol |
 | **Distributed Memory** | CRDT-based conflict-free state · Vector clocks · Gossip propagation · TTL support |
 | **Decentralized Auth** | Ed25519 identity · HMAC shared secret · Web of Trust (PGP-like) · Stealth mode |
-| **AI Routing** | Local models first → cloud on demand → peer failover · Ensemble consensus · Circuit breakers |
+| **AI Routing** | Local models first → cloud on demand → peer failover · Ensemble consensus · Circuit breakers · Adaptive scheduler |
+| **Resource Guard** | Auto-pause sharing when CPU/RAM thresholds exceeded · Graceful degradation |
 | **Sharing Quotas** | Score-based query limits — **the more you share, the more you can use** |
-| **Auto-Discovery** | Static config · Tailscale auto-discovery · Dynamic API registration |
+| **Auto-Discovery** | Static config · Tailscale auto-discovery · mDNS · Dynamic API registration |
 | **Interactive CLI** | `unitybrain` command — chat with AI, manage memory, check peers and quotas |
+| **Web UI** | 🌍 9 languages · Chat with specialist/multi-LLM controls · Share dashboard · Network monitor · Config panel |
 | **Stats** | ⚡ 0.16s startup · 💾 17MB RAM · 📦 4 dependencies (aiohttp, psutil, PyYAML, PyNaCl optional) |
 
 ---
@@ -110,7 +117,7 @@ unitybrain start        # Start P2P server
 
 ```bash
 pip install aiohttp psutil
-python3 src/unitybrain_v4.py mynode
+python3 src/unitybrain_v5.py mynode
 ```
 
 ### Connect Your Network
@@ -225,7 +232,10 @@ unitybrain --ensemble         # Multi-model consensus
 | GET | `/api/memory/{key}` | No | Read a memory entry |
 | POST | `/api/memory/set` | Yes | Write a memory entry |
 | POST | `/api/memory/push` | Yes | Push memory entries (sync) |
-| POST | `/api/query` | Yes | Query AI models |
+| POST | `/api/query` | Yes | Query AI models (supports `specialty`, `models`, `specialties` params) |
+| POST | `/api/multi` | Yes | Multi-LLM query (vote, chain, fuse, compare, specialist modes) |
+| GET | `/api/specialties` | No | List all specialty schemas and their keywords |
+| GET | `/api/specialties/{name}/models` | No | Best models for a given specialty |
 | POST | `/api/brain/chain` | Yes | Chain multiple AI queries |
 | POST | `/api/trust/sign` | Yes | Sign a peer's key (Web of Trust) |
 
@@ -322,13 +332,66 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=%h/.unitybrain/src
-ExecStart=%h/.unitybrain/venv/bin/python3 unitybrain_v4.py mynode
+ExecStart=%h/.unitybrain/venv/bin/python3 unitybrain_v5.py mynode
 Restart=always
 RestartSec=5
 Environment=PYTHONPATH=%h/.unitybrain/src
 
 [Install]
 WantedBy=default.target
+```
+
+---
+
+## 🎯 Specialist Router (v5.1)
+
+UnityBrain auto-detects what kind of prompt you're sending and routes it to the best model.
+
+### 12 Specialty Schemas
+
+| Specialty | Detects | Best model (default) |
+|-----------|---------|---------------------|
+| **Code** | `python`, `function`, `debug`, `implement` | deepseek-v3.1:671b |
+| **Reasoning** | `analyze`, `explain`, `compare`, `evaluate` | deepseek-v3.1:671b |
+| **Creative** | `write`, `story`, `poem`, `creative` | glm-5.1:cloud |
+| **Math** | `calculate`, `equation`, `theorem`, `proof` | deepseek-v3.1:671b |
+| **Conversation** | casual chat, greetings | glm-5.1:cloud |
+| **General** | default fallback | glm-5.1:cloud |
+| **Multilingual** | `translate`, language detection | glm-5.1:cloud |
+| **Tool Use** | `api`, `curl`, `http` | qwen3-coder-next |
+| **Instruction** | step-by-step, how-to | glm-5.1:cloud |
+| **Science** | `research`, `hypothesis`, `experiment` | deepseek-v3.1:671b |
+| **Data** | `csv`, `json`, `parse`, `dataset` | deepseek-v3.1:671b |
+| **Security** | `encrypt`, `vulnerability`, `pentest` | deepseek-v3.1:671b |
+
+### 6 Multi-LLM Modes
+
+| Mode | How it works |
+|------|-------------|
+| **1️⃣ Single** | One model responds (default) |
+| **🗳️ Vote** | 3 models respond → best answer wins |
+| **🔗 Chain** | Model A → refines → Model B → final |
+| **🔀 Fuse** | 3 models → merged synthesis |
+| **⚖️ Compare** | 2+ models side by side |
+| **🎯 Specialist** | Auto-detect specialty → best model per specialty |
+
+### Quick Examples
+
+```bash
+# Auto-detect specialty
+unitybrain -q "Write a Python web scraper"
+
+# Force code specialty
+curl -X POST http://localhost:8080/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Sort this array","specialty":"code"}'
+
+# Compare two models
+unitybrain --multi compare -q "Explain quantum entanglement"
+
+# Multi-model vote
+curl -X POST http://localhost:8080/api/multi \
+  -d '{"prompt":"Best approach for microservices?","mode":"vote","models":["deepseek-v3.1:671b-cloud","glm-5.1:cloud","qwen3-coder-next:cloud"]}'
 ```
 
 ---

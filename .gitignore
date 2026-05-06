@@ -2,3 +2,12 @@
 __pycache__/
 logs/*.log
 logs/*.jsonl
+
+# Secrets (use P2P_SECRET env var instead)
+P2P_SECRET
+*.secret
+.env
+
+# CRIT-01 fix: Config files may contain secrets
+config/bug.json
+config/pinky.json

@@ -2,7 +2,33 @@
 
 All notable changes to UnityBrain will be documented in this file.
 
-## [4.2.0] - 2026-05-05
+## [5.1.0] - 2026-05-06
+
+### Added
+- 🎯 **Model Specialist System** — Spécialités et sélection multi-LLM
+  - `ModelSpecialty` enum: code, reasoning, creative, math, conversation, general, multilingual, vision, audio, embedding, tool_use, instruction
+  - `ModelProfile` — profil complet par modèle (spécialités, forces, limites, taille, vitesse, qualité)
+  - `SpecialistRouter` — routeur intelligent qui auto-detecte la spécialité depuis le prompt
+  - `MultiModelExecutor` — exécution multi-modèles avec 6 modes: single, vote, chain, fuse, compare, specialist
+  - 9 profils par défaut (glm-5.1, deepseek-v3.1, qwen3-coder, qwen3:8b, llama3.1, mistral, codellama, gpt-4o, claude-sonnet-4)
+  - Auto-détection par mots-clés avec scoring par spécificité
+  - Sélection forcée par spécialité, par modèle, ou par multiple spécialités
+
+### New API Endpoints
+- `GET /api/specialties` — Liste toutes les spécialités et leurs modèles
+- `GET /api/specialties/{name}/models` — Modèles pour une spécialité
+- `POST /api/multi` — Requête multi-modèles (vote, chain, fuse, compare, specialist)
+
+### Enhanced
+- `POST /api/query` — Nouveaux paramètres: `specialty`, `models`, `specialties` pour le routage par spécialité
+- Auto-détection: "Write a Python scraper" → route vers deepseek (code), "Explain physics" → glm (reasoning)
+- Fuzzy matching: "deepseek" → "deepseek-v3.1:671b-cloud"
+
+### Tests
+- 67 nouveaux tests pour model_specialist (auto-detection, sélection, routing, multi-model executor)
+- Total: 518 tests passing
+
+## [5.0.0] - 2026-05-05
 
 ### Added
 - 📡 **mDNS Zero-Config Discovery** — `ZeroConfigDiscovery` class: UDP broadcast + multicast for automatic LAN peer discovery. No IP config needed.

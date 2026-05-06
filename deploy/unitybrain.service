@@ -1,0 +1,49 @@
+[Unit]
+Description=UnityBrain P2P AI Network
+Documentation=https://github.com/unitybrain/unitybrain
+After=network.target ollama.service
+Wants=ollama.service
+
+[Service]
+Type=simple
+User=unitybrain
+Group=unitybrain
+WorkingDirectory=/opt/unitybrain
+ExecStart=/usr/local/bin/unitybrain serve --config /etc/unitybrain/config.json
+Restart=always
+RestartSec=5
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+# Environment
+Environment=OLLAMA_HOST=127.0.0.1:11434
+EnvironmentFile=-/etc/unitybrain/env
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/unitybrain /var/log/unitybrain /run/unitybrain
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=512
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=unitybrain
+
+[Install]
+WantedBy=multi-user.target

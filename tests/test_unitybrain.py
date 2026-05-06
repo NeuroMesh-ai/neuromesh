@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tests Unitaires - UnityBrain v3.0
+Tests Unitaires - UnityBrain v5.0.0
 """
 
 import asyncio
@@ -13,296 +13,173 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.unitybrain_v3_final import (
+from src.unitybrain_v5 import (
     UnityBrain,
     Peer,
-    Model,
-    Query,
-    QueryResult,
-    QueryHistory,
-    ReputationSystem,
-    ConsensusManager
+    RateLimiter,
+    SharingQuota,
+    CircuitBreaker,
+    NodeIdentity,
+    VectorClock,
+    CRDTMemory,
+    ModelRouter,
 )
 
 
 # =============================================================================
-# TESTS PEER
+# CONFIG DE TEST
 # =============================================================================
 
-class TestPeer:
-    """Tests de la classe Peer"""
-
-    def test_peer_creation(self):
-        """Test la création d'un peer"""
-        peer = Peer(
-            name="TestPeer",
-            host="127.0.0.1",
-            port=9999,
-            models=["model1", "model2"]
-        )
-
-        assert peer.name == "TestPeer"
-        assert peer.host == "127.0.0.1"
-        assert peer.port == 9999
-        assert peer.models == ["model1", "model2"]
-        assert peer.available is True
-        assert peer.reputation == 1.0
-
-    def test_peer_to_dict(self):
-        """Test la conversion en dictionnaire"""
-        peer = Peer(
-            name="TestPeer",
-            host="127.0.0.1",
-            port=9999,
-            models=["model1"]
-        )
-
-        data = peer.to_dict()
-
-        assert data["name"] == "TestPeer"
-        assert data["host"] == "127.0.0.1"
-        assert data["port"] == 9999
-
-    def test_peer_from_dict(self):
-        """Test la création depuis un dictionnaire"""
-        data = {
-            "name": "TestPeer",
-            "host": "127.0.0.1",
-            "port": 9999,
-            "models": ["model1"],
-            "reputation": 0.95
-        }
-
-        peer = Peer.from_dict(data)
-
-        assert peer.name == "TestPeer"
-        assert peer.host == "127.0.0.1"
-        assert peer.port == 9999
-        assert peer.reputation == 0.95
+TEST_CONFIG = {
+    "node_name": "test_node",
+    "version": "5.0.0",
+    "host": "127.0.0.1",
+    "port": 18080,
+    "ollama_host": "127.0.0.1",
+    "ollama_port": 11434,
+    "local_models": ["test-model:latest"],
+    "stealth_mode": False,
+    "share_ai": False,
+    "rate_limit": 100.0,
+    "rate_burst": 200,
+    "peers": [],
+    "providers": {},
+    "public_mesh": {"enabled": False},
+    "conversation_store": {"enabled": False},
+}
 
 
 # =============================================================================
-# TESTS MODEL
+# TESTS NODE IDENTITY
 # =============================================================================
 
-class TestModel:
-    """Tests de la classe Model"""
+class TestNodeIdentity:
+    def test_create_identity(self):
+        identity = NodeIdentity("test_node", "test_secret")
+        assert identity.name == "test_node"
+        assert identity.fingerprint is not None
 
-    def test_model_creation(self):
-        """Test la création d'un modèle"""
-        model = Model(
-            name="test-model",
-            ollama_name="test-model:latest"
-        )
+    def test_sign_and_verify(self):
+        identity = NodeIdentity("test_node", "test_secret")
+        message = "test_message"
+        signature = identity.sign(message)
+        assert identity.verify(message, signature)
 
-        assert model.name == "test-model"
-        assert model.ollama_name == "test-model:latest"
-        assert model.available is True
-        assert model.latency == 0.0
-
-
-# =============================================================================
-# TESTS QUERY HISTORY
-# =============================================================================
-
-class TestQueryHistory:
-    """Tests de QueryHistory"""
-
-    def test_query_history_creation(self):
-        """Test la création de l'historique"""
-        history = QueryHistory(max_size=100)
-
-        assert history.max_size == 100
-        assert len(history.queries) == 0
-
-    def test_query_history_add(self):
-        """Test l'ajout d'une query"""
-        history = QueryHistory()
-
-        query = Query(
-            prompt="Test prompt",
-            models=["model1"],
-            use_ensemble=False
-        )
-        result = QueryResult(
-            status="success",
-            response="Test response",
-            peer="TestPeer",
-            model="model1",
-            latency=100
-        )
-
-        history.add(query, result)
-
-        assert len(history.queries) == 1
-        assert history.queries[0].prompt == "Test prompt"
-
-    def test_query_history_export(self):
-        """Test l'export"""
-        history = QueryHistory()
-
-        query = Query(
-            prompt="Test",
-            models=["model1"],
-            use_ensemble=False
-        )
-        result = QueryResult(
-            status="success",
-            response="Test response",
-            peer="TestPeer",
-            model="model1",
-            latency=100
-        )
-
-        history.add(query, result)
-
-        # Export JSON
-        json_data = history.export("json")
-        assert len(json_data) == 1
-
-        # Export CSV
-        csv_data = history.export("csv")
-        assert "Test" in csv_data
+    def test_verify_wrong_message(self):
+        identity = NodeIdentity("test_node", "test_secret")
+        signature = identity.sign("message1")
+        assert not identity.verify("message2", signature)
 
 
 # =============================================================================
-# TESTS REPUTATION SYSTEM
+# TESTS RATE LIMITER
 # =============================================================================
 
-class TestReputationSystem:
-    """Tests de ReputationSystem"""
+class TestRateLimiter:
+    def test_allow_within_limit(self):
+        limiter = RateLimiter(rate=100.0, burst=10)
+        assert limiter.allow("client1")
 
-    def test_reputation_creation(self):
-        """Test la création"""
-        system = ReputationSystem()
-
-        assert system.default_reputation == 1.0
-        assert system.min_reputation == 0.0
-        assert system.max_reputation == 1.0
-
-    def test_reputation_add_vote(self):
-        """Test l'ajout d'un vote"""
-        system = ReputationSystem()
-
-        system.add_vote("TestPeer", 0.9)
-
-        assert system.get_reputation("TestPeer") == 0.9
-
-    def test_reputation_average(self):
-        """Test la moyenne des votes"""
-        system = ReputationSystem()
-
-        system.add_vote("TestPeer", 0.8)
-        system.add_vote("TestPeer", 0.9)
-
-        assert system.get_reputation("TestPeer") == 0.85
-
-    def test_reputation_ban(self):
-        """Test le ban"""
-        system = ReputationSystem()
-
-        system.add_vote("BadPeer", 0.2)
-        system.add_vote("BadPeer", 0.1)
-
-        assert system.is_banned("BadPeer")
+    def test_allow_burst(self):
+        limiter = RateLimiter(rate=1.0, burst=5)
+        results = [limiter.allow("client1") for _ in range(5)]
+        assert all(results)
 
 
 # =============================================================================
-# TESTS CONSENSUS MANAGER
+# TESTS CIRCUIT BREAKER
 # =============================================================================
 
-class TestConsensusManager:
-    """Tests de ConsensusManager"""
+class TestCircuitBreaker:
+    def test_initial_state(self):
+        cb = CircuitBreaker()
+        assert cb.can_execute()
 
-    def test_consensus_creation(self):
-        """Test la création"""
-        manager = ConsensusManager(
-            consensus_threshold=0.7,
-            max_voters=10
-        )
-
-        assert manager.consensus_threshold == 0.7
-        assert manager.max_voters == 10
-
-    def test_consensus_simple_majority(self):
-        """Test consensus majorité simple"""
-        manager = ConsensusManager(consensus_threshold=0.6)
-
-        results = [
-            {"peer": "peer1", "model": "model1", "response": "Réponse 1", "quality": 0.8},
-            {"peer": "peer2", "model": "model2", "response": "Réponse 2", "quality": 0.9},
-            {"peer": "peer3", "model": "model3", "response": "Réponse 2", "quality": 0.85},
-        ]
-
-        consensus = manager.consensus_simple_majority(results)
-
-        assert consensus["response"] == "Réponse 2"
-        assert consensus["voters"] == 2
+    def test_opens_after_failures(self):
+        cb = CircuitBreaker(failure_threshold=3)
+        for _ in range(3):
+            cb.record_failure()
+        assert not cb.can_execute()
 
 
 # =============================================================================
-# TESTS UNITYBRAIN (INTEGRATION)
+# TESTS VECTOR CLOCK
 # =============================================================================
 
-@pytest.mark.asyncio
-class TestUnityBrainIntegration:
-    """Tests d'intégration UnityBrain"""
+class TestVectorClock:
+    def test_increment(self):
+        vc = VectorClock("node1")
+        vc.increment()
+        assert vc.clocks.get("node1") == 1
 
-    async def test_unitybrain_creation(self):
-        """Test la création"""
-        unitybrain = UnityBrain()
-
-        assert unitybrain.name == "UnityBrain"
-        assert unitybrain.peers == []
-        assert len(unitybrain.models) > 0
-
-    async def test_unitybrain_add_peer(self):
-        """Test l'ajout d'un peer"""
-        unitybrain = UnityBrain()
-
-        peer = Peer(
-            name="TestPeer",
-            host="127.0.0.1",
-            port=9999,
-            models=["model1"]
-        )
-
-        await unitybrain.add_peer(peer)
-
-        assert len(unitybrain.peers) == 1
-
-    async def test_unitybrain_select_best_peer(self):
-        """Test la sélection du meilleur peer"""
-        unitybrain = UnityBrain()
-
-        peer1 = Peer(
-            name="FastPeer",
-            host="127.0.0.1",
-            port=9999,
-            models=["model1"],
-            latency=10,
-            reputation=1.0
-        )
-        peer2 = Peer(
-            name="SlowPeer",
-            host="127.0.0.1",
-            port=9998,
-            models=["model1"],
-            latency=100,
-            reputation=0.8
-        )
-
-        await unitybrain.add_peer(peer1)
-        await unitybrain.add_peer(peer2)
-
-        best = unitybrain._select_best_peer(["model1"])
-
-        assert best.name == "FastPeer"
+    def test_merge(self):
+        vc1 = VectorClock("node1")
+        vc1.increment()
+        vc2 = VectorClock("node2")
+        vc2.increment()
+        vc1.merge(vc2.clocks)
+        assert vc1.clocks.get("node2") == 1
 
 
 # =============================================================================
-# RUN TESTS
+# TESTS CRDT MEMORY
 # =============================================================================
 
-if __name__ == '__main__':
-    pytest.main([__file__, "-v"])
+class TestCRDTMemory:
+    def test_set_and_get(self):
+        mem = CRDTMemory("node1", max_size=100, default_ttl=3600)
+        mem.set("key1", "value1")
+        assert mem.get("key1") == "value1"
+
+    def test_delete(self):
+        mem = CRDTMemory("node1")
+        mem.set("key1", "value1")
+        assert mem.delete("key1")
+        assert mem.get("key1") is None
+
+
+# =============================================================================
+# TESTS SHARING QUOTA
+# =============================================================================
+
+class TestSharingQuota:
+    def test_get_or_create(self):
+        quota = SharingQuota()
+        info = quota.get_or_create("peer1")
+        assert info["queries_made"] == 0
+
+    def test_record_query(self):
+        quota = SharingQuota()
+        quota.record_query_served("peer1")
+        info = quota.get_or_create("peer1")
+        assert info["queries_served"] == 1
+
+
+# =============================================================================
+# TESTS UNITYBRAIN INIT
+# =============================================================================
+
+class TestUnityBrainInit:
+    def test_init_with_config(self):
+        brain = UnityBrain(TEST_CONFIG)
+        assert brain.node_name == "test_node"
+        assert brain.version == "5.0.0"
+        assert brain.port == 18080
+
+    def test_has_v5_modules(self):
+        brain = UnityBrain(TEST_CONFIG)
+        # Check v5 module attributes exist (may be None if not installed)
+        assert hasattr(brain, 'resource_guard')
+        assert hasattr(brain, 'adaptive_scheduler')
+        assert hasattr(brain, 'conversation_store')
+        assert hasattr(brain, 'model_share_manager')
+        assert hasattr(brain, 'tracker_client')
+
+    def test_status_includes_v5(self):
+        brain = UnityBrain(TEST_CONFIG)
+        status = brain.get_status()
+        assert "resource_guard" in status
+        assert "adaptive_scheduler" in status
+        assert "conversation_store" in status
+        assert "model_share_manager" in status
+        assert "tracker_client" in status

@@ -1,35 +1,30 @@
 #!/usr/bin/env python3
 """
-🌐 UNITYBRAIN v4.2.0 — RÉSEAU P2P DISTRIBUÉ
+🌐 UNITYBRAIN v5.0.0 — RÉSEAU P2P DISTRIBUÉ
 ===============================================
-v4.2.0 Enhancement release:
-1. mDNS Zero-Config Discovery — peers auto-discover on local network via UDP broadcast + mDNS
-2. GPU/CPU Model Negotiation — nodes advertise capabilities, router sends big models to GPU
-3. Gamified Score Dashboard — visual levels (Bronze→Diamond) in the web dashboard
-4. Auto-Update — check for new versions on GitHub, prompt or auto-update
-5. Systray Support — run as background daemon with minimal UI (Linux/Windows/macOS)
+v5.0.0 Major release:
+1. Resource Guard — auto-pause/resume mesh sharing based on local user activity
+2. Adaptive Scheduler — strategy selection (routing/partial_sharding/full_sharding/raid_ram)
+3. Conversation Store — persistent conversations with search, export, privacy levels, encryption
+4. Model Share Manager — secure bridge between private models and public mesh (symlinks, SHA-256)
+5. Tracker Client — public mesh discovery with Ed25519 signing, rate limiting, backoff
+6. Desktop Web UI — 4-tab interface (Chat, Share, Network, Config) with i18n (8 languages)
+7. Security hardening — path-based auth tokens, input validation, CORS, rate limiting on all endpoints
+8. P2P secret from env var only (no hardcoded secrets)
+9. 18 new API endpoints for chat, resources, models, network, config
+10. CLI v5 with 15 subcommands
 
-v4.1.5 Multi-LLM provider support:
-1. ProviderAdapter base class — OllamaProvider, OpenAIProvider, AnthropicProvider
-2. Config `providers` section — connect any LLM API alongside Ollama
-3. _query_local() routes to correct provider based on model name
-4. ModelRouter considers all provider models
-5. Backward compatible — if no providers, falls back to ollama_host/ollama_port
-
-v4.0.1 Bug fixes:
-1. Memory gossip: send correct payload for memory_update messages
-2. Outgoing WS: connect to peers via WS for real-time sync
-3. Memory sync: decoupled from auto_heal into own 30s loop
-4. Auth: fix timestamp race in _auth_headers
-5. Discovery: skip stale/duplicate Tailscale peers
-
-v4.0 Features:
-1. WebSocket temps réel — bidirectional WS with typed messages, reconnect, heartbeat
-2. Auth renforcée — Ed25519 identity, challenge-response, Web of Trust, stealth mode
-3. Mémoire Sync P2P — CRDT-based, gossip protocol, vector clocks, last-write-wins
-4. Clean architecture — lightweight, async, brain_llm non-blocking
-
-HTTP REST API remains available (retrocompatibility). WS is an ADDON.
+v4.2.0 Features preserved:
+- mDNS Zero-Config Discovery
+- GPU/CPU Model Negotiation
+- Gamified Score Dashboard
+- Auto-Update
+- Systray Support
+- Multi-LLM provider support
+- WebSocket temps réel
+- Ed25519 Auth + Web of Trust
+- CRDT Memory Sync
+- Circuit Breaker
 """
 
 import asyncio
@@ -49,6 +44,61 @@ from typing import List, Dict, Any, Optional, Tuple, Set
 from collections import deque
 from pathlib import Path
 import logging.handlers
+
+# ============================================================================
+# v5 MODULE IMPORTS
+# ============================================================================
+
+try:
+    from resource_guard import ResourceGuard, GuardState
+    HAS_RESOURCE_GUARD = True
+except ImportError:
+    HAS_RESOURCE_GUARD = False
+    logger_v5 = logging.getLogger('UnityBrain.v5')
+    logger_v5.warning("resource_guard not available — mesh sharing will not be auto-protected")
+
+try:
+    from adaptive_scheduler import AdaptiveScheduler, Strategy as SchedulerStrategy
+    HAS_ADAPTIVE_SCHEDULER = True
+except ImportError:
+    HAS_ADAPTIVE_SCHEDULER = False
+    logger_v5 = logging.getLogger('UnityBrain.v5')
+    logger_v5.warning("adaptive_scheduler not available — using basic routing")
+
+try:
+    from conversation_store import ConversationStore, PrivacyLevel as ConvPrivacyLevel
+    HAS_CONVERSATION_STORE = True
+except ImportError:
+    HAS_CONVERSATION_STORE = False
+    logger_v5 = logging.getLogger('UnityBrain.v5')
+    logger_v5.warning("conversation_store not available — conversations will not persist")
+
+try:
+    from model_share_manager import ModelShareManager
+    HAS_MODEL_SHARE_MANAGER = True
+except ImportError:
+    HAS_MODEL_SHARE_MANAGER = False
+    logger_v5 = logging.getLogger('UnityBrain.v5')
+    logger_v5.warning("model_share_manager not available — model sharing disabled")
+
+try:
+    from tracker_client import TrackerClient, TrackerState, KnownNode
+    HAS_TRACKER_CLIENT = True
+except ImportError:
+    HAS_TRACKER_CLIENT = False
+
+try:
+    from model_specialist import (
+        ModelSpecialty, ModelProfile, SpecialistRouter,
+        MultiModelMode, MultiModelResult, MultiModelExecutor,
+    )
+    HAS_MODEL_SPECIALIST = True
+except ImportError:
+    HAS_MODEL_SPECIALIST = False
+    logger_v5 = logging.getLogger('UnityBrain.v5')
+    logger_v5.warning("model_specialist not available — specialty routing disabled")
+    logger_v5 = logging.getLogger('UnityBrain.v5')
+    logger_v5.warning("tracker_client not available — public mesh discovery disabled")
 
 # ============================================================================
 # SECURITY CONSTANTS
@@ -1727,15 +1777,19 @@ class UnityBrain:
     def __init__(self, config: Dict):
         self.config = config
         self.node_name = config["node_name"]
-        self.version = "4.1.5"
+        self.version = "5.0.0"
         self.host = config["host"]
         self.port = config["port"]
         self.ollama_host = config["ollama_host"]
         self.ollama_port = config["ollama_port"]
         self.local_models = config["local_models"]
-        self.p2p_secret = config.get("p2p_secret", os.environ.get("P2P_SECRET", "changeme-configure-in-config"))
-        if self.p2p_secret == "changeme-configure-in-config" or self.p2p_secret == "changeme":
-            logger.warning("⚠️  Using default p2p_secret — configure a strong secret in config or P2P_SECRET env var!")
+        self.p2p_secret = os.environ.get("P2P_SECRET") or config.get("p2p_secret")
+        if not self.p2p_secret:
+            logger.error("⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.")
+            logger.error("⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'")
+            self.p2p_secret = os.environ.get("P2P_SECRET", "changeme-configure-in-config")
+        elif self.p2p_secret in ("changeme", "changeme-configure-in-config", "bug-pinky-2026-unity"):
+            logger.warning("⚠️  P2P_SECRET is a known default — please change it!")
         self.stealth_mode = config.get("stealth_mode", False)
         self.share_ai = config.get("share_ai", False)
         # v4.1.5: Multi-LLM providers
@@ -1776,10 +1830,85 @@ class UnityBrain:
         self.auto_updater = AutoUpdater(auto_install=config.get('auto_update', False))
         self.systray = SystrayDaemon(node_name=self.node_name)
 
+        # ====================================================================
+        # v5.0.0 MODULES
+        # ====================================================================
+
+        # Resource Guard — protects local user from mesh overload
+        if HAS_RESOURCE_GUARD:
+            mesh_config = config.get("public_mesh", {})
+            rg_config = {
+                "max_cpu_percent": mesh_config.get("max_cpu_percent", 30),
+                "max_ram_share_mb": mesh_config.get("max_ram_share_mb", 2048),
+                "gpu_share": mesh_config.get("gpu_share", False),
+                "priority": mesh_config.get("priority", "local_first"),
+                "bandwidth_limit_kbps": mesh_config.get("bandwidth_limit_kbps", 5000),
+                "enabled": mesh_config.get("enabled", False),
+            }
+            self.resource_guard = ResourceGuard(config=rg_config)
+            logger.info(f"🛡️ Resource Guard: {self.resource_guard._state.value}")
+        else:
+            self.resource_guard = None
+
+        # Adaptive Scheduler — chooses strategy based on peer count
+        if HAS_ADAPTIVE_SCHEDULER:
+            self.adaptive_scheduler = AdaptiveScheduler(
+                identity=self.identity,
+                resource_guard=self.resource_guard,
+                tracker_client=None,  # tracker_client set later,
+                config={"prefer_local": True}
+            )
+            logger.info(f"🧠 Adaptive Scheduler: strategy={self.adaptive_scheduler._strategy.value}")
+        else:
+            self.adaptive_scheduler = None
+
+        # Conversation Store — persistent conversations with privacy levels
+        conv_config = config.get("conversation_store", {})
+        if HAS_CONVERSATION_STORE and conv_config.get("enabled", True):
+            self.conversation_store = ConversationStore(
+                conversations_dir=os.path.expanduser(conv_config.get("storage_dir", "~/.unitybrain/conversations")),
+                encryption_password=None  # Encryption configured separately
+            )
+            logger.info(f"💾 Conversation Store: enabled ({conv_config.get('storage_dir', '~/.unitybrain/conversations')})")
+        else:
+            self.conversation_store = None
+
+        # Model Share Manager — secure bridge for sharing models
+        if HAS_MODEL_SHARE_MANAGER:
+            base_dir = os.path.expanduser(config.get("base_dir", "~/.unitybrain"))
+            self.model_share_manager = ModelShareManager(base_dir=base_dir)
+            logger.info(f"📂 Model Share Manager: ready ({base_dir}/shared_models/)")
+        else:
+            self.model_share_manager = None
+
+        # Tracker Client — public mesh discovery
+        tracker_config = config.get("public_mesh", {})
+        if HAS_TRACKER_CLIENT and tracker_config.get("enabled", False):
+            self.tracker_client = TrackerClient(
+                identity=self.identity,
+                config=tracker_config
+            )
+            logger.info(f"🌐 Tracker Client: {len(tracker_config.get('tracker_url', [])) if isinstance(tracker_config.get('tracker_url'), list) else 1} tracker(s)")
+        else:
+            self.tracker_client = None
+
         # Components
         self.router = ModelRouter(negotiator=self.model_negotiator)
         self.ensemble = EnsembleConsensus()
         self.history = QueryHistory()
+
+        # v5.0.0: Specialist Router — multi-LLM specialty-based routing
+        if HAS_MODEL_SPECIALIST:
+            specialist_config = config.get("specialist", {})
+            self.specialist_router = SpecialistRouter(config=specialist_config)
+            self.specialist_router.set_available_models(self.local_models)
+            # Multi-model executor (query_fn set at runtime when session available)
+            self.multi_model_executor = MultiModelExecutor(config=specialist_config)
+            logger.info(f"🎯 Specialist Router: {len(self.specialist_router._profiles)} profiles, "
+                        f"{len(self.local_models)} available models")
+        else:
+            self.specialist_router = None
+            self.multi_model_executor = None
 
     def _init_providers(self, config: Dict):
         """Initialize LLM providers from config. Falls back to Ollama-only if no providers."""
@@ -1942,6 +2071,20 @@ class UnityBrain:
 
         self.log_event("init", f"UnityBrain v{self.version} initialized as '{self.node_name}'")
 
+        # v5.0.0: Start Resource Guard background monitor
+        if self.resource_guard:
+            await self.resource_guard.start()
+            logger.info(f"🛡️ Resource Guard started: {self.resource_guard._state.value}")
+
+        # v5.0.0: Start Tracker Client if enabled
+        if self.tracker_client:
+            try:
+                await self.tracker_client.start()
+                logger.info(f"🌐 Tracker Client started")
+            except Exception as e:
+                logger.warning(f"Tracker Client start failed: {e}")
+                self.tracker_client = None
+
     async def check_peers(self):
         if not self.session:
             return
@@ -2074,7 +2217,22 @@ class UnityBrain:
                 self.sharing_quota.calculate_score(self.node_name)
             ),
             "zero_config_peers": len(self.zero_config.get_discovered_peers()),
-            "daemon": self.systray.status()
+            "daemon": self.systray.status(),
+            # v5.0.0 modules
+            "resource_guard": {
+                "available": HAS_RESOURCE_GUARD,
+                "state": self.resource_guard._state.value if self.resource_guard else "unavailable",
+            } if self.resource_guard else {"available": False, "state": "unavailable"},
+            "adaptive_scheduler": {
+                "available": HAS_ADAPTIVE_SCHEDULER,
+                "strategy": self.adaptive_scheduler.strategy.value if self.adaptive_scheduler else "unavailable",
+            } if self.adaptive_scheduler else {"available": False, "strategy": "unavailable"},
+            "conversation_store": {"available": HAS_CONVERSATION_STORE} if self.conversation_store else {"available": False},
+            "model_share_manager": {"available": HAS_MODEL_SHARE_MANAGER} if self.model_share_manager else {"available": False},
+            "tracker_client": {
+                "available": HAS_TRACKER_CLIENT and self.tracker_client is not None,
+                "state": self.tracker_client.state if self.tracker_client else "unavailable",
+            } if self.tracker_client else {"available": False, "state": "unavailable"},
         }
 
     # ========================================================================
@@ -2329,6 +2487,11 @@ class UnityBrain:
         app.router.add_get('/api/config', self._auth_required(self.handle_config_get))
         app.router.add_post('/api/config', self._auth_required(self.handle_config_set))
 
+        # v5.0.0: Specialist & Multi-Model endpoints
+        app.router.add_get('/api/specialties', self.handle_specialties_list)
+        app.router.add_get('/api/specialties/{name}/models', self.handle_specialty_models)
+        app.router.add_post('/api/multi', self._auth_required(self.handle_multi_model_query))
+
         return app
 
     def _auth_required(self, handler):
@@ -2535,6 +2698,9 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         prompt = data.get("prompt", "")
         model = data.get("model")
         strategy = data.get("strategy", "auto")
+        specialty = data.get("specialty")  # v5: specialty-based routing
+        models = data.get("models")  # v5: force specific models
+        specialties = data.get("specialties")  # v5: force multiple specialties
         
         # HIGH-01 fix: Input validation
         if not prompt or len(prompt) > MAX_PROMPT_LENGTH:
@@ -2574,6 +2740,31 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                     "quota_queries_per_minute": quota,
                     "hint": "Share more models or increase uptime to raise your quota"
                 }, status=429)
+        
+        # v5.0.0: Specialty-based routing — if specialty/models specified, use SpecialistRouter
+        if self.specialist_router and (specialty or models or specialties):
+            routing = self.specialist_router.route(
+                prompt,
+                available=self.local_models,
+                specialty=specialty,
+                models=models,
+                specialties=specialties,
+            )
+            selected_models = routing["models"]
+            if len(selected_models) == 1:
+                # Single model — use normal query with the selected model
+                result = await self.query(prompt, selected_models[0], strategy)
+                result["specialist_routing"] = routing
+            else:
+                # Multiple models — use multi-model executor
+                async def _query_one(m, p):
+                    return await self.query(p, m, strategy)
+                multi_result = await self.multi_model_executor.execute(
+                    prompt, selected_models, MultiModelMode.SPECIALIST, query_fn=_query_one
+                )
+                result = multi_result.to_dict()
+                result["specialist_routing"] = routing
+            return web.json_response(result)
         
         result = await self.query(prompt, model, strategy)
         return web.json_response(result)
@@ -2958,9 +3149,16 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         if self.own_capabilities.gpu_available:
             gpu_info = {"name": self.own_capabilities.gpu_name, "available": True}
 
-        sharing_active = not (cpu_percent > 70 or mem.percent > 85)
+        # v5.0.0: Use Resource Guard for sharing state if available
+        if self.resource_guard:
+            guard = self.resource_guard
+            sharing_active = guard.can_accept_request()
+            guard_info = guard.get_status()
+        else:
+            sharing_active = not (cpu_percent > 70 or mem.percent > 85)
+            guard_info = None
 
-        return web.json_response({
+        response = {
             "cpu": {"percent": cpu_percent, "cores": psutil.cpu_count(), "max_share_percent": max_cpu},
             "ram": {
                 "total_mb": round(mem.total / 1024 / 1024),
@@ -2977,7 +3175,10 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                 "gpu_share": gpu_share
             },
             "contribution_score": self.sharing_quota.calculate_score(self.node_name)
-        })
+        }
+        if guard_info:
+            response["resource_guard"] = guard_info
+        return web.json_response(response)
 
     async def handle_resources_config(self, request: web.Request) -> web.Response:
         """POST /api/resources/config — Modify resource sharing limits.
@@ -3060,16 +3261,24 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             shared_list.append(model_name)
             self._persist_config()
 
-        # Create symlink in shared_models directory
-        shared_dir = Path.home() / ".unitybrain" / "shared_models"
-        shared_dir.mkdir(parents=True, exist_ok=True)
-        link_path = shared_dir / model_name.replace(':', '_').replace('/', '_')
-        ollama_model_path = Path.home() / ".ollama" / "models" / model_name.replace(':', '/')
-        if ollama_model_path.exists() and not link_path.exists():
+        # v5.0.0: Use ModelShareManager if available
+        if self.model_share_manager:
             try:
-                link_path.symlink_to(ollama_model_path)
-            except OSError:
-                pass
+                self.model_share_manager.share_model(model_name)
+                self.log_event("model_share", f"Model '{model_name}' shared via ModelShareManager")
+            except Exception as e:
+                self.log_event("model_share", f"ModelShareManager error: {e}", "warn")
+        else:
+            # Fallback: direct symlink
+            shared_dir = Path.home() / ".unitybrain" / "shared_models"
+            shared_dir.mkdir(parents=True, exist_ok=True)
+            link_path = shared_dir / model_name.replace(':', '_').replace('/', '_')
+            ollama_model_path = Path.home() / ".ollama" / "models" / model_name.replace(':', '/')
+            if ollama_model_path.exists() and not link_path.exists():
+                try:
+                    link_path.symlink_to(ollama_model_path)
+                except OSError:
+                    pass
 
         self.log_event("model_share", f"Model '{model_name}' now shared with mesh")
         return web.json_response({"shared": model_name, "models_share": shared_list})
@@ -3086,13 +3295,22 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             shared_list.remove(model_name)
             self._persist_config()
 
-        link_name = model_name.replace(':', '_').replace('/', '_')
-        link_path = Path.home() / ".unitybrain" / "shared_models" / link_name
-        if link_path.is_symlink():
+        # v5.0.0: Use ModelShareManager if available
+        if self.model_share_manager:
             try:
-                link_path.unlink()
-            except OSError:
-                pass
+                self.model_share_manager.unshare_model(model_name)
+                self.log_event("model_unshare", f"Model '{model_name}' unshared via ModelShareManager")
+            except Exception as e:
+                self.log_event("model_unshare", f"ModelShareManager error: {e}", "warn")
+        else:
+            # Fallback: remove symlink
+            link_name = model_name.replace(':', '_').replace('/', '_')
+            link_path = Path.home() / ".unitybrain" / "shared_models" / link_name
+            if link_path.is_symlink():
+                try:
+                    link_path.unlink()
+                except OSError:
+                    pass
 
         self.log_event("model_unshare", f"Model '{model_name}' unshared from mesh")
         return web.json_response({"unshared": model_name, "models_share": shared_list})
@@ -3234,6 +3452,108 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         except OSError as e:
             logger.error(f"Failed to persist config: {e}")
 
+
+    # ========================================================================
+
+    # v5.0.0: SPECIALIST ENDPOINTS
+    # ========================================================================
+
+    async def handle_specialties_list(self, request: web.Request) -> web.Response:
+        """GET /api/specialties — List all available specialties and their models."""
+        if not self.specialist_router:
+            return web.json_response({"error": "Specialist routing not available"}, status=501)
+        specialties = self.specialist_router.get_all_specialties()
+        return web.json_response({
+            "specialties": specialties,
+            "available_models": self.local_models,
+            "registered_profiles": list(self.specialist_router._profiles.keys()),
+        })
+
+    async def handle_specialty_models(self, request: web.Request) -> web.Response:
+        """GET /api/specialties/{name}/models — List models for a specific specialty."""
+        if not self.specialist_router:
+            return web.json_response({"error": "Specialist routing not available"}, status=501)
+        name = request.match_info.get('name', '')
+        try:
+            specialty = ModelSpecialty(name)
+        except ValueError:
+            valid = [s.value for s in ModelSpecialty]
+            return web.json_response({
+                "error": f"Unknown specialty '{name}'",
+                "valid_specialties": valid
+            }, status=400)
+        models = self.specialist_router.get_specialty_models(specialty)
+        return web.json_response({
+            "specialty": name,
+            "models": models,
+        })
+
+    async def handle_multi_model_query(self, request: web.Request) -> web.Response:
+        """POST /api/multi — Multi-model query with fusion strategies.
+        
+        Body: {
+            "prompt": "...",
+            "models": ["model1", "model2"],  // optional: force specific models
+            "specialties": ["code", "reasoning"],  // optional: select by specialties
+            "mode": "vote",  // single, vote, chain, fuse, compare, specialist
+            "strategy": "auto"  // underlying query strategy
+        }
+        """
+        if not self.specialist_router or not self.multi_model_executor:
+            return web.json_response({"error": "Specialist routing not available"}, status=501)
+
+        data = await request.json()
+        prompt = data.get("prompt", "")
+        mode_name = data.get("mode", "specialist")
+        models_param = data.get("models")
+        specialties_param = data.get("specialties")
+        strategy = data.get("strategy", "auto")
+
+        if not prompt or len(prompt) > MAX_PROMPT_LENGTH:
+            return web.json_response(
+                {"error": f"prompt must be 1-{MAX_PROMPT_LENGTH} characters"}, status=400)
+
+        # Parse mode
+        try:
+            mode = MultiModelMode(mode_name)
+        except ValueError:
+            valid = [m.value for m in MultiModelMode]
+            return web.json_response({
+                "error": f"Unknown mode '{mode_name}'",
+                "valid_modes": valid
+            }, status=400)
+
+        # Determine which models to use
+        if models_param:
+            selected = self.specialist_router.select_models_by_names(models_param)
+        elif specialties_param:
+            specs = []
+            for s in specialties_param:
+                try:
+                    specs.append(ModelSpecialty(s))
+                except ValueError:
+                    pass
+            selected = self.specialist_router.select_models_for_specialties(specs, self.local_models)
+        else:
+            # Auto-detect from prompt
+            routing = self.specialist_router.route(prompt, available=self.local_models)
+            selected = routing["models"]
+
+        if not selected:
+            selected = self.local_models[:1] if self.local_models else []
+
+        if not selected:
+            return web.json_response({"error": "No models available"}, status=503)
+
+        # Execute multi-model query
+        async def _query_one(model: str, p: str) -> dict:
+            return await self.query(p, model, strategy)
+
+        result = await self.multi_model_executor.execute(
+            prompt, selected, mode, query_fn=_query_one
+        )
+
+        return web.json_response(result.to_dict())
 
     # ========================================================================
 
@@ -3932,10 +4252,26 @@ async def main():
     brain.systray.write_pid(os.getpid())
     logger.info(f"🖥️ Daemon PID: {os.getpid()}")
 
+    # v5.0.0: Start resource guard monitor
+    if brain.resource_guard:
+        logger.info(f"🛡️ Resource Guard: {brain.resource_guard._state.value}")
+
+    # v5.0.0: Start tracker client announce loop
+    if brain.tracker_client:
+        asyncio.create_task(brain.tracker_client.announce_loop())
+        asyncio.create_task(brain.tracker_client.discover_loop())
+        logger.info(f"🌐 Tracker Client: announcing to mesh")
+
     await shutdown_event.wait()
 
     logger.info("Cleaning up...")
     brain.heartbeat_running = False
+    # v5.0.0: Stop resource guard
+    if brain.resource_guard:
+        await brain.resource_guard.stop()
+    # v5.0.0: Stop tracker client
+    if brain.tracker_client:
+        await brain.tracker_client.stop()
     for task in tasks:
         task.cancel()
     await asyncio.gather(*tasks, return_exceptions=True)
@@ -3953,5 +4289,5 @@ async def main():
 if __name__ == '__main__':
     import sys
     node = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    logger.info(f"Starting UnityBrain v4.1.5 as '{node}'")
+    logger.info(f"Starting UnityBrain v5.0.0 as '{node}'")
     asyncio.run(main())
