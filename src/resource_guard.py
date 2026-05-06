@@ -65,7 +65,7 @@ class ResourceGuard:
 
     # Hard safety margins — these CANNOT be overridden by config
     HARD_MAX_CPU_SHARE = 25.0       # Never share beyond 25% CPU total
-    HARD_MAX_RAM_SHARE_PCT = 20.0    # Never let mesh use more than 20% of total RAM
+    HARD_MAX_RAM_SHARE_MB = 512      # Never share beyond 512MB RAM (fixed cap, not %)
     HARD_MIN_RAM_RESERVE_MB = 512    # Always keep at least 512MB free
 
     # Monitoring
@@ -97,14 +97,12 @@ class ResourceGuard:
             config.get("max_cpu_percent", self.DEFAULT_MAX_CPU_PERCENT),
             5.0, self.HARD_MAX_CPU_SHARE
         )
-        # RAM share: clamp to HARD_MAX_RAM_SHARE_PCT of total RAM
-        total_ram_mb = psutil.virtual_memory().total / (1024 * 1024) if HAS_PSUTIL else 2560
-        max_ram_from_pct = int(total_ram_mb * self.HARD_MAX_RAM_SHARE_PCT / 100)
-        default_ram = min(self.DEFAULT_MAX_RAM_SHARE_MB, max_ram_from_pct)
+        # RAM share: hard cap is 512MB regardless of total system RAM
+        # 256MB default, 512MB max — enough for mesh queries, safe for any machine
         self.max_ram_share_mb = max(
             128,  # minimum sensible value (128MB)
-            min(config.get("max_ram_share_mb", default_ram),
-                max_ram_from_pct)  # never exceed % of total RAM
+            min(config.get("max_ram_share_mb", self.DEFAULT_MAX_RAM_SHARE_MB),
+                self.HARD_MAX_RAM_SHARE_MB)  # never exceed 512MB hard cap
         )
         self.gpu_share = config.get("gpu_share", self.DEFAULT_GPU_SHARE)
         self.priority = config.get("priority", self.DEFAULT_PRIORITY)
@@ -232,8 +230,9 @@ class ResourceGuard:
                 self._total_requests_rejected += 1
                 return False
 
-            # Check total RAM usage
-            if self._current_ram_percent > self.HARD_MAX_RAM_SHARE_PCT:
+            # Check total RAM usage — refuse if system is using too much
+            # Use a percentage threshold: 85% total RAM used = too risky to share
+            if self._current_ram_percent > 85.0:
                 self._total_requests_rejected += 1
                 return False
 
@@ -430,14 +429,14 @@ class ResourceGuard:
             ram_pct = self._current_ram_percent
             cpu_threshold = self._get_cpu_threshold()
 
-            if avg_cpu > cpu_threshold or ram_pct > self.HARD_MAX_RAM_SHARE_PCT:
+            if avg_cpu > cpu_threshold or self._current_ram_percent > 90.0:
                 # Machine is under heavy load — pause sharing
                 if self._state != GuardState.PAUSED:
                     logger.info(f"Resource Guard: PAUSING — cpu={avg_cpu:.1f}% (threshold={cpu_threshold:.1f}%) "
                                 f"ram={ram_pct:.1f}%")
                     self._pause_time = time.time()
                 self._state = GuardState.PAUSED
-            elif avg_cpu > cpu_threshold * 0.7 or ram_pct > self.HARD_MAX_RAM_SHARE_PCT * 0.85:
+            elif avg_cpu > cpu_threshold * 0.7 or self._current_ram_percent > 80.0:
                 # Approaching limits — throttle
                 if self._state != GuardState.THROTTLED:
                     logger.info(f"Resource Guard: THROTTLING — cpu={avg_cpu:.1f}% ram={ram_pct:.1f}%")

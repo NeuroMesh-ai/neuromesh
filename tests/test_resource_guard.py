@@ -84,7 +84,7 @@ def make_active_guard(config=None):
 TEST_CPU_LIMIT = ResourceGuard.DEFAULT_MAX_CPU_PERCENT   # 10%
 TEST_RAM_LIMIT = ResourceGuard.DEFAULT_MAX_RAM_SHARE_MB   # 256MB
 TEST_HARD_CPU = ResourceGuard.HARD_MAX_CPU_SHARE         # 25%
-TEST_HARD_RAM_PCT = ResourceGuard.HARD_MAX_RAM_SHARE_PCT # 20%
+TEST_HARD_RAM_MB = ResourceGuard.HARD_MAX_RAM_SHARE_MB  # 512MB
 TEST_MIN_RAM = 128  # Hard minimum config value
 
 # Resource values for ACTIVE state (low enough to accept requests)
@@ -203,11 +203,11 @@ class TestStateTransitions:
 
     def test_update_state_paused_when_cpu_high(self, guard):
         """When CPU exceeds threshold, state should move to PAUSED."""
-        # Simulate high CPU
-        guard._cpu_samples = deque([THROTTLE_CPU] * 5, maxlen=5)
-        guard._current_cpu = 8.5
-        guard._current_cpu = 87.0
-        guard._current_ram_percent = 50.0
+        # CPU threshold for local_first = min(70, 10+40) = 50%
+        # Samples at 60% > 50% threshold → PAUSED
+        guard._cpu_samples = deque([60.0] * 5, maxlen=5)
+        guard._current_cpu = 60.0
+        guard._current_ram_percent = 10.0  # Under 90%
         guard._state = GuardState.ACTIVE
         guard._update_state()
         assert guard._state == GuardState.PAUSED
@@ -251,11 +251,11 @@ class TestStateTransitions:
         assert guard._state == GuardState.PAUSED
 
     def test_ram_approaching_limit_throttles(self, guard):
-        """RAM approaching hard cap (85% of 20% = 17%) should throttle."""
+        """RAM approaching 80% total usage should throttle."""
         guard._cpu_samples = deque([5.0] * 5, maxlen=5)
         guard._current_cpu = 5.0
-        guard._current_ram_percent = 18.0  # Between 17% and 20%
-        guard._current_ram_available_mb = 1500.0
+        guard._current_ram_percent = 82.0  # Over 80% throttle threshold
+        guard._current_ram_available_mb = 500.0
         guard._state = GuardState.ACTIVE
         guard._update_state()
         assert guard._state == GuardState.THROTTLED
@@ -290,9 +290,10 @@ class TestCanAcceptRequest:
 
     def test_rejects_when_cpu_high(self, guard):
         guard._state = GuardState.ACTIVE
-        guard._cpu_samples = deque([PAUSED_CPU] * 5, maxlen=5)
-        guard._current_cpu = 85.0
+        guard._cpu_samples = deque([60.0] * 5, maxlen=5)  # Over 50% threshold
+        guard._current_cpu = 60.0
         guard._current_ram_available_mb = ACTIVE_RAM_MB
+        guard._current_ram_percent = 10.0
         guard._last_user_activity = 0.0
         guard._resume_time = time.time() - 20
         assert guard.can_accept_request() is False
