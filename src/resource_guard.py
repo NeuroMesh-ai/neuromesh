@@ -58,14 +58,14 @@ class ResourceGuard:
     """
 
     # Default thresholds
-    DEFAULT_MAX_CPU_PERCENT = 30.0
-    DEFAULT_MAX_RAM_SHARE_MB = 2048
+    DEFAULT_MAX_CPU_PERCENT = 10.0      # Max CPU% to share with mesh
+    DEFAULT_MAX_RAM_SHARE_MB = 256        # Max RAM to share with mesh (MB)
     DEFAULT_GPU_SHARE = False
     DEFAULT_PRIORITY = "local_first"
 
     # Hard safety margins — these CANNOT be overridden by config
-    HARD_MAX_CPU_SHARE = 80.0       # Never share beyond 80% CPU total
-    HARD_MAX_RAM_SHARE_PCT = 90.0   # Never let total RAM go above 90%
+    HARD_MAX_CPU_SHARE = 25.0       # Never share beyond 25% CPU total
+    HARD_MAX_RAM_SHARE_PCT = 20.0    # Never let mesh use more than 20% of total RAM
     HARD_MIN_RAM_RESERVE_MB = 512    # Always keep at least 512MB free
 
     # Monitoring
@@ -97,10 +97,14 @@ class ResourceGuard:
             config.get("max_cpu_percent", self.DEFAULT_MAX_CPU_PERCENT),
             5.0, self.HARD_MAX_CPU_SHARE
         )
+        # RAM share: clamp to HARD_MAX_RAM_SHARE_PCT of total RAM
+        total_ram_mb = psutil.virtual_memory().total / (1024 * 1024) if HAS_PSUTIL else 2560
+        max_ram_from_pct = int(total_ram_mb * self.HARD_MAX_RAM_SHARE_PCT / 100)
+        default_ram = min(self.DEFAULT_MAX_RAM_SHARE_MB, max_ram_from_pct)
         self.max_ram_share_mb = max(
-            256,  # minimum sensible value
-            min(config.get("max_ram_share_mb", self.DEFAULT_MAX_RAM_SHARE_MB),
-                16384)  # hard ceiling
+            128,  # minimum sensible value (128MB)
+            min(config.get("max_ram_share_mb", default_ram),
+                max_ram_from_pct)  # never exceed % of total RAM
         )
         self.gpu_share = config.get("gpu_share", self.DEFAULT_GPU_SHARE)
         self.priority = config.get("priority", self.DEFAULT_PRIORITY)

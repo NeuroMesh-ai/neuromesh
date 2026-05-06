@@ -56,8 +56,8 @@
   "public_mesh": {
     "enabled": false,
     "tracker_url": "https://tracker.unitybrain.ai",
-    "max_ram_share_mb": 2048,
-    "max_cpu_percent": 30,
+    "max_ram_share_mb": 256,
+    "max_cpu_percent": 10,
     "gpu_share": false,
     "models_share": [],
     "priority": "local_first",
