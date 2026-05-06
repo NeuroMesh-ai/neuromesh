@@ -76,7 +76,11 @@ SPECIALTY_KEYWORDS: Dict[ModelSpecialty, List[str]] = {
         'class ', 'def ', 'async ', 'import ', 'module', 'api', 'bug',
         'compile', 'syntax', 'variable', 'loop', 'algorithm', 'refactor',
         'python', 'javascript', 'rust', 'golang', 'typescript', 'html', 'css',
-        'docker', 'deploy', 'git', 'test unitaire', 'test unit',
+        'docker', 'deploy', 'git', 'github', 'gitlab', 'test unitaire', 'test unit',
+        'function', 'parse', 'format', 'convert', 'extract', 'generate',
+        'regex', 'json', 'xml', 'sql', 'database', 'query',
+        'web scraper', 'scraper', 'crawler', 'bot',
+        'security vulnerability', 'pentest', 'vulnerability', 'fastapi', 'flask', 'django',
     ],
     ModelSpecialty.REASONING: [
         'explain', 'why', 'how does', 'analyze', 'compare', 'what if',
@@ -119,6 +123,7 @@ SPECIALTY_KEYWORDS: Dict[ModelSpecialty, List[str]] = {
     ModelSpecialty.TOOL_USE: [
         'tool', 'function call', 'api call', 'execute', 'run command',
         'shell', 'terminal', 'search web', 'fetch url',
+        'use the api', 'call the api', 'rest api', 'graphql',
     ],
     ModelSpecialty.INSTRUCTION: [
         'instruction', 'step by step', 'tutorial', 'guide', 'how to',
@@ -395,7 +400,7 @@ class SpecialistRouter:
         self._preferred_language = config.get("preferred_language", "fr")
 
         # Seuil de confiance pour l'auto-détection
-        self._detection_threshold = config.get("detection_threshold", 0.15)
+        self._detection_threshold = config.get("detection_threshold", 0.10)
 
     def register_model(self, profile: ModelProfile):
         """Enregistrer un nouveau modèle avec son profil."""
@@ -429,11 +434,14 @@ class SpecialistRouter:
             match_count = 0
             total_keywords = len(keywords)
             specific_matches = 0  # More specific/longer keywords = stronger signal
+            # Mots-clés ambigus qui ne comptent pas comme spécifiques
+            AMBIGUOUS_KEYWORDS = {'write', 'how', 'what', 'make', 'use', 'run', 'test', 'new'}
             for kw in keywords:
                 if kw in prompt_lower:
                     match_count += 1
                     # Longer keywords are more specific (python, javascript vs hi, what)
-                    if len(kw) > 4:
+                    # Mais les mots ambigus comme "write" ne comptent pas comme spécifiques
+                    if len(kw) > 4 and kw not in AMBIGUOUS_KEYWORDS:
                         specific_matches += 1
             if match_count > 0:
                 # Score: base density + bonus for specific matches

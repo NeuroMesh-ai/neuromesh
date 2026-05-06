@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """
-🌐 UNITYBRAIN v5.0.0 — RÉSEAU P2P DISTRIBUÉ
+🌐 UNITYBRAIN v5.1.0 — RÉSEAU P2P DISTRIBUÉ
 ===============================================
+v5.1.0 Specialist release:
+1. Model Specialist — 12 specialty schemas with auto-detection and multi-LLM routing
+2. Multi-Model Executor — 6 modes (single, vote, chain, fuse, compare, specialist)
+3. Web UI specialist controls — specialty select, multi-mode select, multi-model rendering
+4. i18n — 18 specialty keys in 8 languages
+5. API: /api/specialties, /api/specialties/{name}/models, /api/multi
+6. Bug fixes and cleanup — removed dead code (v3 archive, nested sub-packages)
+
 v5.0.0 Major release:
 1. Resource Guard — auto-pause/resume mesh sharing based on local user activity
 2. Adaptive Scheduler — strategy selection (routing/partial_sharding/full_sharding/raid_ram)
@@ -562,7 +570,7 @@ class AutoUpdater:
     """
     
     GITHUB_API = 'https://api.github.com/repos/dnshouet-cpu/Unitybrain/releases/latest'
-    CURRENT_VERSION = '4.2.0'
+    CURRENT_VERSION = '5.1.0'
     CHECK_INTERVAL = 86400  # once per day
     
     def __init__(self, auto_install: bool = False):
@@ -1777,7 +1785,7 @@ class UnityBrain:
     def __init__(self, config: Dict):
         self.config = config
         self.node_name = config["node_name"]
-        self.version = "5.0.0"
+        self.version = "5.1.0"
         self.host = config["host"]
         self.port = config["port"]
         self.ollama_host = config["ollama_host"]

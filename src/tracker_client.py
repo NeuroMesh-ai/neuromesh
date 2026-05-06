@@ -284,7 +284,7 @@ class TrackerClient:
     def __init__(self, identity, config: Dict = None):
         """
         Args:
-            identity: NodeIdentity instance (from unitybrain_v4) — provides Ed25519 signing
+            identity: NodeIdentity instance (from unitybrain_v5) — provides Ed25519 signing
             config: dict with public_mesh configuration
         """
         self.identity = identity

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 Script de Test - UnityBrain v5.0.0
+🧪 Script de Test - UnityBrain v5.1.0
 Teste que le système fonctionne sur Bug et Pinky
 """
 
@@ -15,7 +15,7 @@ from src.unitybrain_v5 import UnityBrain
 
 TEST_CONFIG_BUG = {
     "node_name": "bug",
-    "version": "5.0.0",
+    "version": "5.1.0",
     "host": "127.0.0.1",
     "port": 8080,
     "ollama_host": "127.0.0.1",
@@ -33,7 +33,7 @@ TEST_CONFIG_BUG = {
 
 TEST_CONFIG_PINKY = {
     "node_name": "pinky",
-    "version": "5.0.0",
+    "version": "5.1.0",
     "host": "127.0.0.1",
     "port": 8081,
     "ollama_host": "127.0.0.1",
@@ -53,7 +53,7 @@ TEST_CONFIG_PINKY = {
 async def test_unitybrain():
     """Teste UnityBrain v5"""
     print("\n" + "=" * 70)
-    print("🧪 TESTING UNITYBRAIN v5.0.0")
+    print("🧪 TESTING UNITYBRAIN v5.1.0")
     print("=" * 70)
 
     # Créer UnityBrain
@@ -69,7 +69,7 @@ async def test_unitybrain():
 
     # Status check
     status = brain.get_status()
-    assert status["version"] == "5.0.0"
+    assert status["version"] == "5.1.0"
     assert "resource_guard" in status
     assert "adaptive_scheduler" in status
     print(f"✅ Status: v{status['version']}, modules OK")

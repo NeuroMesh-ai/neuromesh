@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tests Unitaires - BugBrain v5.0.0 (via UnityBrain)
+Tests Unitaires - BugBrain v5.1.0 (via UnityBrain)
 BugBrain is now a profile of UnityBrain
 """
 
@@ -23,7 +23,7 @@ from src.unitybrain_v5 import (
 
 BUG_CONFIG = {
     "node_name": "bug",
-    "version": "5.0.0",
+    "version": "5.1.0",
     "host": "127.0.0.1",
     "port": 8080,
     "ollama_host": "127.0.0.1",
@@ -75,5 +75,5 @@ class TestBugBrainInit:
     def test_init(self):
         brain = UnityBrain(BUG_CONFIG)
         assert brain.node_name == "bug"
-        assert brain.version == "5.0.0"
+        assert brain.version == "5.1.0"
         assert brain.share_ai is True

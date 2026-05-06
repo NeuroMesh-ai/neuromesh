@@ -522,7 +522,7 @@ def cmd_serve(args):
 
     # Service not running — try to start it
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    server_script = os.path.join(script_dir, "unitybrain_v4.py")
+    server_script = os.path.join(script_dir, "unitybrain_v5.py")
     if not os.path.exists(server_script):
         print(f"❌ Cannot find server script: {server_script}")
         sys.exit(1)
@@ -557,7 +557,7 @@ def cmd_app(args):
         print("⚠️  UnityBrain not running. Starting service...")
         import subprocess
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        server_script = os.path.join(script_dir, "unitybrain_v4.py")
+        server_script = os.path.join(script_dir, "unitybrain_v5.py")
         subprocess.Popen([sys.executable, server_script, args.node],
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         import time as _t
@@ -600,7 +600,7 @@ def cmd_sidekick(args):
         print("⚠️  UnityBrain not running. Starting service...")
         import subprocess
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        server_script = os.path.join(script_dir, "unitybrain_v4.py")
+        server_script = os.path.join(script_dir, "unitybrain_v5.py")
         subprocess.Popen([sys.executable, server_script, args.node],
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         import time as _t
@@ -962,7 +962,7 @@ WantedBy=multi-user.target
         user=os.environ.get("USER", "unitybrain"),
         workdir=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
         python=sys.executable,
-        server=os.path.abspath(os.path.join(os.path.dirname(__file__), "unitybrain_v4.py")),
+        server=os.path.abspath(os.path.join(os.path.dirname(__file__), "unitybrain_v5.py")),
         node=args.node,
     )
 
