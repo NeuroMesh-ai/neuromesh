@@ -103,6 +103,12 @@ try:
     HAS_MODEL_SPECIALIST = True
 except ImportError:
     HAS_MODEL_SPECIALIST = False
+
+try:
+    from bandwidth_quota import BandwidthQuota, QuotaPeriod
+    HAS_BANDWIDTH_QUOTA = True
+except ImportError:
+    HAS_BANDWIDTH_QUOTA = False
     logger_v5 = logging.getLogger('UnityBrain.v5')
     logger_v5.warning("model_specialist not available — specialty routing disabled")
     logger_v5 = logging.getLogger('UnityBrain.v5')
@@ -1858,6 +1864,18 @@ class UnityBrain:
         else:
             self.resource_guard = None
 
+        # Bandwidth Quota — monthly data and bandwidth limits like a mobile plan
+        if HAS_BANDWIDTH_QUOTA:
+            bw_config = config.get("bandwidth_quota", {})
+            # Merge mesh bandwidth_limit_kbps into quota config
+            if "bandwidth_limit_kbps" not in bw_config:
+                bw_config["bandwidth_limit_kbps"] = mesh_config.get("bandwidth_limit_kbps", 5000)
+            self.bandwidth_quota = BandwidthQuota(config=bw_config)
+            logger.info(f"📡 Bandwidth Quota: {self.bandwidth_quota.monthly_data_gb} GB/{self.bandwidth_quota.period.value}, "
+                        f"{self.bandwidth_quota.bandwidth_limit_kbps} kbps max")
+        else:
+            self.bandwidth_quota = None
+
         # Adaptive Scheduler — chooses strategy based on peer count
         if HAS_ADAPTIVE_SCHEDULER:
             self.adaptive_scheduler = AdaptiveScheduler(
@@ -2220,6 +2238,7 @@ class UnityBrain:
             "web_of_trust": len(self.web_of_trust.trust_edges),
             "rate_limiter": self.rate_limiter.to_dict(),
             "sharing_quota": self.sharing_quota.to_dict(),
+            "bandwidth_quota": self.bandwidth_quota.to_dict() if self.bandwidth_quota else {"available": False},
             "capabilities": self.own_capabilities.to_dict(),
             "gamified_score": GamifiedScore.get_tier(
                 self.sharing_quota.calculate_score(self.node_name)
@@ -2480,6 +2499,10 @@ class UnityBrain:
         app.router.add_get('/api/resources/status', self._auth_required(self.handle_resources_status))
         app.router.add_post('/api/resources/config', self._auth_required(self.handle_resources_config))
 
+        # Bandwidth Quota
+        app.router.add_get('/api/bandwidth', self.handle_bandwidth_status)
+        app.router.add_post('/api/bandwidth', self._auth_required(self.handle_bandwidth_config))
+
         # Models
         app.router.add_get('/api/models', self._auth_required(self.handle_models_list))
         app.router.add_post('/api/models/{name}/share', self._auth_required(self.handle_model_share))
@@ -2723,6 +2746,18 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                 {"error": f"invalid strategy, allowed: {', '.join(sorted(ALLOWED_STRATEGIES))}"},
                 status=400)
         
+        # Check bandwidth quota for mesh requests
+        if self.bandwidth_quota:
+            is_peer = request.get('auth', {}).get('node', '') != self.node_name
+            if is_peer and not self.bandwidth_quota.can_transfer():
+                remaining = self.bandwidth_quota.get_remaining_data_mb()
+                return web.json_response({
+                    "error": "bandwidth quota exceeded",
+                    "remaining_mb": round(remaining, 1),
+                    "reset_at": self.bandwidth_quota._current_period.period_end,
+                    "hint": "Monthly data quota exceeded. Increase bandwidth_quota.monthly_data_gb or wait for reset."
+                }, status=429)
+
         # Check if this is a peer request
         auth_info = request.get('auth', {})
         is_peer_request = auth_info.get('node', self.node_name) != self.node_name
@@ -3221,6 +3256,57 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         self._persist_config()
         self.log_event("resources", f"Resource config updated: {data}")
         return web.json_response({"status": "updated", "public_mesh": mesh_config})
+
+    # --- Bandwidth Quota endpoints ---
+
+    async def handle_bandwidth_status(self, request: web.Request) -> web.Response:
+        """GET /api/bandwidth — Statut du quota de bande passante."""
+        if not self.bandwidth_quota:
+            return web.json_response({"available": False, "error": "bandwidth_quota module not loaded"})
+        return web.json_response(self.bandwidth_quota.get_status())
+
+    async def handle_bandwidth_config(self, request: web.Request) -> web.Response:
+        """POST /api/bandwidth — Mettre à jour le quota de bande passante.
+
+        Body: {"monthly_data_gb": 10, "bandwidth_limit_kbps": 10000, "quota_period": "monthly"}
+        """
+        if not self.bandwidth_quota:
+            return web.json_response({"error": "bandwidth_quota module not loaded"}, status=503)
+
+        data = await request.json()
+
+        # Valider et mettre à jour
+        monthly_gb = data.get("monthly_data_gb")
+        bw_kbps = data.get("bandwidth_limit_kbps")
+        period = data.get("quota_period")
+
+        # Validation
+        if monthly_gb is not None and (monthly_gb < 0 or monthly_gb > 100):
+            return web.json_response({"error": "monthly_data_gb must be between 0 and 100"}, status=400)
+        if bw_kbps is not None and (bw_kbps < 0 or bw_kbps > 100000):
+            return web.json_response({"error": "bandwidth_limit_kbps must be between 0 and 100000"}, status=400)
+        if period is not None and period not in ("monthly", "weekly", "daily"):
+            return web.json_response({"error": "quota_period must be monthly, weekly, or daily"}, status=400)
+
+        self.bandwidth_quota.update_config(
+            monthly_data_gb=monthly_gb,
+            bandwidth_limit_kbps=bw_kbps,
+            period=period,
+        )
+
+        # Persister dans la config
+        bw_config = self.config.get("bandwidth_quota", {})
+        if monthly_gb is not None:
+            bw_config["monthly_data_gb"] = monthly_gb
+        if bw_kbps is not None:
+            bw_config["bandwidth_limit_kbps"] = bw_kbps
+        if period is not None:
+            bw_config["quota_period"] = period
+        self.config["bandwidth_quota"] = bw_config
+        self._persist_config()
+
+        self.log_event("bandwidth", f"Bandwidth quota updated: {data}")
+        return web.json_response({"status": "updated", "bandwidth_quota": self.bandwidth_quota.get_status()})
 
     # --- Model endpoints ---
 

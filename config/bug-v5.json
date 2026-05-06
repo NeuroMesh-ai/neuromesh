@@ -74,5 +74,10 @@
     "auto_save": true,
     "search_enabled": true
   },
-  "p2p_secret": "bug-pinky-2026-unity"
+  "p2p_secret": "bug-pinky-2026-unity",
+  "bandwidth_quota": {
+    "monthly_data_gb": 5.0,
+    "bandwidth_limit_kbps": 5000,
+    "quota_period": "monthly"
+  }
 }
