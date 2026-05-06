@@ -87,10 +87,10 @@ class BandwidthQuota:
     DEFAULT_PERIOD = QuotaPeriod.MONTHLY
 
     # ── Hard caps (non overridables) ───────────────────────────
-    HARD_MIN_MONTHLY_DATA_MB = 500       # 500 MB minimum
-    HARD_MAX_MONTHLY_DATA_GB = 100       # 100 GB maximum
+    HARD_MIN_MONTHLY_DATA_MB = 500       # 500 MB minimum (0 = unlimited)
+    HARD_MAX_MONTHLY_DATA_GB = 0         # 0 = no hard cap (unlimited possible for dedicated mode)
     HARD_MIN_BANDWIDTH_KBPS = 1000       # 1 Mbps minimum
-    HARD_MAX_BANDWIDTH_KBPS = 100000     # 100 Mbps maximum
+    HARD_MAX_BANDWIDTH_KBPS = 0          # 0 = no hard cap (unlimited possible for dedicated mode)
 
     # ── Instantané ────────────────────────────────────────────
     # Fenêtre glissante pour le débit instantané (10 secondes)
@@ -101,20 +101,33 @@ class BandwidthQuota:
 
         # ── Quota mensuel de données ──
         monthly_gb = config.get("monthly_data_gb", self.DEFAULT_MONTHLY_DATA_GB)
-        monthly_mb = monthly_gb * 1024
-        monthly_mb = max(
-            self.HARD_MIN_MONTHLY_DATA_MB,
-            min(monthly_mb, self.HARD_MAX_MONTHLY_DATA_GB * 1024)
-        )
-        self.monthly_data_mb = monthly_mb
-        self.monthly_data_gb = round(monthly_mb / 1024, 1)
+        # 0 = unlimited data (for dedicated mode / unlimited internet)
+        if monthly_gb == 0:
+            self.monthly_data_mb = 0  # unlimited, bypasses all caps
+            self.monthly_data_gb = 0
+        else:
+            monthly_mb = monthly_gb * 1024
+            if self.HARD_MAX_MONTHLY_DATA_GB == 0:
+                self.monthly_data_mb = max(self.HARD_MIN_MONTHLY_DATA_MB, monthly_mb)
+            else:
+                self.monthly_data_mb = max(
+                    self.HARD_MIN_MONTHLY_DATA_MB,
+                    min(monthly_mb, self.HARD_MAX_MONTHLY_DATA_GB * 1024)
+                )
+            self.monthly_data_gb = round(self.monthly_data_mb / 1024, 1)
 
         # ── Limite bande passante instantanée ──
         bw_kbps = config.get("bandwidth_limit_kbps", self.DEFAULT_BANDWIDTH_KBPS)
-        self.bandwidth_limit_kbps = max(
-            self.HARD_MIN_BANDWIDTH_KBPS,
-            min(bw_kbps, self.HARD_MAX_BANDWIDTH_KBPS)
-        )
+        # 0 = unlimited bandwidth (for dedicated mode / unlimited internet)
+        if bw_kbps == 0:
+            self.bandwidth_limit_kbps = 0  # unlimited
+        elif self.HARD_MAX_BANDWIDTH_KBPS == 0:
+            self.bandwidth_limit_kbps = max(self.HARD_MIN_BANDWIDTH_KBPS, bw_kbps)
+        else:
+            self.bandwidth_limit_kbps = max(
+                self.HARD_MIN_BANDWIDTH_KBPS,
+                min(bw_kbps, self.HARD_MAX_BANDWIDTH_KBPS)
+            )
 
         # ── Période de reset ──
         period_str = config.get("quota_period", "monthly")
@@ -189,18 +202,20 @@ class BandwidthQuota:
             return self._check_data_quota(estimated_bytes) and self._check_bandwidth(estimated_bytes)
 
     def get_remaining_data_mb(self) -> float:
-        """Données restantes dans la période courante (MB)."""
+        """Données restantes dans la période courante (MB). -1 = unlimited."""
         with self._lock:
             self._check_period_reset()
+            if self.monthly_data_mb == 0:
+                return -1  # unlimited
             used = self._current_period.total_bytes / (1024 * 1024)
             return max(0, self.monthly_data_mb - used)
 
     def get_remaining_data_pct(self) -> float:
-        """Pourcentage de données restantes dans la période."""
+        """Pourcentage de données restantes dans la période. -1 = unlimited."""
         with self._lock:
             self._check_period_reset()
             if self.monthly_data_mb == 0:
-                return 0
+                return -1  # unlimited
             used_mb = self._current_period.total_bytes / (1024 * 1024)
             return max(0, min(100, (1 - used_mb / self.monthly_data_mb) * 100))
 
@@ -219,17 +234,29 @@ class BandwidthQuota:
         """Mettre à jour la configuration du quota."""
         with self._lock:
             if monthly_data_gb is not None:
-                mb = monthly_data_gb * 1024
-                mb = max(self.HARD_MIN_MONTHLY_DATA_MB, min(mb, self.HARD_MAX_MONTHLY_DATA_GB * 1024))
-                self.monthly_data_mb = mb
-                self.monthly_data_gb = round(mb / 1024, 1)
+                if monthly_data_gb == 0:
+                    self.monthly_data_mb = 0  # unlimited
+                    self.monthly_data_gb = 0
+                else:
+                    mb = monthly_data_gb * 1024
+                    if self.HARD_MAX_MONTHLY_DATA_GB == 0:
+                        mb = max(self.HARD_MIN_MONTHLY_DATA_MB, mb)
+                    else:
+                        mb = max(self.HARD_MIN_MONTHLY_DATA_MB, min(mb, self.HARD_MAX_MONTHLY_DATA_GB * 1024))
+                    self.monthly_data_mb = mb
+                    self.monthly_data_gb = round(mb / 1024, 1)
                 logger.info(f"📡 Quota données mis à jour: {self.monthly_data_gb} GB/{self.period.value}")
 
             if bandwidth_limit_kbps is not None:
-                self.bandwidth_limit_kbps = max(
-                    self.HARD_MIN_BANDWIDTH_KBPS,
-                    min(bandwidth_limit_kbps, self.HARD_MAX_BANDWIDTH_KBPS)
-                )
+                if bandwidth_limit_kbps == 0:
+                    self.bandwidth_limit_kbps = 0  # unlimited
+                elif self.HARD_MAX_BANDWIDTH_KBPS == 0:
+                    self.bandwidth_limit_kbps = max(self.HARD_MIN_BANDWIDTH_KBPS, bandwidth_limit_kbps)
+                else:
+                    self.bandwidth_limit_kbps = max(
+                        self.HARD_MIN_BANDWIDTH_KBPS,
+                        min(bandwidth_limit_kbps, self.HARD_MAX_BANDWIDTH_KBPS)
+                    )
                 logger.info(f"📡 Bande passante mise à jour: {self.bandwidth_limit_kbps} kbps")
 
             if period is not None:
@@ -267,13 +294,16 @@ class BandwidthQuota:
                 "period_start": self._current_period.period_start,
                 "period_end": self._current_period.period_end,
                 # Hard caps (info pour le UI)
-                "hard_max_data_gb": self.HARD_MAX_MONTHLY_DATA_GB,
+                "hard_max_data_gb": self.HARD_MAX_MONTHLY_DATA_GB or "unlimited",
                 "hard_min_data_mb": self.HARD_MIN_MONTHLY_DATA_MB,
-                "hard_max_bandwidth_kbps": self.HARD_MAX_BANDWIDTH_KBPS,
+                "hard_max_bandwidth_kbps": self.HARD_MAX_BANDWIDTH_KBPS or "unlimited",
                 "hard_min_bandwidth_kbps": self.HARD_MIN_BANDWIDTH_KBPS,
+                # Flags illimité
+                "data_unlimited": self.monthly_data_mb == 0,
+                "bandwidth_unlimited": self.bandwidth_limit_kbps == 0,
                 # État
-                "quota_exceeded": remaining_mb <= 0,
-                "bandwidth_exceeded": current_bw > self.bandwidth_limit_kbps,
+                "quota_exceeded": remaining_mb != -1 and remaining_mb <= 0,
+                "bandwidth_exceeded": False if self.bandwidth_limit_kbps == 0 else current_bw > self.bandwidth_limit_kbps,
             }
 
     def to_dict(self) -> Dict:
@@ -284,14 +314,18 @@ class BandwidthQuota:
     # ===================================================================
 
     def _check_data_quota(self, additional_bytes: int = 0) -> bool:
-        """Vérifier si on reste dans le quota mensuel."""
+        """Vérifier si on reste dans le quota mensuel. 0 = unlimited."""
         self._check_period_reset()
+        if self.monthly_data_mb == 0:
+            return True  # unlimited
         total_after = self._current_period.total_bytes + additional_bytes
         limit_bytes = self.monthly_data_mb * 1024 * 1024
         return total_after <= limit_bytes
 
     def _check_bandwidth(self, additional_bytes: int = 0) -> bool:
-        """Vérifier le débit instantané sur la fenêtre glissante."""
+        """Vérifier le débit instantané. 0 = unlimited."""
+        if self.bandwidth_limit_kbps == 0:
+            return True  # unlimited
         self._cleanup_burst_window()
         if not self._burst_bytes:
             return True  # Aucun trafic récent, OK

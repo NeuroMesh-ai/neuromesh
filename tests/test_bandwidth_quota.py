@@ -35,9 +35,9 @@ class TestInitialization:
         assert bq.monthly_data_mb == 500  # clamped to min
 
     def test_data_quota_clamped_max(self):
-        """Au-dessus de 100GB, clampé à 100GB."""
+        """Hard max is 0 (unlimited), so 500GB is accepted as-is."""
         bq = BandwidthQuota({"monthly_data_gb": 500})
-        assert bq.monthly_data_gb == 100.0  # clamped to max
+        assert bq.monthly_data_gb == 500.0  # no hard cap, accepted
 
     def test_bandwidth_clamped_min(self):
         """En dessous de 1 Mbps, clampé à 1 Mbps."""
@@ -45,9 +45,9 @@ class TestInitialization:
         assert bq.bandwidth_limit_kbps == 1000  # min
 
     def test_bandwidth_clamped_max(self):
-        """Au-dessus de 100 Mbps, clampé à 100 Mbps."""
+        """Hard max is 0 (unlimited), so 500Mbps is accepted."""
         bq = BandwidthQuota({"bandwidth_limit_kbps": 500000})
-        assert bq.bandwidth_limit_kbps == 100000  # max
+        assert bq.bandwidth_limit_kbps == 500000  # no hard cap, accepted
 
 
 class TestTransferRecording:
@@ -166,7 +166,7 @@ class TestConfigUpdate:
     def test_update_clamps_data_max(self):
         bq = BandwidthQuota()
         bq.update_config(monthly_data_gb=999)
-        assert bq.monthly_data_gb == 100.0  # Clampé au max
+        assert bq.monthly_data_gb == 999.0  # no hard cap, accepted
 
     def test_update_clamps_bandwidth_min(self):
         bq = BandwidthQuota()
@@ -176,7 +176,7 @@ class TestConfigUpdate:
     def test_update_clamps_bandwidth_max(self):
         bq = BandwidthQuota()
         bq.update_config(bandwidth_limit_kbps=999999)
-        assert bq.bandwidth_limit_kbps == 100000  # Max 100 Mbps
+        assert bq.bandwidth_limit_kbps == 999999  # no hard cap, accepted
 
     def test_invalid_period_ignored(self):
         bq = BandwidthQuota()
@@ -255,24 +255,24 @@ class TestHardCaps:
     """Tests des hard caps de sécurité."""
 
     def test_hard_max_data(self):
-        assert BandwidthQuota.HARD_MAX_MONTHLY_DATA_GB == 100
+        assert BandwidthQuota.HARD_MAX_MONTHLY_DATA_GB == 0  # 0 = unlimited
 
     def test_hard_min_data(self):
         assert BandwidthQuota.HARD_MIN_MONTHLY_DATA_MB == 500
 
     def test_hard_max_bandwidth(self):
-        assert BandwidthQuota.HARD_MAX_BANDWIDTH_KBPS == 100000
+        assert BandwidthQuota.HARD_MAX_BANDWIDTH_KBPS == 0  # 0 = unlimited
 
     def test_hard_min_bandwidth(self):
         assert BandwidthQuota.HARD_MIN_BANDWIDTH_KBPS == 1000
 
     def test_cannot_override_data_max(self):
         bq = BandwidthQuota({"monthly_data_gb": 999})
-        assert bq.monthly_data_gb == 100.0
+        assert bq.monthly_data_gb == 999.0  # no hard cap
 
     def test_cannot_override_bandwidth_max(self):
         bq = BandwidthQuota({"bandwidth_limit_kbps": 999999})
-        assert bq.bandwidth_limit_kbps == 100000
+        assert bq.bandwidth_limit_kbps == 999999  # no hard cap
 
 
 class TestTransferStats:
@@ -296,3 +296,59 @@ class TestTransferStats:
         assert d["bytes_sent"] == 100
         assert d["bytes_received"] == 200
         assert d["total_bytes"] == 300
+
+class TestUnlimitedDedicatedMode:
+    """Tests pour le mode dédié (fous-fous) — 0 = unlimited."""
+
+    def test_unlimited_data(self):
+        """0 = unlimited data."""
+        bq = BandwidthQuota({"monthly_data_gb": 0})
+        assert bq.monthly_data_gb == 0
+        assert bq.monthly_data_mb == 0
+        assert bq.can_transfer(10 * 1024 * 1024 * 1024)  # 10GB ok
+
+    def test_unlimited_bandwidth(self):
+        """0 = unlimited bandwidth."""
+        bq = BandwidthQuota({"bandwidth_limit_kbps": 0})
+        assert bq.bandwidth_limit_kbps == 0
+        # Burst doesn't block
+        for _ in range(100):
+            bq._burst_bytes.append((time.time(), 50000))
+        assert bq.can_transfer(1) is True
+
+    def test_full_dedicated_mode(self):
+        """Both unlimited = full dedicated mode."""
+        bq = BandwidthQuota({"monthly_data_gb": 0, "bandwidth_limit_kbps": 0})
+        assert bq.monthly_data_mb == 0
+        assert bq.bandwidth_limit_kbps == 0
+        bq.record_transfer(bytes_sent=50 * 1024 * 1024 * 1024)  # 50GB
+        assert bq.can_transfer(1024) is True
+        status = bq.get_status()
+        assert status["data_unlimited"] is True
+        assert status["bandwidth_unlimited"] is True
+        assert status["quota_exceeded"] is False
+
+    def test_update_to_unlimited(self):
+        """Switch from normal to unlimited via update_config."""
+        bq = BandwidthQuota()
+        assert bq.monthly_data_gb == 5.0
+        bq.update_config(monthly_data_gb=0, bandwidth_limit_kbps=0)
+        assert bq.monthly_data_gb == 0
+        assert bq.bandwidth_limit_kbps == 0
+
+    def test_update_from_unlimited_to_normal(self):
+        """Switch from unlimited back to normal."""
+        bq = BandwidthQuota({"monthly_data_gb": 0, "bandwidth_limit_kbps": 0})
+        bq.update_config(monthly_data_gb=10, bandwidth_limit_kbps=10000)
+        assert bq.monthly_data_gb == 10.0
+        assert bq.bandwidth_limit_kbps == 10000
+
+    def test_remaining_minus_one_means_unlimited(self):
+        """get_remaining_data_mb returns -1 for unlimited."""
+        bq = BandwidthQuota({"monthly_data_gb": 0})
+        assert bq.get_remaining_data_mb() == -1
+
+    def test_remaining_pct_minus_one_means_unlimited(self):
+        """get_remaining_data_pct returns -1 for unlimited."""
+        bq = BandwidthQuota({"monthly_data_gb": 0})
+        assert bq.get_remaining_data_pct() == -1

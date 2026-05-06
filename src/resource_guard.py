@@ -64,9 +64,10 @@ class ResourceGuard:
     DEFAULT_PRIORITY = "local_first"
 
     # Hard safety margins — these CANNOT be overridden by config
-    HARD_MAX_CPU_SHARE = 25.0       # Never share beyond 25% CPU total
-    HARD_MAX_RAM_SHARE_MB = 512      # Never share beyond 512MB RAM (fixed cap, not %)
-    HARD_MIN_RAM_RESERVE_MB = 512    # Always keep at least 512MB free
+    HARD_MAX_CPU_SHARE = 70.0       # Max 70% CPU — 30% always reserved for the machine
+    HARD_MAX_RAM_SHARE_PCT = 70.0   # Max 70% of total RAM — 30% always reserved
+    HARD_MIN_RAM_RESERVE_MB = 512   # Always keep at least 512MB free (absolute minimum)
+    HARD_MAX_RAM_SHARE_MB = 65536   # Absolute ceiling (64GB), further clamped by % of total RAM
 
     # Monitoring
     MONITOR_INTERVAL = 2.0          # seconds between resource checks
@@ -97,12 +98,18 @@ class ResourceGuard:
             config.get("max_cpu_percent", self.DEFAULT_MAX_CPU_PERCENT),
             5.0, self.HARD_MAX_CPU_SHARE
         )
-        # RAM share: hard cap is 512MB regardless of total system RAM
-        # 256MB default, 512MB max — enough for mesh queries, safe for any machine
+        # RAM share: percentage-based with hard cap
+        # Default = 10% of total RAM (conservative for normal users)
+        # Max = 70% of total RAM (dedicated mode for fous-fous)
+        # Always reserve at least 30% + 512MB absolute minimum
+        total_ram_mb = psutil.virtual_memory().total / (1024 * 1024) if HAS_PSUTIL else 2560
+        max_ram_from_pct = int(total_ram_mb * self.HARD_MAX_RAM_SHARE_PCT / 100)
+        default_ram_mb = int(total_ram_mb * 0.10)  # 10% default
+        default_ram_mb = max(128, min(default_ram_mb, max_ram_from_pct))
         self.max_ram_share_mb = max(
             128,  # minimum sensible value (128MB)
-            min(config.get("max_ram_share_mb", self.DEFAULT_MAX_RAM_SHARE_MB),
-                self.HARD_MAX_RAM_SHARE_MB)  # never exceed 512MB hard cap
+            min(config.get("max_ram_share_mb", default_ram_mb),
+                min(max_ram_from_pct, self.HARD_MAX_RAM_SHARE_MB))  # never exceed 70% of total
         )
         self.gpu_share = config.get("gpu_share", self.DEFAULT_GPU_SHARE)
         self.priority = config.get("priority", self.DEFAULT_PRIORITY)
@@ -538,9 +545,12 @@ class ResourceGuard:
                     config["max_cpu_percent"], 5.0, self.HARD_MAX_CPU_SHARE
                 )
             if "max_ram_share_mb" in config:
+                total_ram_mb = psutil.virtual_memory().total / (1024 * 1024) if HAS_PSUTIL else 2560
+                max_allowed = int(total_ram_mb * self.HARD_MAX_RAM_SHARE_PCT / 100)
                 self.max_ram_share_mb = max(
-                    256,
-                    min(config["max_ram_share_mb"], 16384)
+                    128,
+                    min(config["max_ram_share_mb"],
+                        min(max_allowed, self.HARD_MAX_RAM_SHARE_MB))
                 )
             if "gpu_share" in config:
                 self.gpu_share = config["gpu_share"]

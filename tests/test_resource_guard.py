@@ -84,7 +84,7 @@ def make_active_guard(config=None):
 TEST_CPU_LIMIT = ResourceGuard.DEFAULT_MAX_CPU_PERCENT   # 10%
 TEST_RAM_LIMIT = ResourceGuard.DEFAULT_MAX_RAM_SHARE_MB   # 256MB
 TEST_HARD_CPU = ResourceGuard.HARD_MAX_CPU_SHARE         # 25%
-TEST_HARD_RAM_MB = ResourceGuard.HARD_MAX_RAM_SHARE_MB  # 512MB
+TEST_HARD_RAM_MB = ResourceGuard.HARD_MAX_RAM_SHARE_MB  # 64GB absolute cap, 70% of total RAM
 TEST_MIN_RAM = 128  # Hard minimum config value
 
 # Resource values for ACTIVE state (low enough to accept requests)
@@ -124,7 +124,7 @@ class TestInitialization:
         """CPU limit cannot exceed hard cap (80%)."""
         default_config["max_cpu_percent"] = 99.0
         g = ResourceGuard(default_config)
-        assert g.max_cpu_percent == 25.0
+        assert g.max_cpu_percent == 70.0  # new hard cap: 70%
 
     def test_config_clamping_low_cpu(self, default_config):
         """CPU limit cannot go below 5%."""
@@ -136,7 +136,7 @@ class TestInitialization:
         """RAM limit cannot exceed 16GB."""
         default_config["max_ram_share_mb"] = 65536
         g = ResourceGuard(default_config)
-        assert g.max_ram_share_mb <= 600  # clamped to 20% of total RAM
+        assert g.max_ram_share_mb <= 1797  # clamped to 70% of total RAM
 
     def test_config_clamping_low_ram(self, default_config):
         """RAM limit cannot go below 256MB."""
@@ -527,11 +527,15 @@ class TestUpdateConfig:
 
     def test_update_ram(self, guard):
         guard.update_config({"max_ram_share_mb": 4096})
-        assert guard.max_ram_share_mb == 4096
+        # On 2.5GB machine, 70% = 1797MB, so 4096 is clamped
+        import psutil
+        total_mb = psutil.virtual_memory().total / (1024 * 1024)
+        max_allowed = int(total_mb * 0.70)
+        assert guard.max_ram_share_mb == min(4096, max_allowed)
 
     def test_update_clamps_high(self, guard):
         guard.update_config({"max_cpu_percent": 99.0})
-        assert guard.max_cpu_percent == 25.0  # hard cap
+        assert guard.max_cpu_percent == 70.0  # hard cap (70%)
 
     def test_disable_via_config(self, guard):
         guard.update_config({"enabled": False})
@@ -728,10 +732,10 @@ class TestDoSProtection:
 # ============================================================================
 
 class TestHardLimits:
-    def test_cpu_hard_cap_25(self):
+    def test_cpu_hard_cap_70(self):
         """max_cpu_percent cannot exceed 80%."""
         g = ResourceGuard({"enabled": True, "max_cpu_percent": 95.0})
-        assert g.max_cpu_percent == 25.0
+        assert g.max_cpu_percent == 70.0  # hard cap: 70%
 
     def test_cpu_minimum_5(self):
         """max_cpu_percent cannot go below 5%."""
@@ -741,7 +745,7 @@ class TestHardLimits:
     def test_ram_hard_cap_16gb(self):
         """max_ram_share_mb cannot exceed 16GB."""
         g = ResourceGuard({"enabled": True, "max_ram_share_mb": 64000})
-        assert g.max_ram_share_mb <= 600  # clamped to 20% of total RAM
+        assert g.max_ram_share_mb <= 1797  # clamped to 70% of total RAM
 
     def test_ram_minimum_128mb(self):
         """max_ram_share_mb cannot go below 128MB."""
@@ -819,8 +823,8 @@ class TestIntegration:
             "max_ram_share_mb": 999999,  # try to share all RAM
         }
         g = ResourceGuard(evil_config)
-        assert g.max_cpu_percent == 25.0  # clamped to hard cap
-        assert g.max_ram_share_mb <= 600  # clamped to 20% of total RAM
+        assert g.max_cpu_percent == 70.0  # clamped to hard cap (70%)
+        assert g.max_ram_share_mb <= 1797  # clamped to 70% of total RAM
 
     def test_get_status_completes(self, guard):
         """get_status should always return valid dict."""
