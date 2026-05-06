@@ -44,12 +44,17 @@ import socket
 import os
 import re
 import uuid
-import psutil
 import logging
 import hashlib
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple, Set
 from collections import deque
+
+try:
+    import psutil
+    HAS_PSUTIL = True
+except ImportError:
+    HAS_PSUTIL = False
 from pathlib import Path
 import logging.handlers
 
@@ -361,9 +366,14 @@ class NodeCapabilities:
     def _detect(self):
         """Auto-detect hardware capabilities."""
         try:
-            self.cpu_cores = psutil.cpu_count(logical=True) or 4
-            self.ram_total_mb = psutil.virtual_memory().total // (1024 * 1024)
-            freq = psutil.cpu_freq()
+            if HAS_PSUTIL:
+                self.cpu_cores = psutil.cpu_count(logical=True) or 4
+                self.ram_total_mb = psutil.virtual_memory().total // (1024 * 1024)
+                freq = psutil.cpu_freq()
+            else:
+                self.cpu_cores = os.cpu_count() or 4
+                self.ram_total_mb = 2560  # fallback: 2.5GB default
+                freq = None
             self.cpu_freq_mhz = int(freq.current) if freq else 0
         except Exception:
             self.cpu_cores = 4
@@ -2150,8 +2160,8 @@ class UnityBrain:
         result = {"response": "", "model": model or "auto", "latency_ms": 0, "source": "local"}
 
         # Check if should handle locally
-        local_cpu = psutil.cpu_percent(interval=0.1)
-        local_mem = psutil.virtual_memory()
+        local_cpu = psutil.cpu_percent(interval=0.1) if HAS_PSUTIL else 0
+        local_mem = psutil.virtual_memory() if HAS_PSUTIL else None
 
         if strategy == "consensus":
             consensus = await self.ensemble.query_ensemble(
@@ -2947,6 +2957,8 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         auth = self._verify_auth(request)
         if auth is None:
             return web.Response(status=401, text='Unauthorized')
+        if not HAS_PSUTIL:
+            return web.json_response({"error": "psutil not available"}, status=503)
         cpu = psutil.cpu_percent(interval=0.5)
         mem = psutil.virtual_memory()
         return web.json_response({
@@ -3242,6 +3254,8 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
 
     async def handle_resources_status(self, request: web.Request) -> web.Response:
         """GET /api/resources/status — Current system resource state."""
+        if not HAS_PSUTIL:
+            return web.json_response({"error": "psutil not available"}, status=503)
         cpu_percent = psutil.cpu_percent(interval=0.5)
         mem = psutil.virtual_memory()
         disk = psutil.disk_usage('/')
@@ -3264,7 +3278,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             guard_info = None
 
         response = {
-            "cpu": {"percent": cpu_percent, "cores": psutil.cpu_count(), "max_share_percent": max_cpu},
+            "cpu": {"percent": cpu_percent, "cores": psutil.cpu_count() if HAS_PSUTIL else os.cpu_count(), "max_share_percent": max_cpu},
             "ram": {
                 "total_mb": round(mem.total / 1024 / 1024),
                 "available_mb": round(mem.available / 1024 / 1024),

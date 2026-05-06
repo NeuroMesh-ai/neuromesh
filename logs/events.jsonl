@@ -576,3 +576,25 @@
 {"time": "2026-05-04T22:04:11.306298", "type": "server", "message": "Listening on 0.0.0.0:8080", "level": "info"}
 {"time": "2026-05-04T22:04:50.979467", "type": "ws", "message": "WS connected 4ba7b0cd from 100.79.20.105 (2 total)", "level": "info"}
 {"time": "2026-05-04T22:05:30.915583", "type": "ws", "message": "WS disconnected 4ba7b0cd (0 total)", "level": "info"}
+{"time": "2026-05-06T17:54:31.792387", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-06T17:54:31.899735", "type": "init", "message": "UnityBrain v5.1.0 initialized as 'pinky'", "level": "info"}
+{"time": "2026-05-06T17:54:31.907789", "type": "server", "message": "Listening on 0.0.0.0:8081", "level": "info"}
+{"time": "2026-05-06T17:54:59.752647", "type": "ws", "message": "WS pending auth e823edea from 100.101.143.118", "level": "info"}
+{"time": "2026-05-06T17:54:59.766211", "type": "ws", "message": "WS authenticated e823edea from 100.101.143.118 (2 total)", "level": "info"}
+{"time": "2026-05-06T17:55:33.726541", "type": "ws", "message": "WS disconnected e823edea (1 total)", "level": "info"}
+{"time": "2026-05-06T17:56:04.303313", "type": "ws", "message": "WS pending auth a31e8868 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-06T17:56:04.323789", "type": "ws", "message": "WS authenticated a31e8868 from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-06T18:12:11.748223", "type": "ws", "message": "WS disconnected a31e8868 (0 total)", "level": "info"}
+{"time": "2026-05-06T18:12:12.504909", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-06T18:12:12.651557", "type": "init", "message": "UnityBrain v5.1.0 initialized as 'pinky'", "level": "info"}
+{"time": "2026-05-06T18:12:12.659897", "type": "server", "message": "Listening on 0.0.0.0:8081", "level": "info"}
+{"time": "2026-05-06T18:12:56.393396", "type": "ws", "message": "WS pending auth 51bc7d6a from 100.101.143.118", "level": "info"}
+{"time": "2026-05-06T18:12:56.408719", "type": "ws", "message": "WS authenticated 51bc7d6a from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-06T19:07:53.977064", "type": "ws", "message": "WS disconnected 51bc7d6a (0 total)", "level": "info"}
+{"time": "2026-05-06T19:08:13.283265", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-06T19:08:14.389767", "type": "init", "message": "UnityBrain v5.1.0 initialized as 'pinky'", "level": "info"}
+{"time": "2026-05-06T19:08:14.398001", "type": "server", "message": "Listening on 0.0.0.0:8081", "level": "info"}
+{"time": "2026-05-06T19:08:33.843607", "type": "ws", "message": "WS pending auth 21bf78b7 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-06T19:08:34.059134", "type": "ws", "message": "WS authenticated 21bf78b7 from 100.101.143.118 (2 total)", "level": "info"}
+{"time": "2026-05-06T19:20:36.937880", "type": "bandwidth", "message": "Bandwidth quota updated: {'monthly_data_gb': 10.0, 'bandwidth_limit_kbps': 10000}", "level": "info"}
+{"time": "2026-05-06T19:20:36.951795", "type": "bandwidth", "message": "Bandwidth quota updated: {'monthly_data_gb': 5.0, 'bandwidth_limit_kbps': 5000}", "level": "info"}
