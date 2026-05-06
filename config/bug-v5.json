@@ -79,5 +79,10 @@
     "monthly_data_gb": 5.0,
     "bandwidth_limit_kbps": 5000,
     "quota_period": "monthly"
+  },
+  "credit_system": {
+    "base_allocation": 100,
+    "max_balance": 10000,
+    "carry_over_pct": 0.5
   }
 }

@@ -109,6 +109,12 @@ try:
     HAS_BANDWIDTH_QUOTA = True
 except ImportError:
     HAS_BANDWIDTH_QUOTA = False
+
+try:
+    from credit_system import CreditSystem, CreditTier, QUERY_COSTS, MONTHLY_REWARDS, BASE_ALLOCATION
+    HAS_CREDIT_SYSTEM = True
+except ImportError:
+    HAS_CREDIT_SYSTEM = False
     logger_v5 = logging.getLogger('UnityBrain.v5')
     logger_v5.warning("model_specialist not available — specialty routing disabled")
     logger_v5 = logging.getLogger('UnityBrain.v5')
@@ -1876,6 +1882,20 @@ class UnityBrain:
         else:
             self.bandwidth_quota = None
 
+        # Credit System — mesh economics (earn by sharing, spend by querying)
+        if HAS_CREDIT_SYSTEM:
+            credit_config = config.get("credit_system", {})
+            self.credit_system = CreditSystem(config=credit_config)
+            self.credit_system.set_sharing_quota(self.sharing_quota)
+            self.credit_system.set_bandwidth_quota(self.bandwidth_quota)
+            logger.info(
+                f"💰 Credit System: base={self.credit_system.base_allocation}/mois, "
+                f"max={self.credit_system.max_balance}, "
+                f"carry={self.credit_system.carry_over_pct*100}%"
+            )
+        else:
+            self.credit_system = None
+
         # Adaptive Scheduler — chooses strategy based on peer count
         if HAS_ADAPTIVE_SCHEDULER:
             self.adaptive_scheduler = AdaptiveScheduler(
@@ -2239,6 +2259,7 @@ class UnityBrain:
             "rate_limiter": self.rate_limiter.to_dict(),
             "sharing_quota": self.sharing_quota.to_dict(),
             "bandwidth_quota": self.bandwidth_quota.to_dict() if self.bandwidth_quota else {"available": False},
+            "credit_system": self.credit_system.to_dict() if self.credit_system else {"available": False},
             "capabilities": self.own_capabilities.to_dict(),
             "gamified_score": GamifiedScore.get_tier(
                 self.sharing_quota.calculate_score(self.node_name)
@@ -2502,6 +2523,11 @@ class UnityBrain:
         # Bandwidth Quota
         app.router.add_get('/api/bandwidth', self.handle_bandwidth_status)
         app.router.add_post('/api/bandwidth', self._auth_required(self.handle_bandwidth_config))
+
+        # Credits
+        app.router.add_get('/api/credits', self.handle_credits_status)
+        app.router.add_get('/api/credits/{peer}', self.handle_credits_account)
+        app.router.add_post('/api/credits/reward', self._auth_required(self.handle_credits_reward))
 
         # Models
         app.router.add_get('/api/models', self._auth_required(self.handle_models_list))
@@ -2769,20 +2795,56 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                 "share_ai": False
             }, status=403)
         
-        # v4.1.5: Quota check for peer requests
+        # v5.2: Credit check for peer requests (replaces old quota system)
         if is_peer_request:
             peer_name = auth_info.get('node', 'unknown')
             self.sharing_quota.record_query_made(peer_name)
+
+            # Determine query cost
+            query_type = "simple"
+            model_count = 1
+            if models and len(models) > 1:
+                query_type = "multi"
+                model_count = len(models)
+            elif specialty:
+                query_type = "specialty"
+
+            # v4.1.5: Rate limit check (still enforced)
             if not self.sharing_quota.allow_query(peer_name):
                 score = self.sharing_quota.calculate_score(peer_name)
                 quota = self.sharing_quota.get_quota(peer_name)
                 return web.json_response({
-                    "error": "Quota exceeded",
+                    "error": "Rate limit exceeded",
                     "peer": peer_name,
                     "score": score,
                     "quota_queries_per_minute": quota,
-                    "hint": "Share more models or increase uptime to raise your quota"
+                    "hint": "Share more models or increase uptime to raise your rate limit"
                 }, status=429)
+
+            # v5.2: Credit system check
+            if self.credit_system:
+                can_afford = self.credit_system.can_afford(peer_name, QUERY_COSTS.get(query_type, 1))
+                if not can_afford:
+                    acc = self.credit_system.get_or_create(peer_name)
+                    return web.json_response({
+                        "error": "Insufficient credits",
+                        "peer": peer_name,
+                        "balance": round(acc.balance, 1),
+                        "cost": QUERY_COSTS.get(query_type, 1),
+                        "tier": self.credit_system.get_tier(peer_name).value,
+                        "hint": "Share more resources (models, GPU, memory) to earn credits, or wait for monthly reset"
+                    }, status=402)
+                # Spend credits
+                success, cost = self.credit_system.spend(peer_name, query_type, model_count)
+                if not success:
+                    acc = self.credit_system.get_or_create(peer_name)
+                    return web.json_response({
+                        "error": "Insufficient credits",
+                        "peer": peer_name,
+                        "balance": round(acc.balance, 1),
+                        "cost": cost,
+                        "hint": "Share more resources to earn credits"
+                    }, status=402)
         
         # v5.0.0: Specialty-based routing — if specialty/models specified, use SpecialistRouter
         if self.specialist_router and (specialty or models or specialties):
@@ -3307,6 +3369,56 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
 
         self.log_event("bandwidth", f"Bandwidth quota updated: {data}")
         return web.json_response({"status": "updated", "bandwidth_quota": self.bandwidth_quota.get_status()})
+
+    # --- Credit System endpoints ---
+
+    async def handle_credits_status(self, request: web.Request) -> web.Response:
+        """GET /api/credits — Status complet du système de crédits."""
+        if not self.credit_system:
+            return web.json_response({"available": False, "error": "credit_system module not loaded"})
+        self.credit_system.check_monthly_reset()
+        return web.json_response(self.credit_system.to_dict())
+
+    async def handle_credits_account(self, request: web.Request) -> web.Response:
+        """GET /api/credits/{peer} — Compte de crédits d'un nœud."""
+        if not self.credit_system:
+            return web.json_response({"available": False})
+        peer_name = request.match_info.get('peer', self.node_name)
+        self.credit_system.check_monthly_reset()
+        return web.json_response(self.credit_system.get_account_info(peer_name))
+
+    async def handle_credits_reward(self, request: web.Request) -> web.Response:
+        """POST /api/credits/reward — Accorder manuellement des crédits (admin).
+
+        Body: {"node": "peer_name", "type": "models|gpu|uptime|memory|reputation", "amount": 50}
+        """
+        if not self.credit_system:
+            return web.json_response({"error": "credit_system module not loaded"}, status=503)
+        data = await request.json()
+        node = data.get("node", "")
+        reward_type = data.get("type", "")
+        amount = data.get("amount", 0)
+
+        if not node:
+            return web.json_response({"error": "node is required"}, status=400)
+
+        if reward_type == "models":
+            self.credit_system.reward_models(node, int(amount / 50) or 1)
+        elif reward_type == "gpu":
+            self.credit_system.reward_gpu(node)
+        elif reward_type == "uptime":
+            self.credit_system.reward_uptime(node, amount)
+        elif reward_type == "memory":
+            self.credit_system.reward_memory_chunks(node, int(amount / 2) or 1)
+        elif reward_type == "reputation":
+            self.credit_system.reward_reputation(node, amount)
+        elif amount > 0:
+            self.credit_system._add_reward(node, reward_type or "manual", amount)
+        else:
+            return web.json_response({"error": "type must be models|gpu|uptime|memory|reputation, or specify amount"}, status=400)
+
+        self.log_event("credits", f"Reward: {reward_type} for {node}")
+        return web.json_response({"status": "rewarded", "account": self.credit_system.get_account_info(node)})
 
     # --- Model endpoints ---
 
