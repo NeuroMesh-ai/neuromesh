@@ -123,35 +123,60 @@
                         <section class="share-section">
                             <h3>📊 Ressources Partagées</h3>
                             <div class="resource-sliders">
+                                <!-- CPU: 5-70%, chaque ressource est indépendante -->
                                 <div class="resource-row">
                                     <label>
-                                        <span class="resource-label">CPU</span>
+                                        <span class="resource-label">💻 CPU</span>
                                         <span class="resource-value" id="cpuValue">10%</span>
                                     </label>
-                                    <input type="range" id="cpuSlider" min="0" max="25" value="10" step="5">
-                                    <span class="resource-detail">Maximum: <span id="cpuMax">10%</span> · Actuel: <span id="cpuUsed">--</span></span>
+                                    <input type="range" id="cpuSlider" min="5" max="70" value="10" step="5">
+                                    <span class="resource-detail">5-70% · Actuel: <span id="cpuUsed">--</span> · Max: <span id="cpuMax">10%</span></span>
                                 </div>
+                                <!-- RAM: 128MB-70% du total, chaque ressource est indépendante -->
                                 <div class="resource-row">
                                     <label>
-                                        <span class="resource-label">RAM</span>
+                                        <span class="resource-label">🧠 RAM</span>
                                         <span class="resource-value" id="ramValue">256 MB</span>
                                     </label>
-                                    <input type="range" id="ramSlider" min="0" max="512" value="256" step="64">
-                                    <span class="resource-detail">Maximum: <span id="ramMax">256 MB</span> · Actuel: <span id="ramUsed">--</span></span>
+                                    <input type="range" id="ramSlider" min="128" max="65536" value="256" step="128">
+                                    <span class="resource-detail">128MB-70% du total · Actuel: <span id="ramUsed">--</span> · Max: <span id="ramMax">256 MB</span></span>
                                 </div>
+                                <!-- Bande passante: 0=illimité, 1Mbps-500Mbps, chaque ressource est indépendante -->
                                 <div class="resource-row">
                                     <label>
-                                        <span class="resource-label">Bande passante</span>
+                                        <span class="resource-label">📡 Bande passante</span>
                                         <span class="resource-value" id="bwValue">5 Mbps</span>
                                     </label>
-                                    <input type="range" id="bwSlider" min="0" max="50000" value="5000" step="500">
-                                    <span class="resource-detail">Partagé: <span id="bwMax">5 Mbps</span></span>
+                                    <input type="range" id="bwSlider" min="0" max="500000" value="5000" step="1000">
+                                    <span class="resource-detail">0 = illimité · 1-500 Mbps · Actuel: <span id="bwMax">5 Mbps</span></span>
                                 </div>
+                                <!-- Données mensuelles: 0=illimité, 0.5-500GB, chaque ressource est indépendante -->
+                                <div class="resource-row">
+                                    <label>
+                                        <span class="resource-label">💾 Données/mois</span>
+                                        <span class="resource-value" id="dataValue">5 GB</span>
+                                    </label>
+                                    <input type="range" id="dataSlider" min="0" max="500" value="5" step="1">
+                                    <span class="resource-detail">0 = illimité · 0.5-500 GB · Reset: <span id="dataReset">--</span></span>
+                                </div>
+                                <!-- Période de reset: mensuel, hebdo, quotidien -->
+                                <div class="resource-row">
+                                    <label>
+                                        <span class="resource-label">📅 Reset quota</span>
+                                        <select id="periodSelect" style="background:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:6px;padding:4px 8px;">
+                                            <option value="monthly">Mensuel (1er du mois)</option>
+                                            <option value="weekly">Hebdomadaire</option>
+                                            <option value="daily">Quotidien</option>
+                                        </select>
+                                    </label>
+                                    <span class="resource-detail">Quand le quota de données réinitialise</span>
+                                </div>
+                                <!-- GPU: on/off, chaque ressource est indépendante -->
                                 <div class="resource-row toggle-row">
                                     <label class="toggle-label">
                                         <input type="checkbox" id="gpuToggle">
                                         <span class="toggle-switch"></span>
-                                        <span>Partager mon GPU</span>
+                                        <span>🖥️ Partager mon GPU</span>
                                     </label>
                                     <span class="toggle-hint">⚠️ Uniquement si vous n'utilisez pas le GPU</span>
                                 </div>

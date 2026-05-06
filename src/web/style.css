@@ -591,6 +591,11 @@ body {
     color: var(--text-muted);
 }
 
+.resource-value.unlimited {
+    color: #4CAF50;
+    font-weight: 700;
+}
+
 /* Range slider styling */
 input[type="range"] {
     -webkit-appearance: none;

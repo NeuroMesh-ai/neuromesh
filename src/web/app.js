@@ -62,6 +62,7 @@
         setupTabs();
         setupChat();
         setupShare();
+        loadBandwidthQuota();
         setupNetwork();
         setupConfig();
         setupSidebar();
@@ -487,13 +488,17 @@
         const cpuSlider = $('#cpuSlider');
         const ramSlider = $('#ramSlider');
         const bwSlider = $('#bwSlider');
+        const dataSlider = $('#dataSlider');
         const gpuToggle = $('#gpuToggle');
 
+        // CPU: 5-70%, chaque ressource est indépendante
         cpuSlider?.addEventListener('input', () => {
-            $('#cpuValue').textContent = `${cpuSlider.value}%`;
-            $('#cpuMax').textContent = `${cpuSlider.value}%`;
+            const v = parseInt(cpuSlider.value);
+            $('#cpuValue').textContent = v === 70 ? `${v}% (max)` : `${v}%`;
+            $('#cpuMax').textContent = `${v}%`;
         });
 
+        // RAM: 128MB-70% du total, chaque ressource est indépendante
         ramSlider?.addEventListener('input', () => {
             const mb = parseInt(ramSlider.value);
             const gb = (mb / 1024).toFixed(1);
@@ -501,16 +506,40 @@
             $('#ramMax').textContent = mb >= 1024 ? `${gb} GB` : `${mb} MB`;
         });
 
+        // Bande passante: 0=illimité, chaque ressource est indépendante
         bwSlider?.addEventListener('input', () => {
             const kbps = parseInt(bwSlider.value);
-            const mbps = (kbps / 1000).toFixed(1);
-            $('#bwValue').textContent = kbps >= 1000 ? `${mbps} Mbps` : `${kbps} Kbps`;
-            $('#bwMax').textContent = kbps >= 1000 ? `${mbps} Mbps` : `${kbps} Kbps`;
+            if (kbps === 0) {
+                $('#bwValue').textContent = '∞ Illimité';
+                $('#bwMax').textContent = '∞ Illimité';
+            } else {
+                const mbps = (kbps / 1000).toFixed(1);
+                $('#bwValue').textContent = kbps >= 1000 ? `${mbps} Mbps` : `${kbps} Kbps`;
+                $('#bwMax').textContent = kbps >= 1000 ? `${mbps} Mbps` : `${kbps} Kbps`;
+            }
+        });
+
+        // Données/mois: 0=illimité, chaque ressource est indépendante
+        dataSlider?.addEventListener('input', () => {
+            const gb = parseInt(dataSlider.value);
+            if (gb === 0) {
+                $('#dataValue').textContent = '∞ Illimité';
+            } else {
+                $('#dataValue').textContent = gb >= 1 ? `${gb} GB` : `${gb * 1000} MB`;
+            }
         });
 
         $('#resumeShareBtn')?.addEventListener('click', () => {
             showToast(t('share.resumeShareToast'), 'info');
         });
+
+        // Save each resource independently on slider release (change event)
+        cpuSlider?.addEventListener('change', () => saveResource('cpu'));
+        ramSlider?.addEventListener('change', () => saveResource('ram'));
+        bwSlider?.addEventListener('change', () => saveResource('bandwidth'));
+        dataSlider?.addEventListener('change', () => saveResource('bandwidth'));
+        $('#periodSelect')?.addEventListener('change', () => saveResource('bandwidth'));
+        gpuToggle?.addEventListener('change', () => saveResource('gpu'));
     }
 
     function updateCapabilities(caps) {
@@ -519,10 +548,88 @@
             // Update CPU info
         }
         if (caps.ram_total_mb) {
-            const ramMax = Math.floor(caps.ram_total_mb * 0.5);
+            const ramMax = Math.floor(caps.ram_total_mb * 0.70);  // 70% hard cap
             if ($('#ramSlider')) {
                 $('#ramSlider').max = ramMax;
             }
+        }
+    }
+
+    // Load bandwidth quota status from API
+    async function loadBandwidthQuota() {
+        try {
+            const resp = await fetch('/api/bandwidth');
+            if (!resp.ok) return;
+            const bq = await resp.json();
+
+            // Update data slider
+            const dataSlider = $('#dataSlider');
+            if (dataSlider && bq.monthly_data_gb !== undefined) {
+                dataSlider.value = bq.monthly_data_gb;
+                if (bq.monthly_data_gb === 0) {
+                    $('#dataValue').textContent = '∞ Illimité';
+                } else {
+                    $('#dataValue').textContent = `${bq.monthly_data_gb} GB`;
+                }
+            }
+
+            // Update period select
+            const periodSelect = $('#periodSelect');
+            if (periodSelect && bq.period) {
+                periodSelect.value = bq.period;
+            }
+
+            // Update data reset info
+            if (bq.period_end) {
+                const resetDate = new Date(bq.period_end * 1000);
+                const resetStr = resetDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+                const dataReset = $('#dataReset');
+                if (dataReset) dataReset.textContent = resetStr;
+            }
+
+            // Update bandwidth slider
+            const bwSlider = $('#bwSlider');
+            if (bwSlider && bq.bandwidth_limit_kbps !== undefined) {
+                bwSlider.value = bq.bandwidth_limit_kbps;
+                if (bq.bandwidth_limit_kbps === 0) {
+                    $('#bwValue').textContent = '∞ Illimité';
+                    $('#bwMax').textContent = '∞ Illimité';
+                }
+            }
+        } catch (e) {
+            // API not available yet
+        }
+    }
+
+    // ─── Resource Save Handlers (chaque ressource est indépendante) ──────
+
+    function saveResource(type) {
+        const token = localStorage.getItem('ub_token') || '';
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        if (type === 'cpu') {
+            const val = parseInt($('#cpuSlider')?.value || 10);
+            fetch('/api/resources/config', { method: 'POST', headers, body: JSON.stringify({ max_cpu_percent: val }) })
+                .then(r => r.json()).then(d => showToast(`💾 CPU → ${val}%`, 'success')).catch(e => showToast('Erreur CPU', 'error'));
+        } else if (type === 'ram') {
+            const val = parseInt($('#ramSlider')?.value || 256);
+            fetch('/api/resources/config', { method: 'POST', headers, body: JSON.stringify({ max_ram_share_mb: val }) })
+                .then(r => r.json()).then(d => showToast(`💾 RAM → ${val >= 1024 ? (val/1024).toFixed(1)+' GB' : val+' MB'}`, 'success')).catch(e => showToast('Erreur RAM', 'error'));
+        } else if (type === 'gpu') {
+            const val = $('#gpuToggle')?.checked || false;
+            fetch('/api/resources/config', { method: 'POST', headers, body: JSON.stringify({ gpu_share: val }) })
+                .then(r => r.json()).then(d => showToast(`💾 GPU → ${val ? '✅' : '❌'}`, 'success')).catch(e => showToast('Erreur GPU', 'error'));
+        } else if (type === 'bandwidth') {
+            const bwKbps = parseInt($('#bwSlider')?.value || 5000);
+            const dataGb = parseInt($('#dataSlider')?.value || 5);
+            const period = $('#periodSelect')?.value || 'monthly';
+            fetch('/api/bandwidth', { method: 'POST', headers, body: JSON.stringify({ bandwidth_limit_kbps: bwKbps, monthly_data_gb: dataGb, quota_period: period }) })
+                .then(r => r.json()).then(d => {
+                    const bwStr = bwKbps === 0 ? '∞ Illimité' : (bwKbps >= 1000 ? `${(bwKbps/1000).toFixed(1)} Mbps` : `${bwKbps} Kbps`);
+                    const dataStr = dataGb === 0 ? '∞ Illimité' : `${dataGb} GB`;
+                    showToast(`💾 Bande passante → ${bwStr}, Données → ${dataStr}/${period}`, 'success');
+                }).catch(e => showToast('Erreur bande passante', 'error'));
         }
     }
 
