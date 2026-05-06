@@ -6,7 +6,10 @@
   "ollama_host": "127.0.0.1",
   "ollama_port": 11434,
   "local_models": [
-    "qwen3:0.6b"
+    "qwen3:0.6b",
+    "qwen3:8b",
+    "qwen3-coder:14b",
+    "gemma3:12b"
   ],
   "providers": {
     "ollama": {
@@ -14,7 +17,10 @@
       "host": "127.0.0.1",
       "port": 11434,
       "models": [
-        "qwen3:0.6b"
+        "qwen3:0.6b",
+        "qwen3:8b",
+        "qwen3-coder:14b",
+        "gemma3:12b"
       ],
       "enabled": true
     }
@@ -39,7 +45,10 @@
       "host": "100.79.20.105",
       "port": 8081,
       "models": [
-        "qwen3:0.6b"
+        "qwen3:0.6b",
+        "qwen3:8b",
+        "qwen3-coder:14b",
+        "gemma3:12b"
       ]
     }
   ],
