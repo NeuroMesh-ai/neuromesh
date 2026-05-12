@@ -1,0 +1,20 @@
+<service>
+  <id>NeuroMesh</id>
+  <name>NeuroMesh P2P AI Network</name>
+  <description>NeuroMesh — Lightweight P2P distributed AI network</description>
+  <executable>C:\NeuroMesh\python\python.exe</executable>
+  <arguments>C:\NeuroMesh\app\src\neuromesh_v5.py --config C:\NeuroMesh\data\config\node.json</arguments>
+  <logpath>C:\NeuroMesh\data\logs\service</logpath>
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>5</keepFiles>
+  </log>
+  <onfailure action="restart" delay="30 sec"/>
+  <onfailure action="restart" delay="60 sec"/>
+  <onfailure action="restart" delay="120 sec"/>
+  <startmode>Automatic</startmode>
+  <env name="NEUROMESH_HOME" value="C:\NeuroMesh"/>
+  <env name="PYTHONPATH" value="C:\NeuroMesh\app\src;C:\NeuroMesh\python\Lib"/>
+  <pidfile>C:\NeuroMesh\data\neuromesh.pid</pidfile>
+  <stopparentprocessfirst>true</stopparentprocessfirst>
+</service>
