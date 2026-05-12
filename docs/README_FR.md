@@ -273,6 +273,8 @@ neuromesh shared            # Lister les modèles partagés
 
 **Le mesh ne lit JAMAIS en dehors de `shared_models/`.** Arrêter le partage est instantané — le mesh perd l'accès dès que le lien est supprimé.
 
+**Les modèles cloud (OpenAI, Anthropic, etc.) ne sont JAMAIS partagés sur le mesh par défaut.** Ils utilisent VOS clés API et VOS crédits. Partager un modèle cloud nécessite un `force=True` explicite et affiche un avertissement clair. Seuls les modèles Ollama locaux sont naturellement partagés sur le mesh.
+
 ---
 
 ## 🖥️ Interface Desktop
@@ -356,7 +358,7 @@ Les 4 modes partagent le même cœur. Un binaire, quatre modes de vie.
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,
-    "models_share": ["glm-5.1:cloud"],
+    "models_share": [],  /* Vide = partage uniquement les modèles locaux Ollama. Les modèles cloud ne sont JAMAIS partagés sur le mesh par défaut */
     "priority": "local_first",
     "bandwidth_limit_kbps": 5000,
     "contribution_score": 0
@@ -366,7 +368,7 @@ Les 4 modes partagent le même cœur. Un binaire, quatre modes de vie.
       "type": "ollama",
       "host": "127.0.0.1",
       "port": 11434,
-      "models": ["glm-5.1:cloud"],
+      "models": ["glm-5.1"],
       "enabled": true
     }
   }

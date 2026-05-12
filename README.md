@@ -138,26 +138,26 @@ python3 src/neuromesh_v5.py mynode
       "type": "ollama",
       "host": "127.0.0.1",
       "port": 11434,
-      "models": ["glm-5.1:cloud"],
+      "models": ["glm-5.1"],
       "enabled": true
     }
   }
 }
 ```
 
-**`share_ai: true`** means this node shares its CPU/RAM/models with the network. Set `false` to keep models private while still connected to P2P.
+**`share_ai: true`** means this node shares its **local** CPU/RAM/models with the network. **Cloud models (OpenAI, Anthropic) are NEVER shared on the mesh by default** — they use your API keys and credits. Set `false` to keep all models private while still connected to P2P.
 
 ### Add OpenAI or Anthropic
 
 ```json
 "providers": {
-  "ollama": { "type": "ollama", "host": "127.0.0.1", "port": 11434, "models": ["glm-5.1:cloud"], "enabled": true },
+  "ollama": { "type": "ollama", "host": "127.0.0.1", "port": 11434, "models": ["glm-5.1"], "enabled": true },
   "openai": { "type": "openai", "api_key": "sk-...", "models": ["gpt-4o", "gpt-4o-mini"], "enabled": true },
   "anthropic": { "type": "anthropic", "api_key": "sk-ant-...", "models": ["claude-sonnet-4-20250514"], "enabled": true }
 }
 ```
 
-Queries with `"model": "gpt-4o"` are automatically routed to OpenAI. No code changes. Models from all providers are visible across the P2P network.
+Queries with `"model": "gpt-4o"` are automatically routed to OpenAI. No code changes. Local models are shared across the P2P network; cloud models stay private by default.
 
 ---
 

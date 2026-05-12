@@ -89,7 +89,7 @@ That's it. Your private network works out of the box. Want to join the mesh? Set
 - **OpenAI** — GPT-4o, GPT-4o-mini, etc.
 - **Anthropic** — Claude models
 - **OpenAI-compatible** — LM Studio, vLLM, any custom API
-- Models from all providers shared across P2P and mesh
+- **Local models shared across P2P** — cloud models are private by default, never shared on the mesh without explicit opt-in
 
 ### 🔌 WebSocket Real-Time Communication
 - Bidirectional WebSocket on `/ws` endpoint
@@ -111,7 +111,7 @@ That's it. Your private network works out of the box. Want to join the mesh? Set
 
 ### 🤖 AI Model Routing
 - **Local models first** — queries go to local Ollama when possible
-- **Cloud models on demand** — `model:cloud` syntax
+- **Cloud models on demand** — `model:cloud` syntax, stays private on your node
 - **Peer failover** — route to a peer if local model is busy
 - **Ensemble consensus** — query multiple models, return the best answer
 - **Circuit breakers** — stop hammering dead peers
@@ -273,6 +273,8 @@ neuromesh shared            # List shared models
 
 **The mesh NEVER reads outside `shared_models/`.** Unsharing is instant — the mesh loses access the moment the symlink is removed.
 
+**Cloud models (OpenAI, Anthropic, etc.) are NEVER shared on the mesh by default.** They use YOUR API keys and YOUR credits. Sharing a cloud model requires explicit `force=True` and shows a clear warning. Local Ollama models are the ones naturally shared on the mesh.
+
 ---
 
 ## 🖥️ Desktop Interface
@@ -356,7 +358,7 @@ All 4 modes share the same core. One binary, four lifestyles.
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,
-    "models_share": ["glm-5.1:cloud"],
+    "models_share": [],  /* Empty = share only local Ollama models. Cloud models NEVER shared on mesh by default */
     "priority": "local_first",
     "bandwidth_limit_kbps": 5000,
     "contribution_score": 0
@@ -366,7 +368,7 @@ All 4 modes share the same core. One binary, four lifestyles.
       "type": "ollama",
       "host": "127.0.0.1",
       "port": 11434,
-      "models": ["glm-5.1:cloud"],
+      "models": ["glm-5.1"],
       "enabled": true
     }
   }
