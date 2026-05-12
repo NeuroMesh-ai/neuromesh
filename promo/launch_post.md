@@ -47,9 +47,9 @@ Two nodes running 24/7 on recycled hardware:
 
 ### Quick start
 ```bash
-git clone https://github.com/NeuroMesh-ai/neuromesh.git
+git clone https://github.com/dnshouet-cpu/neuromesh.git
 cd neuromesh
 python3 src/neuromesh_v5.py --config mynode.json
 ```
 
-⭐ Star the repo: https://github.com/NeuroMesh-ai/neuromesh
+⭐ Star the repo: https://github.com/dnshouet-cpu/neuromesh

@@ -1,3 +1,4 @@
+# ⚠️ Ce document est un audit historique de la v4. Les corrections ont été portées à neuromesh_v5.py.
 # 🔒 NeuroMesh v4 — Ré-Audit de Sécurité
 
 **Date:** 2026-05-12  

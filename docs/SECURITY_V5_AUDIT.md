@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-12  
 **Fichiers comparés:**
-- `src/neuromesh_v4.py` (4243 lignes) — version auditée + corrigée
+- `src/neuromesh_v5.py` (4243 lignes) — version auditée + corrigée
 - `src/neuromesh_v5.py` (4800+ lignes) — **version en production**, non corrigée
 
 ## Résultat Global

@@ -66,11 +66,11 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/unitybrain-ai/neuromesh"
-Documentation = "https://github.com/unitybrain-ai/neuromesh#readme"
-Repository = "https://github.com/unitybrain-ai/neuromesh.git"
-"Bug Tracker" = "https://github.com/unitybrain-ai/neuromesh/issues"
-Changelog = "https://github.com/unitybrain-ai/neuromesh/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/dnshouet-cpu/neuromesh"
+Documentation = "https://github.com/dnshouet-cpu/neuromesh#readme"
+Repository = "https://github.com/dnshouet-cpu/neuromesh.git"
+"Bug Tracker" = "https://github.com/dnshouet-cpu/neuromesh/issues"
+Changelog = "https://github.com/dnshouet-cpu/neuromesh/blob/main/CHANGELOG.md"
 
 [project.scripts]
 neuromesh = "src.neuromesh_cli:main"

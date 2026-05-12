@@ -7,7 +7,7 @@
 
 Un réseau P2P distribué pour l'IA. Pas de serveur central. Pas de compte. Vos machines parlent directement.
 
-⭐ github.com/NeuroMesh-ai/neuromesh
+⭐ github.com/dnshouet-cpu/neuromesh
 
 2/
 🔧 Ce qui est nouveau en v5.2 :
@@ -45,7 +45,7 @@ Un réseau P2P distribué pour l'IA. Pas de serveur central. Pas de compte. Vos 
 6/
 📦 Quick start :
 
-git clone https://github.com/NeuroMesh-ai/neuromesh.git
+git clone https://github.com/dnshouet-cpu/neuromesh.git
 cd neuromesh
 python3 src/neuromesh_v5.py --config mynode.json
 
@@ -53,7 +53,7 @@ python3 src/neuromesh_v5.py --config mynode.json
 ▸ Cloud models privés par défaut
 ▸ Mesh discovery automatique
 
-⭐ github.com/NeuroMesh-ai/neuromesh
+⭐ github.com/dnshouet-cpu/neuromesh
 
 7/
 🌐 Rejoignez le mesh :
@@ -62,6 +62,6 @@ Pinky & Bug — deux nœuds qui tournent 24/7 sur du matériel recyclé. Un Fuji
 
 Pas de data center. Pas de cloud bill. Juste du P2P.
 
-⭐ Star le repo : github.com/NeuroMesh-ai/neuromesh
+⭐ Star le repo : github.com/dnshouet-cpu/neuromesh
 
 #NeuroMesh #P2P #AI #OpenSource #SelfHosted #Decentralized

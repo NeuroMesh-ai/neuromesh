@@ -709,7 +709,7 @@ C'est pas du communisme. C'est pas du capitalisme. C'est de la **symbiose**.
 brain.llm est le cerveau d'NeuroMesh. Il est déjà intégré dans le nœud :
 
 ```python
-# Endpoints existants dans neuromesh_v4.py
+# Endpoints existants dans neuromesh_v5.py
 /api/brain/status     → État du cerveau (modèles, latence, santé)
 /api/brain/models     → Modèles disponibles (local + cloud + P2P)
 /api/brain/query      → Requête IA avec routage intelligent

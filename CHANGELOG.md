@@ -66,7 +66,7 @@ All notable changes to NeuroMesh will be documented in this file.
 - 📝 **Docs** — `docs/AUTH_DESIGN.md` with complete auth design. `DONATIONS.md` with BTC address.
 
 ### Changed
-- Main file renamed: `src/neuromesh_v3.py` → `src/neuromesh_v4.py`
+- Main file renamed: `src/neuromesh_v5.py` → `src/neuromesh_v5.py`
 - VERSION: 3.3.0 → 4.0.0
 - README.md rewritten for v4.0
 - requirements.txt cleaned up (PyJWT removed, PyNaCl optional)

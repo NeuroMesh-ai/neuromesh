@@ -11,7 +11,7 @@
 [![Specialist](https://img.shields.io/badge/specialist-12_schemas-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![Website](https://img.shields.io/badge/website-neuromesh.ai-blue.svg)](https://neuromesh-ai.github.io/neuromesh)
 
-**Lightweight P2P distributed AI network.** No central server. No accounts. No premium tier. Connect machines, share models, sync memory. **v5.2: Multi-LLM specialist routing — auto-detect prompt type, route to the best model.**
+**Lightweight P2P distributed AI network.** No central server. No accounts. No premium tier. Connect machines, share models, sync memory. **v5.1: Multi-LLM specialist routing — auto-detect prompt type, route to the best model.**
 
 🌐 **[Website & Live Demo →](https://neuromesh-ai.github.io/neuromesh)**
 
@@ -343,7 +343,7 @@ WantedBy=default.target
 
 ---
 
-## 🎯 Specialist Router (v5.2)
+## 🎯 Specialist Router (v5.1)
 
 NeuroMesh auto-detects what kind of prompt you're sending and routes it to the best model.
 

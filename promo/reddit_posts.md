@@ -14,7 +14,7 @@ What's new:
 
 Runs on a Core 2 Duo with 2.5GB RAM. Seriously.
 
-Repo: https://github.com/NeuroMesh-ai/neuromesh
+Repo: https://github.com/dnshouet-cpu/neuromesh
 
 ---
 
@@ -32,7 +32,7 @@ New in v5.2:
 
 4 dependencies, MIT license.
 
-Repo: https://github.com/NeuroMesh-ai/neuromesh
+Repo: https://github.com/dnshouet-cpu/neuromesh
 
 ---
 
@@ -50,4 +50,4 @@ v5.2 brings:
 
 MIT licensed, 4 dependencies, runs on recycled hardware.
 
-⭐ https://github.com/NeuroMesh-ai/neuromesh
+⭐ https://github.com/dnshouet-cpu/neuromesh

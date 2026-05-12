@@ -25,10 +25,10 @@ Connect machines running Ollama into a P2P mesh. Share compute, sync memory, rou
 I'm running two nodes 24/7 — one on a recycled Fujitsu Esprimo (Core 2 Duo, 2.5GB RAM) and one on a Samsung with NVMe. Yes, it actually runs on a Core 2 Duo.
 
 ```bash
-git clone https://github.com/NeuroMesh-ai/neuromesh.git
+git clone https://github.com/dnshouet-cpu/neuromesh.git
 python3 src/neuromesh_v5.py --config mynode.json
 ```
 
 MIT licensed. Feedback welcome.
 
-Repository: https://github.com/NeuroMesh-ai/neuromesh
+Repository: https://github.com/dnshouet-cpu/neuromesh

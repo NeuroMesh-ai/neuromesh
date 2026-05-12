@@ -12,7 +12,7 @@ What's new:
 
 No server, no accounts, no tracking. Runs on a Core 2 Duo. MIT license.
 
-⭐ https://github.com/NeuroMesh-ai/neuromesh
+⭐ https://github.com/dnshouet-cpu/neuromesh
 
 ---
 
@@ -28,7 +28,7 @@ Running local LLMs on multiple machines? NeuroMesh v5.2 connects them into a P2P
 Your API keys, your rules. Opt-in sharing with clear warnings.
 
 ```bash
-git clone https://github.com/NeuroMesh-ai/neuromesh.git
+git clone https://github.com/dnshouet-cpu/neuromesh.git
 python3 src/neuromesh_v5.py --config mynode.json
 ```
 
@@ -45,4 +45,4 @@ Built NeuroMesh v5.2 with security in mind:
 ✅ Config templates only — real configs in .gitignore
 ✅ Cloud API keys private by default, opt-in with explicit consent
 
-⭐ https://github.com/NeuroMesh-ai/neuromesh
+⭐ https://github.com/dnshouet-cpu/neuromesh

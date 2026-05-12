@@ -15,4 +15,4 @@ New in v5.2:
 
 It runs on a Core 2 Duo with 2.5GB RAM. 4 dependencies. MIT license.
 
-https://github.com/NeuroMesh-ai/neuromesh
+https://github.com/dnshouet-cpu/neuromesh

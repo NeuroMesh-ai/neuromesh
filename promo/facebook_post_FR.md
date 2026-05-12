@@ -13,4 +13,4 @@ Pas de serveur central. Pas de compte. Vos machines parlent directement.
 
 Tourne même sur un Core 2 Duo avec 2.5Go de RAM. Si si.
 
-⭐ github.com/NeuroMesh-ai/neuromesh
+⭐ github.com/dnshouet-cpu/neuromesh

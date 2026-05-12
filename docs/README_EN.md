@@ -1,12 +1,12 @@
 # 🌐 NeuroMesh v5
 
-[![Version](https://img.shields.io/badge/version-5.2.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-Decentralized-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![E2E Encrypted](https://img.shields.io/badge/E2E-Encrypted-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
-**Distributed P2P AI network with public mesh. Share compute, share models, stay private. v5.2: Multi-LLM specialist routing.**
+**Distributed P2P AI network with public mesh. Share compute, share models, stay private. v5.1: Multi-LLM specialist routing.**
 
 > 🌍 [Documentation en français](./README_FR.md) | 🌐 [Documentación en español](./README_ES.md) | 🌐 [中文文档](./README_ZH.md) | 🌐 [हिन्दी](./README_HI.md) | 🌐 [العربية](./README_AR.md) | 🌐 [Português](./README_PT.md) | 🌐 [日本語](./README_JA.md)
 
@@ -37,72 +37,6 @@ NeuroMesh connects machines into a peer-to-peer AI network. Your machines talk t
 | 📊 **Contribution Quotas** | Share more, get more. 0 sharing = 1 req/5min. Generous sharing = 20+ req/min. |
 | 🖥️ **Desktop Interface** | Chat, Share, Network, Config — 4 tabs, zero terminal needed. |
 | 🔧 **4 Deploy Modes** | Service, App, Sidekick, Plugin — one binary, four lifestyles. |
-
----
-
-## 🆕 v5.2 Additions
-
-| Feature | Description |
-|---------|-------------|
-| 🔄 **Network Sync** | Real-time state synchronization across all P2P nodes |
-| 📋 **Model Registry** | Centralized catalog of all models across the network with metadata |
-| 💰 **Credit System** | Earn credits by sharing, spend credits by querying. Fair resource distribution. |
-| 🎯 **Specialist Router** | 12 specialty schemas (code, reasoning, creative, math, etc.) with auto-detection and routing to the best model per specialty |
-| 🔀 **6 Multi-LLM modes** | Single, Vote, Chain, Fuse, Compare, Specialist |
-| 🔒 **Security Audit** | Full security re-audit with fixes for v5.2 |
-
----
-
-## 🎯 Specialist Router (v5.2)
-
-NeuroMesh auto-detects what kind of prompt you're sending and routes it to the best model.
-
-### 12 Specialty Schemas
-
-| Specialty | Detects | Best model (default) |
-|-----------|---------|---------------------|
-| **Code** | `python`, `function`, `debug`, `implement` | deepseek-v3.1:671b |
-| **Reasoning** | `analyze`, `explain`, `compare`, `evaluate` | deepseek-v3.1:671b |
-| **Creative** | `write`, `story`, `poem`, `creative` | glm-5.1:cloud |
-| **Math** | `calculate`, `equation`, `theorem`, `proof` | deepseek-v3.1:671b |
-| **Conversation** | casual chat, greetings | glm-5.1:cloud |
-| **General** | default fallback | glm-5.1:cloud |
-| **Multilingual** | `translate`, language detection | glm-5.1:cloud |
-| **Tool Use** | `api`, `curl`, `http` | qwen3-coder-next |
-| **Instruction** | step-by-step, how-to | glm-5.1:cloud |
-| **Science** | `research`, `hypothesis`, `experiment` | deepseek-v3.1:671b |
-| **Data** | `csv`, `json`, `parse`, `dataset` | deepseek-v3.1:671b |
-| **Security** | `encrypt`, `vulnerability`, `pentest` | deepseek-v3.1:671b |
-
-### 6 Multi-LLM Modes
-
-| Mode | How it works |
-|------|-------------|
-| **1️⃣ Single** | One model responds (default) |
-| **🗳️ Vote** | 3 models respond → best answer wins |
-| **🔗 Chain** | Model A → refines → Model B → final |
-| **🔀 Fuse** | 3 models → merged synthesis |
-| **⚖️ Compare** | 2+ models side by side |
-| **🎯 Specialist** | Auto-detect specialty → best model per specialty |
-
-### Quick Examples
-
-```bash
-# Auto-detect specialty
-neuromesh -q "Write a Python web scraper"
-
-# Force code specialty
-curl -X POST http://localhost:8080/api/query \
-  -H "Content-Type: application/json" \
-  -d '{"prompt":"Sort this array","specialty":"code"}'
-
-# Compare two models
-neuromesh --multi compare -q "Explain quantum entanglement"
-
-# Multi-model vote
-curl -X POST http://localhost:8080/api/multi \
-  -d '{"prompt":"Best approach for microservices?","mode":"vote","models":["deepseek-v3.1:671b-cloud","glm-5.1:cloud","qwen3-coder-next:cloud"]}'
-```
 
 ---
 

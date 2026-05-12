@@ -4,430 +4,461 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NeuroMesh — P2P Distributed AI Network</title>
+<meta name="description" content="Lightweight P2P distributed AI network. No central server. No accounts. Install, connect, query.">
+<meta name="theme-color" content="#0a0e27">
+<link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
 <style>
-/* ── Reset & Base ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0B0F29;--bg2:#111538;--bg3:#1a1f4a;--teal:#4ecdc4;--teal2:#36b5ab;
-  --text:#e0e6f0;--muted:#8892b0;--code-bg:#0d1230;--border:#1e2556;
-  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
-  --mono:'SF Mono','Fira Code','Cascadia Code',monospace;
+  --bg:#0a0e1a;--bg2:#111527;--bg3:#1a1f36;
+  --green:#4ecdc4;--green2:#3ab8a8;--cyan:#5ce0d6;
+  --pink:#ff6b6b;--yellow:#ffe66d;
+  --text:#e0e4f0;--text2:#9ba3bf;--text3:#6b7394;
+  --border:#222845;--radius:12px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --mono:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;
 }
-html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
-a{color:var(--teal);text-decoration:none;transition:color .2s}
-a:hover{color:var(--teal2)}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--green);text-decoration:none;transition:color .2s}
+a:hover{color:var(--cyan)}
+::selection{background:var(--green);color:var(--bg)}
+code,pre{font-family:var(--mono)}
 
-/* ── Utility ── */
-.container{max-width:1100px;margin:0 auto;padding:0 24px}
-.section{padding:80px 0}
-.section-title{font-size:2rem;font-weight:700;margin-bottom:12px;text-align:center}
-.section-sub{text-align:center;color:var(--muted);margin-bottom:48px;font-size:1.05rem}
-.badge{display:inline-block;background:var(--teal);color:var(--bg);font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;vertical-align:middle;margin-left:8px}
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between}
+nav .logo{display:flex;align-items:center;gap:.6rem;font-weight:700;font-size:1.15rem;color:#fff}
+nav .logo img{width:32px;height:32px}
+nav .links{display:flex;gap:1.5rem;font-size:.85rem}
+nav .links a{color:var(--text2);transition:color .2s}
+nav .links a:hover{color:var(--green)}
+nav .gh{background:var(--green);color:var(--bg);padding:.35rem 1rem;border-radius:20px;font-weight:600;font-size:.8rem;transition:transform .2s,box-shadow .2s}
+nav .gh:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(78,205,196,.3);color:var(--bg)}
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
 
-/* ── Nav ── */
-nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(11,15,41,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 0}
-nav .container{display:flex;align-items:center;justify-content:space-between}
-nav .logo{font-size:1.25rem;font-weight:800;color:var(--teal);letter-spacing:-.5px}
-nav .logo span{color:var(--text)}
-nav ul{list-style:none;display:flex;gap:24px}
-nav a{color:var(--muted);font-size:.9rem;transition:color .2s}
-nav a:hover{color:var(--teal)}
-@media(max-width:768px){nav ul{display:none}}
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:50%;left:50%;width:800px;height:800px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(78,205,196,.08) 0%,transparent 70%);pointer-events:none}
+.hero-logo{width:140px;height:140px;margin-bottom:1.5rem;filter:drop-shadow(0 0 40px rgba(78,205,196,.3));animation:float 6s ease-in-out infinite}
+.hero h1{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.5rem;background:linear-gradient(135deg,#fff 0%,var(--green) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .tagline{font-size:clamp(1.1rem,2.5vw,1.5rem);color:var(--text2);margin-bottom:.3rem;font-weight:400}
+.hero .tagline-fr{font-size:1rem;color:var(--text3);font-style:italic;margin-bottom:2rem}
+.hero .version{display:inline-block;background:var(--bg3);border:1px solid var(--border);color:var(--green);padding:.2rem .7rem;border-radius:20px;font-size:.75rem;font-family:var(--mono);margin-bottom:2rem}
+.hero .badges{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-bottom:2.5rem}
+.hero .badges span{background:var(--bg3);border:1px solid var(--border);padding:.25rem .7rem;border-radius:20px;font-size:.75rem;color:var(--text2)}
+.hero .cta{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.8rem;border-radius:var(--radius);font-weight:600;font-size:.95rem;transition:all .2s;cursor:pointer;border:none;font-family:var(--font)}
+.btn-primary{background:var(--green);color:var(--bg)}
+.btn-primary:hover{background:var(--cyan);color:var(--bg);transform:translateY(-2px);box-shadow:0 8px 30px rgba(78,205,196,.25)}
+.btn-secondary{background:transparent;color:var(--green);border:1px solid var(--green)}
+.btn-secondary:hover{background:rgba(78,205,196,.1);transform:translateY(-2px)}
 
-/* ── Hero ── */
-#hero{padding:140px 0 80px;text-align:center;position:relative;overflow:hidden}
-#hero::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(78,205,196,.12) 0%,transparent 70%);pointer-events:none}
-.hero-banner{max-width:100%;border-radius:12px;margin-bottom:32px;box-shadow:0 0 60px rgba(78,205,196,.15)}
-.hero-title{font-size:3.5rem;font-weight:900;letter-spacing:-1px;margin-bottom:8px}
-.hero-title .accent{color:var(--teal)}
-.hero-sub{font-size:1.35rem;color:var(--muted);margin-bottom:28px}
-.hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:var(--bg);font-weight:700;padding:14px 32px;border-radius:8px;font-size:1rem;transition:transform .2s,box-shadow .2s}
-.hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(78,205,196,.3)}
-.hero-cta svg{width:18px;height:18px}
-@media(max-width:600px){.hero-title{font-size:2.2rem}.hero-sub{font-size:1rem}}
+/* Stats bar */
+.stats{display:flex;justify-content:center;gap:3rem;padding:3rem 2rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg2)}
+.stat{text-align:center}
+.stat .num{font-size:1.8rem;font-weight:800;color:var(--green);font-family:var(--mono)}
+.stat .label{font-size:.8rem;color:var(--text3);margin-top:.2rem}
 
-/* ── Features ── */
-.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
-.feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px 24px;transition:border-color .3s,transform .3s}
-.feature-card:hover{border-color:var(--teal);transform:translateY(-4px)}
-.feature-icon{font-size:1.8rem;margin-bottom:12px}
-.feature-card h3{font-size:1.05rem;margin-bottom:6px}
-.feature-card p{color:var(--muted);font-size:.9rem;line-height:1.5}
+/* Sections */
+section{padding:5rem 2rem;max-width:1100px;margin:0 auto}
+section h2{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;margin-bottom:1rem;text-align:center}
+section h2 .accent{color:var(--green)}
+section .subtitle{text-align:center;color:var(--text2);max-width:600px;margin:0 auto 3rem;font-size:1.05rem}
 
-/* ── Architecture ── */
-.arch-svg{text-align:center;margin:0 auto;max-width:700px}
-.arch-svg svg{width:100%;height:auto}
+/* Features grid */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+.feature{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.8rem;transition:all .3s;position:relative;overflow:hidden}
+.feature:hover{border-color:var(--green);transform:translateY(-3px);box-shadow:0 8px 30px rgba(78,205,196,.08)}
+.feature .icon{font-size:1.8rem;margin-bottom:.8rem;display:block}
+.feature h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem;color:#fff}
+.feature p{font-size:.9rem;color:var(--text2);line-height:1.6}
+.feature .tag{display:inline-block;background:rgba(78,205,196,.1);color:var(--green);padding:.15rem .5rem;border-radius:4px;font-size:.7rem;font-family:var(--mono);margin-top:.8rem}
 
-/* ── Code blocks ── */
-.code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:20px 24px;font-family:var(--mono);font-size:.88rem;line-height:1.7;overflow-x:auto;margin-bottom:24px;position:relative}
-.code-block .lang{position:absolute;top:8px;right:14px;color:var(--muted);font-size:.7rem;text-transform:uppercase}
-.code-block .prompt{color:var(--teal)}
-.code-block .cmd{color:#f8f8f2}
-.code-block .comment{color:#5c6a8a}
-.code-block .string{color:#a8e6a3}
+/* Why section */
+.why{background:var(--bg2);max-width:100%;padding:5rem 2rem}
+.why-inner{max-width:900px;margin:0 auto}
+.why h2{text-align:center;margin-bottom:2rem}
+.why p{color:var(--text2);line-height:1.8;margin-bottom:1.2rem;font-size:1.02rem}
+.why strong{color:#fff}
+.why .manifesto{border-left:3px solid var(--green);padding-left:1.5rem;margin:2rem 0;font-style:italic;color:var(--text)}
 
-/* ── Specialist Router ── */
-.router-table{width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:40px}
-.router-table th{text-align:left;padding:12px 16px;background:var(--bg2);color:var(--teal);border-bottom:2px solid var(--teal);font-weight:600}
-.router-table td{padding:10px 16px;border-bottom:1px solid var(--border)}
-.router-table tr:hover td{background:rgba(78,205,196,.04)}
-.modes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.mode-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px}
-.mode-card h4{color:var(--teal);margin-bottom:4px;font-size:1rem}
-.mode-card p{color:var(--muted);font-size:.85rem}
+/* Quick start */
+.steps{display:flex;flex-direction:column;gap:1.5rem;max-width:750px;margin:0 auto}
+.step{display:flex;gap:1.2rem;align-items:flex-start}
+.step-num{width:36px;height:36px;border-radius:50%;background:var(--green);color:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;margin-top:.2rem}
+.step-content h3{font-size:1rem;font-weight:700;margin-bottom:.4rem;color:#fff}
+.step-content p{font-size:.9rem;color:var(--text2)}
 
-/* ── Live Demo Terminal ── */
-.demo-container{max-width:800px;margin:0 auto;background:var(--code-bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.4)}
-.demo-bar{display:flex;align-items:center;gap:8px;padding:12px 18px;background:var(--bg2);border-bottom:1px solid var(--border)}
-.demo-dot{width:12px;height:12px;border-radius:50%}
-.demo-dot.r{background:#ff5f57}.demo-dot.y{background:#febc2e}.demo-dot.g{background:#28c840}
-.demo-title{color:var(--muted);font-size:.8rem;margin-left:8px;font-family:var(--mono)}
-.demo-body{padding:20px 24px;font-family:var(--mono);font-size:.85rem;line-height:1.75;min-height:340px;max-height:440px;overflow-y:auto}
-.demo-line{margin-bottom:4px;white-space:pre-wrap;word-break:break-all}
-.demo-line .pfx{color:var(--teal);font-weight:700}
-.demo-line .out{color:var(--muted)}
-.demo-line .accent{color:#a8e6a3}
-.demo-line .warn{color:#febc2e}
-.demo-cursor{display:inline-block;width:8px;height:16px;background:var(--teal);animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px}
-@keyframes blink{50%{opacity:0}}
+/* Code blocks */
+.code-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:1rem 0 0}
+.code-block .lang{padding:.4rem 1rem;font-size:.7rem;color:var(--text3);font-family:var(--mono);border-bottom:1px solid var(--border);text-transform:uppercase;background:var(--bg2)}
+.code-block pre{padding:1rem 1.2rem;overflow-x:auto;font-size:.85rem;line-height:1.7;color:var(--text2)}
+.code-block .comment{color:var(--text3)}
+.code-block .string{color:var(--green)}
+.code-block .key{color:var(--yellow)}
 
-/* ── Philosophy ── */
-.philosophy{text-align:center;max-width:700px;margin:0 auto}
-.philosophy blockquote{font-size:1.4rem;font-weight:300;line-height:1.6;color:var(--text);border-left:3px solid var(--teal);padding-left:24px;text-align:left}
-.philosophy blockquote strong{color:var(--teal);font-weight:600}
+/* Architecture */
+.arch-container{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;overflow-x:auto}
+.arch-container pre{font-family:var(--mono);font-size:clamp(.7rem,1.5vw,.88rem);color:var(--text);line-height:1.5;text-align:left;white-space:pre}
 
-/* ── Footer ── */
-footer{border-top:1px solid var(--border);padding:40px 0;text-align:center;color:var(--muted);font-size:.85rem}
-footer .btc{font-family:var(--mono);font-size:.75rem;color:var(--teal);word-break:break-all;margin:12px auto;max-width:400px}
-footer a{color:var(--teal)}
+/* API table */
+.api-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.api-table th{text-align:left;padding:.8rem 1rem;background:var(--bg2);color:var(--green);border-bottom:2px solid var(--border);font-weight:600}
+.api-table td{padding:.7rem 1rem;border-bottom:1px solid var(--border);color:var(--text2)}
+.api-table td:first-child{font-family:var(--mono);color:var(--yellow);font-size:.8rem}
+.api-table .method{font-family:var(--mono);color:var(--green);font-weight:600;font-size:.75rem}
+.api-table .auth-yes{color:var(--pink);font-size:.75rem}
+.api-table .auth-no{color:var(--text3);font-size:.75rem}
+.api-wrapper{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
+
+/* CLI */
+.cli-commands{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.8rem}
+.cli-cmd{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;font-family:var(--mono);font-size:.85rem}
+.cli-cmd .cmd{color:var(--green);font-weight:700}
+.cli-cmd .desc{color:var(--text3);font-size:.78rem;margin-top:.3rem;font-family:var(--font)}
+
+/* Footer */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2rem;text-align:center}
+footer .footer-links{display:flex;gap:2rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap}
+footer .footer-links a{color:var(--text2);font-size:.9rem;transition:color .2s}
+footer .footer-links a:hover{color:var(--green)}
+footer .btc{font-family:var(--mono);font-size:.75rem;color:var(--text3);background:var(--bg);padding:.4rem .8rem;border-radius:6px;display:inline-block;margin-top:1rem;word-break:break-all}
+footer .copy{color:var(--text3);font-size:.8rem;margin-top:1.5rem}
+
+/* Animations */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.animate{opacity:0;animation:fadeInUp .6s ease forwards}
+.animate:nth-child(1){animation-delay:.1s}
+.animate:nth-child(2){animation-delay:.2s}
+.animate:nth-child(3){animation-delay:.3s}
+.animate:nth-child(4){animation-delay:.4s}
+.animate:nth-child(5){animation-delay:.5s}
+.animate:nth-child(6){animation-delay:.6s}
+.animate:nth-child(7){animation-delay:.7s}
+.animate:nth-child(8){animation-delay:.8s}
+.animate:nth-child(9){animation-delay:.9s}
+.animate:nth-child(10){animation-delay:1s}
+
+/* Responsive */
+@media(max-width:768px){
+  nav .links{display:none}
+  .hamburger{display:block}
+  nav .links.open{display:flex;flex-direction:column;position:absolute;top:60px;left:0;right:0;background:rgba(10,14,26,.98);padding:1rem 2rem;border-bottom:1px solid var(--border)}
+  .stats{flex-direction:column;gap:1.5rem;padding:2rem}
+  .features-grid{grid-template-columns:1fr}
+  section{padding:3rem 1.2rem}
+  .cli-commands{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
 <!-- Nav -->
 <nav>
-  <div class="container">
-    <div class="logo">Neuro<span>Mesh</span></div>
-    <ul>
-      <li><a href="#features">Features</a></li>
-      <li><a href="#architecture">Architecture</a></li>
-      <li><a href="#quickstart">Quick Start</a></li>
-      <li><a href="#router">Specialist Router</a></li>
-      <li><a href="#demo">Live Demo</a></li>
-      <li><a href="#philosophy">Philosophy</a></li>
-    </ul>
+  <div class="logo">
+    <img src="../assets/logo.svg" alt="UB" width="32" height="32">
+    <span>NeuroMesh</span>
   </div>
+  <div class="links" id="navLinks">
+    <a href="#features">Features</a>
+    <a href="#why">Why</a>
+    <a href="#quickstart">Quick Start</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#api">API</a>
+    <a href="#cli">CLI</a>
+    <a href="https://github.com/NeuroMesh-ai/neuromesh" target="_blank" class="gh">GitHub ↗</a>
+  </div>
+  <button class="hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
 </nav>
 
 <!-- Hero -->
-<section id="hero">
-  <div class="container">
-    <img src="banner.png" alt="NeuroMesh Banner" class="hero-banner" loading="lazy">
-    <h1 class="hero-title"><span class="accent">Neuro</span>Mesh<span class="badge">v5.2</span></h1>
-    <p class="hero-sub">P2P Distributed AI Network</p>
-    <a href="#quickstart" class="hero-cta">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 17l5-5-5-5M6 17l5-5-5-5"/></svg>
-      Get Started
-    </a>
+<section class="hero">
+  <img src="../assets/logo.svg" alt="NeuroMesh Logo" class="hero-logo">
+  <h1>NeuroMesh</h1>
+  <p class="tagline">P2P Distributed AI Network</p>
+  <p class="tagline-fr">Intelligence partagée — Shared Intelligence</p>
+  <span class="version">v4.1.0</span>
+  <div class="badges">
+    <span>🟢 MIT License</span>
+    <span>🐍 Python 3.12+</span>
+    <span>🔗 100% Decentralized</span>
+    <span>🪶 17MB RAM</span>
+  </div>
+  <div class="cta">
+    <a href="#quickstart" class="btn btn-primary">⚡ Get Started</a>
+    <a href="https://github.com/NeuroMesh-ai/neuromesh" target="_blank" class="btn btn-secondary">📂 View on GitHub</a>
   </div>
 </section>
 
+<!-- Stats -->
+<div class="stats">
+  <div class="stat"><div class="num">0.16s</div><div class="label">Startup Time</div></div>
+  <div class="stat"><div class="num">17MB</div><div class="label">RAM Usage</div></div>
+  <div class="stat"><div class="num">4</div><div class="label">Dependencies</div></div>
+  <div class="stat"><div class="num">∞</div><div class="label">Nodes Possible</div></div>
+</div>
+
 <!-- Features -->
-<section id="features" class="section">
-  <div class="container">
-    <h2 class="section-title">Features</h2>
-    <p class="section-sub">Everything you need for distributed, trustless AI compute.</p>
-    <div class="features-grid">
-      <div class="feature-card"><div class="feature-icon">🧠</div><h3>Multi-LLM</h3><p>Route queries across Ollama, OpenAI, Anthropic, Google, Mistral, and more — simultaneously.</p></div>
-      <div class="feature-card"><div class="feature-icon">🔗</div><h3>CRDT Memory</h3><p>Conflict-free replicated shared memory across all nodes. Eventually consistent, always available.</p></div>
-      <div class="feature-card"><div class="feature-icon">🔑</div><h3>Ed25519 Auth</h3><p>Cryptographic identity for every node. Signed messages, verified trust, zero central authority.</p></div>
-      <div class="feature-card"><div class="feature-icon">🕸️</div><h3>P2P Mesh</h3><p>Full libp2p mesh networking. No central server, no single point of failure, no gatekeepers.</p></div>
-      <div class="feature-card"><div class="feature-icon">🛡️</div><h3>Resource Guard</h3><p>Per-node resource limits. CPU, memory, and GPU budgets enforced locally — no exploitation.</p></div>
-      <div class="feature-card"><div class="feature-icon">💰</div><h3>Credit System</h3><p>Contribute compute, earn credits. Spend credits, get answers. Fair, transparent, peer-to-peer.</p></div>
-      <div class="feature-card"><div class="feature-icon">🎯</div><h3>Specialist Router</h3><p>12 specialty schemas auto-route queries to the best-qualified nodes in the network.</p></div>
-      <div class="feature-card"><div class="feature-icon">🔄</div><h3>Network Sync</h3><p>State synchronization across the mesh. New nodes catch up instantly via CRDT gossip.</p></div>
+<section id="features">
+  <h2>Packed with <span class="accent">Power</span></h2>
+  <p class="subtitle">Everything you need for a distributed AI network — nothing you don't.</p>
+  <div class="features-grid">
+    <div class="feature animate">
+      <span class="icon">🤖</span>
+      <h3>Multi-LLM Providers</h3>
+      <p>Ollama, OpenAI, Anthropic, and any OpenAI-compatible endpoint. Bring your own key, share models across the P2P network automatically.</p>
+      <span class="tag">BYOK</span>
+    </div>
+    <div class="feature animate">
+      <span class="icon">🌐</span>
+      <h3>P2P WebSocket</h3>
+      <p>Real-time bidirectional sync via WebSocket. Gossip protocol propagates changes across all nodes. No central server — ever.</p>
+      <span class="tag">Gossip Protocol</span>
+    </div>
+    <div class="feature animate">
+      <span class="icon">🧠</span>
+      <h3>Distributed Memory</h3>
+      <p>CRDT conflict-free replication, vector clocks for causal ordering, gossip propagation, and TTL support. Memory that never conflicts.</p>
+      <span class="tag">CRDT + Vector Clocks</span>
+    </div>
+    <div class="feature animate">
+      <span class="icon">🔐</span>
+      <h3>Decentralized Auth</h3>
+      <p>Ed25519 identity keys, HMAC shared secrets, Web of Trust (PGP-like transitive trust), stealth mode for hidden nodes.</p>
+      <span class="tag">No Accounts Needed</span>
+    </div>
+    <div class="feature animate">
+      <span class="icon">⚡</span>
+      <h3>Smart AI Routing</h3>
+      <p>Local first → cloud on demand → peer failover. Ensemble consensus queries multiple models and returns the best answer. Circuit breakers protect the network.</p>
+      <span class="tag">Auto-Failover</span>
+    </div>
+    <div class="feature animate">
+      <span class="icon">📊</span>
+      <h3>Sharing Quotas</h3>
+      <p>Score-based limits: share more compute, earn more access. 1–200 queries/minute depending on your contribution. Fair by design.</p>
+      <span class="tag">Merit-Based</span>
+    </div>
+    <div class="feature animate">
+      <span class="icon">🔍</span>
+      <h3>Auto-Discovery</h3>
+      <p>Static config, Tailscale auto-discovery, or dynamic API registration. Nodes find each other — zero manual work on Tailscale.</p>
+      <span class="tag">Zero Config</span>
+    </div>
+    <div class="feature animate">
+      <span class="icon">🖥️</span>
+      <h3>Interactive CLI</h3>
+      <p>The <code>neuromesh</code> command with /status, /peers, /models, /quota, /ensemble, and more. Full control from your terminal.</p>
+      <span class="tag">Terminal-First</span>
+    </div>
+    <div class="feature animate">
+      <span class="icon">🪶</span>
+      <h3>Lightweight</h3>
+      <p>0.16s startup, 17MB RAM, 4 dependencies. Runs on a Raspberry Pi, a Core 2 Duo, or anything with Python 3.12+.</p>
+      <span class="tag">Minimal Footprint</span>
+    </div>
+    <div class="feature animate">
+      <span class="icon">🔌</span>
+      <h3>OpenClaw Plugin</h3>
+      <p>One command install: <code>openclaw skill install neuromesh</code>. Integrates with your OpenClaw agent seamlessly.</p>
+      <span class="tag">1-Click Install</span>
+    </div>
+  </div>
+</section>
+
+<!-- Why this exists -->
+<section id="why" class="why">
+  <div class="why-inner">
+    <h2>Why This <span class="accent">Exists</span></h2>
+    <p>We're tired of <strong>AI as a service</strong>. Monthly subscriptions. API keys that expire. Rate limits you didn't ask for. Vendor lock-in. Data you don't control. Servers that go down and take your workflow with them.</p>
+    <p>NeuroMesh is the <strong>antidote</strong>. Your machines, your models, your memory. Connect them peer-to-peer. No middleman. No subscription. No "enterprise tier".</p>
+    <div class="manifesto">
+      "If you can run Python, you can run a node. If you have two machines, you have a network. If your neighbor joins, it gets stronger. That's it. That's the whole pitch."
+    </div>
+    <p>The network doesn't phone home. It doesn't meter your usage. It doesn't upsell you. It <strong>just works</strong> — locally, privately, and reliably.</p>
+    <p>Every node is equal. No master, no slave, no controller. Memory syncs via CRDT so there are <strong>never conflicts</strong>. Auth is decentralized — your keys, your trust. Add a node, and the whole network gains compute. Remove one, and the rest keeps running.</p>
+    <p><strong>This is AI infrastructure for people who build things, not for people who buy things.</strong></p>
+  </div>
+</section>
+
+<!-- Quick Start -->
+<section id="quickstart">
+  <h2>Quick <span class="accent">Start</span></h2>
+  <p class="subtitle">Running in under 2 minutes. Seriously.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Clone the repo</h3>
+        <p>Grab the code and enter the directory.</p>
+        <div class="code-block">
+          <div class="lang">bash</div>
+          <pre><span class="comment"># Clone &amp; enter</span>
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+<span class="key">cd</span> NeuroMesh</pre>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Run with default config</h3>
+        <p>That's it. One command. Python 3.12+ required.</p>
+        <div class="code-block">
+          <div class="lang">bash</div>
+          <pre>python3 src/neuromesh_v4.py
+
+<span class="comment"># Or with a custom config</span>
+python3 src/neuromesh_v4.py --config config/bug.json</pre>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Connect your nodes</h3>
+        <p>Set a shared P2P secret and add peers. They discover each other automatically.</p>
+        <div class="code-block">
+          <div class="lang">json</div>
+          <pre>{
+  <span class="key">"node_name"</span>: <span class="string">"mynode"</span>,
+  <span class="key">"port"</span>: <span class="string">8080</span>,
+  <span class="key">"p2p_secret"</span>: <span class="string">"your-shared-secret"</span>,
+  <span class="key">"peers"</span>: [
+    {<span class="key">"name"</span>: <span class="string">"other-node"</span>, <span class="key">"host"</span>: <span class="string">"192.168.1.100"</span>, <span class="key">"port"</span>: <span class="string">8080</span>}
+  ]
+}</pre>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Query your network</h3>
+        <p>Memory sync, model sharing, and real-time communication — all automatic.</p>
+        <div class="code-block">
+          <div class="lang">bash</div>
+          <pre><span class="comment"># Ping a node</span>
+curl http://localhost:8080/api/ping
+
+<span class="comment"># Query AI with auth</span>
+TS=$(date +%s)
+SIG=$(echo -n <span class="string">"/api/query:$TS"</span> | openssl dgst -sha256 \
+  -hmac <span class="string">"your-secret"</span> | awk <span class="string">'{print $NF}'</span>)
+curl -X POST http://localhost:8080/api/query \
+  -H <span class="string">"X-NeuroMesh-Auth: $SIG"</span> \
+  -H <span class="string">"X-NeuroMesh-TS: $TS"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"prompt":"Hello!","model":"glm-5.1:cloud"}'</span></pre>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- Architecture -->
-<section id="architecture" class="section" style="background:var(--bg2)">
-  <div class="container">
-    <h2 class="section-title">Architecture</h2>
-    <p class="section-sub">A flat P2P mesh — no masters, no minions.</p>
-    <div class="arch-svg">
-      <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
-        <!-- Connections -->
-        <line x1="300" y1="80" x2="140" y2="200" stroke="#1e2556" stroke-width="2"/>
-        <line x1="300" y1="80" x2="460" y2="200" stroke="#1e2556" stroke-width="2"/>
-        <line x1="300" y1="80" x2="300" y2="320" stroke="#1e2556" stroke-width="2"/>
-        <line x1="140" y1="200" x2="460" y2="200" stroke="#1e2556" stroke-width="2"/>
-        <line x1="140" y1="200" x2="300" y2="320" stroke="#1e2556" stroke-width="2"/>
-        <line x1="460" y1="200" x2="300" y2="320" stroke="#1e2556" stroke-width="2"/>
-        <!-- Animated pulses on connections -->
-        <circle r="4" fill="#4ecdc4"><animateMotion dur="3s" repeatCount="indefinite" path="M300,80 L140,200"/></circle>
-        <circle r="4" fill="#4ecdc4"><animateMotion dur="3.5s" repeatCount="indefinite" path="M140,200 L460,200"/></circle>
-        <circle r="4" fill="#4ecdc4"><animateMotion dur="4s" repeatCount="indefinite" path="M460,200 L300,320"/></circle>
-        <circle r="4" fill="#4ecdc4"><animateMotion dur="2.8s" repeatCount="indefinite" path="M300,80 L300,320"/></circle>
-        <!-- Nodes -->
-        <circle cx="300" cy="80" r="28" fill="#111538" stroke="#4ecdc4" stroke-width="2"/>
-        <text x="300" y="76" text-anchor="middle" fill="#4ecdc4" font-size="11" font-weight="700">Node</text>
-        <text x="300" y="90" text-anchor="middle" fill="#8892b0" font-size="9">Alpha</text>
-
-        <circle cx="140" cy="200" r="28" fill="#111538" stroke="#4ecdc4" stroke-width="2"/>
-        <text x="140" y="196" text-anchor="middle" fill="#4ecdc4" font-size="11" font-weight="700">Node</text>
-        <text x="140" y="210" text-anchor="middle" fill="#8892b0" font-size="9">Beta</text>
-
-        <circle cx="460" cy="200" r="28" fill="#111538" stroke="#4ecdc4" stroke-width="2"/>
-        <text x="460" y="196" text-anchor="middle" fill="#4ecdc4" font-size="11" font-weight="700">Node</text>
-        <text x="460" y="210" text-anchor="middle" fill="#8892b0" font-size="9">Gamma</text>
-
-        <circle cx="300" cy="320" r="28" fill="#111538" stroke="#4ecdc4" stroke-width="2"/>
-        <text x="300" y="316" text-anchor="middle" fill="#4ecdc4" font-size="11" font-weight="700">Node</text>
-        <text x="300" y="330" text-anchor="middle" fill="#8892b0" font-size="9">Delta</text>
-
-        <!-- Labels -->
-        <text x="300" y="390" text-anchor="middle" fill="#8892b0" font-size="12">libp2p gossip · CRDT sync · Ed25519 trust</text>
-      </svg>
-    </div>
+<section id="architecture">
+  <h2>Architecture</h2>
+  <p class="subtitle">Every node is identical. No master. No slave. Pure P2P.</p>
+  <div class="arch-container">
+<pre>┌─────────────────────────────────────────────┐
+│                  Node (Bug)                  │
+│  ┌─────────┐  ┌──────────┐  ┌────────────┐ │
+│  │ HTTP    │  │WebSocket │  │  CRDT      │ │
+│  │ REST API│  │  Server  │  │  Memory    │ │
+│  └────┬────┘  └────┬─────┘  └─────┬──────┘ │
+│       │            │              │         │
+│       └──────┬─────┘──────────────┘         │
+│              │                              │
+│       ┌──────┴──────┐                       │
+│       │   AI Router │◄──── Ollama (local)   │
+│       └──────┬──────┘                       │
+│              │                              │
+│       ┌──────┴──────┐                       │
+│       │  Peer Mgr   │◄──── Tailscale/Static │
+│       └─────────────┘                       │
+└──────────────┬──────────────────────────────┘
+               │  WS + HTTP (gossip)
+┌──────────────┴──────────────────────────────┐
+│               Node (Pinky)                  │
+│         (same architecture)                 │
+└────────────────────────────────────────────┘</pre>
   </div>
 </section>
 
-<!-- Quick Start -->
-<section id="quickstart" class="section">
-  <div class="container">
-    <h2 class="section-title">Quick Start</h2>
-    <p class="section-sub">Up and running in under 2 minutes.</p>
-    <div class="code-block"><span class="lang">bash</span><span class="comment"># Install NeuroMesh</span>
-<span class="prompt">$ </span><span class="cmd">npm install -g neuromesh</span>
-
-<span class="comment"># Initialize your node identity</span>
-<span class="prompt">$ </span><span class="cmd">neuromesh init</span>
-<span class="out">✓ Generated Ed25519 keypair</span>
-<span class="out">✓ Node ID: 12D3KooW...q7Rx</span>
-
-<span class="comment"># Join the mesh</span>
-<span class="prompt">$ </span><span class="cmd">neuromesh start</span>
-<span class="out">✓ Connected to 23 peers via libp2p</span>
-<span class="out">✓ CRDT memory synced (142 entries)</span>
-<span class="out">✓ Credit balance: 1000</span></div>
-
-    <div class="code-block"><span class="lang">bash</span><span class="comment"># Query the mesh</span>
-<span class="prompt">$ </span><span class="cmd">neuromesh -q <span class="string">"Explain CRDTs in simple terms"</span></span>
-<span class="out">→ Routed to specialist: distributed-systems</span>
-<span class="out">→ Response from node 12D3KooW...pLm9</span>
-<span class="out">  CRDTs (Conflict-free Replicated Data Types) are data structures</span>
-<span class="out">  that can be replicated across multiple computers and merged</span>
-<span class="out">  without coordination, always converging to the same state...</span></div>
-  </div>
-</section>
-
-<!-- Specialist Router -->
-<section id="router" class="section" style="background:var(--bg2)">
-  <div class="container">
-    <h2 class="section-title">Specialist Router</h2>
-    <p class="section-sub">12 specialty schemas — queries find the right node automatically.</p>
-    <table class="router-table">
-      <thead><tr><th>Specialty</th><th>Schema ID</th><th>Example Query</th></tr></thead>
+<!-- API Reference -->
+<section id="api">
+  <h2>API <span class="accent">Reference</span></h2>
+  <p class="subtitle">REST + WebSocket. Simple, typed, authenticated.</p>
+  <div class="api-wrapper">
+    <table class="api-table">
+      <thead>
+        <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr>
+      </thead>
       <tbody>
-        <tr><td>Code Generation</td><td><code>code-gen</code></td><td>"Write a Python REST client"</td></tr>
-        <tr><td>Code Review</td><td><code>code-review</code></td><td>"Review this PR for bugs"</td></tr>
-        <tr><td>Data Analysis</td><td><code>data-analysis</code></td><td>"Analyze this CSV dataset"</td></tr>
-        <tr><td>Creative Writing</td><td><code>creative</code></td><td>"Write a short sci-fi story"</td></tr>
-        <tr><td>Math & Logic</td><td><code>math-logic</code></td><td>"Prove this theorem"</td></tr>
-        <tr><td>Translation</td><td><code>translation</code></td><td>"Translate this to Japanese"</td></tr>
-        <tr><td>Security Audit</td><td><code>security</code></td><td>"Audit this contract"</td></tr>
-        <tr><td>Distributed Systems</td><td><code>dist-sys</code></td><td>"Explain CRDT consensus"</td></tr>
-        <tr><td>DevOps & Infra</td><td><code>devops</code></td><td>"Terraform module for EKS"</td></tr>
-        <tr><td>Scientific Research</td><td><code>research</code></td><td>"Summarize this paper"</td></tr>
-        <tr><td>Education</td><td><code>education</code></td><td>"Teach me neural networks"</td></tr>
-        <tr><td>General QA</td><td><code>general</code></td><td>"What is quantum computing?"</td></tr>
+        <tr><td><span class="method">GET</span></td><td>/api/ping</td><td><span class="auth-no">No</span></td><td>Health check</td></tr>
+        <tr><td><span class="method">GET</span></td><td>/api/status</td><td><span class="auth-no">No</span></td><td>Node status, peers, memory stats</td></tr>
+        <tr><td><span class="method">GET</span></td><td>/api/memory/{key}</td><td><span class="auth-no">No</span></td><td>Read a memory entry</td></tr>
+        <tr><td><span class="method">POST</span></td><td>/api/memory/set</td><td><span class="auth-yes">Yes</span></td><td>Write a memory entry</td></tr>
+        <tr><td><span class="method">POST</span></td><td>/api/memory/push</td><td><span class="auth-yes">Yes</span></td><td>Push memory entries (sync)</td></tr>
+        <tr><td><span class="method">POST</span></td><td>/api/query</td><td><span class="auth-yes">Yes</span></td><td>Query AI models</td></tr>
+        <tr><td><span class="method">POST</span></td><td>/api/brain/chain</td><td><span class="auth-yes">Yes</span></td><td>Chain multiple AI queries</td></tr>
+        <tr><td><span class="method">POST</span></td><td>/api/trust/sign</td><td><span class="auth-yes">Yes</span></td><td>Sign a peer's key (Web of Trust)</td></tr>
+        <tr><td><span class="method">GET</span></td><td>/api/trust/{key}</td><td><span class="auth-no">No</span></td><td>Check trust score</td></tr>
+        <tr><td><span class="method">GET</span></td><td>/</td><td><span class="auth-no">No</span></td><td>Web dashboard</td></tr>
       </tbody>
     </table>
-
-    <h3 style="text-align:center;margin-bottom:24px;color:var(--text)">6 Multi-LLM Modes</h3>
-    <div class="modes-grid">
-      <div class="mode-card"><h4>🔀 Round Robin</h4><p>Distribute queries evenly across all available LLMs. Simple load balancing.</p></div>
-      <div class="mode-card"><h4>⚡ Fastest</h4><p>Route to whichever LLM responds first. Speed-optimized.</p></div>
-      <div class="mode-card"><h4>🏆 Best Quality</h4><p>Always use the highest-rated model for the specialty. Quality-first.</p></div>
-      <div class="mode-card"><h4>🗳️ Vote</h4><p>Query multiple LLMs, aggregate responses by consensus. Democratic answers.</p></div>
-      <div class="mode-card"><h4>📊 Benchmark</h4><p>Run same query across all LLMs, compare outputs side-by-side.</p></div>
-      <div class="mode-card"><h4>🎯 Adaptive</h4><p>Auto-select based on query type, cost, and latency. Smart routing.</p></div>
+  </div>
+  <div style="margin-top:2rem">
+    <h3 style="font-size:1.1rem;margin-bottom:1rem;color:var(--green)">WebSocket Messages</h3>
+    <p style="color:var(--text2);font-size:.9rem;margin-bottom:1rem">Connect to <code style="color:var(--yellow)">ws://host:port/ws</code> and send typed JSON:</p>
+    <div class="code-block">
+      <div class="lang">json</div>
+      <pre>{<span class="key">"type"</span>: <span class="string">"auth"</span>,  <span class="key">"hmac"</span>: <span class="string">"&lt;signature&gt;"</span>,  <span class="key">"ts"</span>: <span class="string">"&lt;timestamp&gt;"</span>}
+{<span class="key">"type"</span>: <span class="string">"ping"</span>,  <span class="key">"timestamp"</span>: <span class="string">1234567890</span>}
+{<span class="key">"type"</span>: <span class="string">"query"</span>, <span class="key">"prompt"</span>: <span class="string">"What is AI?"</span>, <span class="key">"model"</span>: <span class="string">"glm-5.1:cloud"</span>}
+{<span class="key">"type"</span>: <span class="string">"memory_update"</span>, <span class="key">"key"</span>: <span class="string">"mykey"</span>, <span class="key">"entry"</span>: {<span class="key">"value"</span>: <span class="string">"mydata"</span>}}</pre>
     </div>
   </div>
 </section>
 
-<!-- Live Demo -->
-<section id="demo" class="section">
-  <div class="container">
-    <h2 class="section-title">Live Demo</h2>
-    <p class="section-sub">Try it. Watch the mesh respond.</p>
-    <div class="demo-container">
-      <div class="demo-bar">
-        <span class="demo-dot r"></span><span class="demo-dot y"></span><span class="demo-dot g"></span>
-        <span class="demo-title">neuromesh — interactive</span>
-      </div>
-      <div class="demo-body" id="demo-body">
-        <!-- JS fills this -->
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Philosophy -->
-<section id="philosophy" class="section" style="background:var(--bg2)">
-  <div class="container">
-    <h2 class="section-title">Philosophy</h2>
-    <p class="section-sub">Why we built this.</p>
-    <div class="philosophy">
-      <blockquote>
-        <strong>No mining.</strong> No premium tier. No hidden costs.<br><br>
-        Symbiosis, not hierarchy.<br><br>
-        Every node contributes. Every node benefits. The network is the product — and it belongs to everyone in it.
-      </blockquote>
-    </div>
+<!-- CLI -->
+<section id="cli">
+  <h2>Interactive <span class="accent">CLI</span></h2>
+  <p class="subtitle">Full control from your terminal. The <code>neuromesh</code> command.</p>
+  <div class="cli-commands">
+    <div class="cli-cmd"><span class="cmd">/status</span><div class="desc">Node health, uptime, peers</div></div>
+    <div class="cli-cmd"><span class="cmd">/peers</span><div class="desc">Connected peers &amp; latency</div></div>
+    <div class="cli-cmd"><span class="cmd">/models</span><div class="desc">Available AI models</div></div>
+    <div class="cli-cmd"><span class="cmd">/quota</span><div class="desc">Your sharing score &amp; limits</div></div>
+    <div class="cli-cmd"><span class="cmd">/ensemble</span><div class="desc">Multi-model consensus</div></div>
+    <div class="cli-cmd"><span class="cmd">/memory</span><div class="desc">CRDT memory browser</div></div>
+    <div class="cli-cmd"><span class="cmd">/trust</span><div class="desc">Web of Trust status</div></div>
+    <div class="cli-cmd"><span class="cmd">/discover</span><div class="desc">Find new peers</div></div>
   </div>
 </section>
 
 <!-- Footer -->
 <footer>
-  <div class="container">
-    <p>Built by Bug 🐛 and <a href="https://github.com/denis-houet">Denis Houet</a></p>
-    <p class="btc">BTC: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</p>
-    <p style="margin-top:8px">Licensed under <a href="https://opensource.org/licenses/MIT">MIT License</a></p>
-    <p style="margin-top:16px;font-size:.75rem;color:var(--border)">NeuroMesh v5.2 — P2P Distributed AI Network</p>
+  <div class="footer-links">
+    <a href="https://github.com/NeuroMesh-ai/neuromesh" target="_blank">📂 GitHub</a>
+    <a href="https://github.com/NeuroMesh-ai/neuromesh/blob/main/LICENSE" target="_blank">📄 MIT License</a>
+    <a href="#features">✨ Features</a>
+    <a href="#quickstart">⚡ Quick Start</a>
+    <a href="#api">📡 API</a>
+  </div>
+  <div style="color:var(--text2);font-size:.85rem;margin-bottom:.5rem">Support the project — BTC donations welcome</div>
+  <div class="btc">bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x</div>
+  <div class="copy">
+    Built by Bug 🐛 &amp; Denis Houet — No mining. No premium tier. No hidden costs. Just free, open, distributed AI.
   </div>
 </footer>
 
+<!-- Scroll animations -->
 <script>
-// ── Live Demo Terminal Simulator ──
-const demoLines = [
-  { text: '$ neuromesh start', type: 'cmd', delay: 0 },
-  { text: '✓ Node identity loaded (Ed25519)', type: 'out', delay: 400 },
-  { text: '✓ libp2p mesh connected — 47 peers', type: 'out', delay: 300 },
-  { text: '✓ CRDT memory synced (312 entries)', type: 'out', delay: 250 },
-  { text: '✓ Resource guard active (CPU 60%, MEM 8GB, GPU 1)', type: 'out', delay: 200 },
-  { text: '✓ Credit balance: 2,450', type: 'out', delay: 150 },
-  { text: '', type: 'blank', delay: 600 },
-  { text: '$ neuromesh -q "Write a Python web scraper"', type: 'cmd', delay: 800 },
-  { text: '→ Routed to specialist: code-gen', type: 'out', delay: 300 },
-  { text: '→ LLM: ollama/qwen3 (local)', type: 'out', delay: 200 },
-  { text: '→ Response from node 12D3KooW...xR4m', type: 'out', delay: 300 },
-  { text: '', type: 'blank', delay: 100 },
-  { text: 'import requests', type: 'accent', delay: 100 },
-  { text: 'from bs4 import BeautifulSoup', type: 'accent', delay: 80 },
-  { text: '', type: 'blank', delay: 60 },
-  { text: 'def scrape(url):', type: 'accent', delay: 80 },
-  { text: '    r = requests.get(url)', type: 'accent', delay: 60 },
-  { text: '    soup = BeautifulSoup(r.text, "html.parser")', type: 'accent', delay: 60 },
-  { text: '    return [a["href"] for a in soup.find_all("a", href=True)]', type: 'accent', delay: 60 },
-  { text: '', type: 'blank', delay: 60 },
-  { text: 'links = scrape("https://example.com")', type: 'accent', delay: 60 },
-  { text: 'print(f"Found {len(links)} links")', type: 'accent', delay: 60 },
-  { text: '', type: 'blank', delay: 600 },
-  { text: '$ neuromesh --multi vote -q "Best approach for microservices?"', type: 'cmd', delay: 800 },
-  { text: '→ Multi-LLM mode: vote (4 models)', type: 'out', delay: 300 },
-  { text: '→ Querying: ollama/qwen3, openai/gpt-4o, anthropic/claude, google/gemini', type: 'out', delay: 400 },
-  { text: '', type: 'blank', delay: 800 },
-  { text: '📊 Vote results:', type: 'warn', delay: 200 },
-  { text: '  3/4 → Event-driven architecture with message queues', type: 'out', delay: 200 },
-  { text: '  2/4 → Domain-driven design for service boundaries', type: 'out', delay: 200 },
-  { text: '  4/4 → Container orchestration (K8s) for deployment', type: 'out', delay: 200 },
-  { text: '', type: 'blank', delay: 200 },
-  { text: '🏆 Consensus: Event-driven + DDD + K8s — agreed by 4/4 models', type: 'accent', delay: 300 },
-  { text: '💰 Cost: 12 credits (3 credits per model)', type: 'out', delay: 150 },
-  { text: '', type: 'blank', delay: 600 },
-  { text: '$ neuromesh status', type: 'cmd', delay: 800 },
-  { text: 'Peers: 47  |  Credits: 2,438  |  Uptime: 4m 12s  |  Queries served: 3', type: 'out', delay: 400 },
-];
-
-const body = document.getElementById('demo-body');
-let i = 0;
-
-function typeLine(lineObj) {
-  if (i >= demoLines.length) {
-    // Loop
-    body.innerHTML = '';
-    i = 0;
-    setTimeout(() => runNext(), 1500);
-    return;
-  }
-
-  const div = document.createElement('div');
-  div.className = 'demo-line';
-
-  if (lineObj.type === 'blank') {
-    div.innerHTML = '&nbsp;';
-  } else if (lineObj.type === 'cmd') {
-    div.innerHTML = '<span class="pfx">$ </span>';
-    const span = document.createElement('span');
-    span.className = 'cmd';
-    span.textContent = lineObj.text.substring(2);
-    div.appendChild(span);
-    // Typing animation for commands
-    const fullText = lineObj.text.substring(2);
-    span.textContent = '';
-    div.querySelector('.pfx').after(span);
-    body.appendChild(div);
-    let ci = 0;
-    const typeChar = () => {
-      if (ci < fullText.length) {
-        span.textContent += fullText[ci++];
-        setTimeout(typeChar, 25 + Math.random() * 35);
-      } else {
-        setTimeout(() => runNext(), 300);
-      }
-    };
-    typeChar();
-    body.scrollTop = body.scrollHeight;
-    return;
-  } else if (lineObj.type === 'accent') {
-    div.innerHTML = '<span class="accent">' + escapeHtml(lineObj.text) + '</span>';
-  } else if (lineObj.type === 'warn') {
-    div.innerHTML = '<span class="warn">' + escapeHtml(lineObj.text) + '</span>';
-  } else {
-    div.innerHTML = '<span class="out">' + escapeHtml(lineObj.text) + '</span>';
-  }
-
-  body.appendChild(div);
-  body.scrollTop = body.scrollHeight;
-  setTimeout(() => runNext(), lineObj.delay || 200);
-}
-
-function runNext() {
-  if (i < demoLines.length) {
-    typeLine(demoLines[i]);
-    i++;
-  } else {
-    // Add cursor then restart after pause
-    const cur = document.createElement('span');
-    cur.className = 'demo-cursor';
-    body.appendChild(cur);
-    setTimeout(() => {
-      body.innerHTML = '';
-      i = 0;
-      runNext();
-    }, 4000);
-  }
-}
-
-function escapeHtml(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// Start on scroll into view
-let started = false;
-const observer = new IntersectionObserver((entries) => {
-  if (entries[0].isIntersecting && !started) {
-    started = true;
-    runNext();
-  }
-}, { threshold: 0.3 });
-observer.observe(document.querySelector('.demo-container'));
-
-// Fallback: start after 3s anyway
-setTimeout(() => { if (!started) { started = true; runNext(); } }, 3000);
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('animate');observer.unobserve(e.target)}})},{threshold:.1});
+document.querySelectorAll('.feature').forEach(f=>observer.observe(f));
 </script>
 </body>
 </html>

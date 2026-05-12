@@ -1,6 +1,6 @@
 # 🌐 NeuroMesh v5
 
-[![バージョン](https://img.shields.io/badge/バージョン-5.2.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![バージョン](https://img.shields.io/badge/バージョン-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![ライセンス: MIT](https://img.shields.io/badge/ライセンス-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-分散型-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
@@ -37,72 +37,6 @@ NeuroMeshは、マシンをピアツーピアのAIネットワークに接続し
 | 📊 **貢献ベースのクオータ** | より共有すれば、より多くアクセス可能。0共有 = 1リクエスト/5分。寛大な共有 = 20+リクエスト/分。 |
 | 🖥️ **デスクトップインターフェース** | チャット、共有、ネットワーク、設定 — 4つのタブ、ターミナル不要。 |
 | 🔧 **4つのデプロイモード** | サービス、アプリ、サイドキック、プラグイン — 1つのバイナリ、4つのライフスタイル。 |
-
----
-
-## 🆕 v5.2 の追加機能
-
-| 機能 | 説明 |
-|------|------|
-| 🔄 **Network Sync** | すべてのP2Pノード間のリアルタイム状態同期 |
-| 📋 **Model Registry** | ネットワーク上の全モデルのメタデータ付き集中カタログ |
-| 💰 **クレジットシステム** | 共有でクレジットを獲得、クエリでクレジットを消費。公平なリソース分配。 |
-| 🎯 **Specialist Router** | 12の専門スキーマ（コード、推論、クリエイティブ、数学など）で自動検出し、専門分野別に最適モデルへルーティング |
-| 🔀 **6つのマルチLLMモード** | Single、Vote、Chain、Fuse、Compare、Specialist |
-| 🔒 **セキュリティ監査** | v5.2向けの完全なセキュリティ再監査と修正 |
-
----
-
-## 🎯 Specialist Router (v5.2)
-
-NeuroMeshは送信するプロンプトの種類を自動検出し、最適なモデルにルーティングします。
-
-### 12の専門スキーマ
-
-| 専門 | 検出キーワード | 最適モデル（デフォルト） |
-|------|--------------|------------------------|
-| **コード** | `python`、`function`、`debug`、`implement` | deepseek-v3.1:671b |
-| **推論** | `analyze`、`explain`、`compare`、`evaluate` | deepseek-v3.1:671b |
-| **クリエイティブ** | `write`、`story`、`poem`、`creative` | glm-5.1:cloud |
-| **数学** | `calculate`、`equation`、`theorem`、`proof` | deepseek-v3.1:671b |
-| **会話** | カジュアルなチャット、挨拶 | glm-5.1:cloud |
-| **一般** | デフォルトフォールバック | glm-5.1:cloud |
-| **多言語** | `translate`、言語検出 | glm-5.1:cloud |
-| **ツール使用** | `api`、`curl`、`http` | qwen3-coder-next |
-| **指示** | ステップバイステップ、ハウツー | glm-5.1:cloud |
-| **科学** | `research`、`hypothesis`、`experiment` | deepseek-v3.1:671b |
-| **データ** | `csv`、`json`、`parse`、`dataset` | deepseek-v3.1:671b |
-| **セキュリティ** | `encrypt`、`vulnerability`、`pentest` | deepseek-v3.1:671b |
-
-### 6つのマルチLLMモード
-
-| モード | 動作 |
-|--------|------|
-| **1️⃣ Single** | 1つのモデルが応答（デフォルト） |
-| **🗳️ Vote** | 3つのモデルが応答 → 最良の回答が勝利 |
-| **🔗 Chain** | モデルA → 精製 → モデルB → 最終 |
-| **🔀 Fuse** | 3つのモデル → 統合シンセシス |
-| **⚖️ Compare** | 2つ以上のモデルを並べて比較 |
-| **🎯 Specialist** | 専門分野を自動検出 → 専門別に最適モデルを選択 |
-
-### クイック例
-
-```bash
-# 専門分野の自動検出
-neuromesh -q "Pythonでウェブスクレイパーを書いて"
-
-# コード専門を強制
-curl -X POST http://localhost:8080/api/query \
-  -H "Content-Type: application/json" \
-  -d '{"prompt":"この配列をソートして","specialty":"code"}'
-
-# 2つのモデルを比較
-neuromesh --multi compare -q "量子もつれを説明して"
-
-# マルチモデル投票
-curl -X POST http://localhost:8080/api/multi \
-  -d '{"prompt":"マイクロサービスの最適なアプローチは？","mode":"vote","models":["deepseek-v3.1:671b-cloud","glm-5.1:cloud","qwen3-coder-next:cloud"]}'
-```
 
 ---
 

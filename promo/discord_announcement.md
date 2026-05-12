@@ -27,11 +27,11 @@ Just released **NeuroMesh v5.2** — a lightweight P2P distributed AI network.
 
 **Quick start:**
 ```bash
-git clone https://github.com/NeuroMesh-ai/neuromesh.git
+git clone https://github.com/dnshouet-cpu/neuromesh.git
 cd neuromesh
 python3 src/neuromesh_v5.py --config mynode.json
 ```
 
 0.16s startup, 17MB RAM, 4 dependencies. MIT license. Runs on a Core 2 Duo.
 
-⭐ https://github.com/NeuroMesh-ai/neuromesh
+⭐ https://github.com/dnshouet-cpu/neuromesh

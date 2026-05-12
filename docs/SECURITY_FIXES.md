@@ -1,3 +1,4 @@
+# ⚠️ Ce document est un audit historique de la v4. Les corrections ont été portées à neuromesh_v5.py.
 # 🔒 NeuroMesh v4 — Security Fixes Applied
 
 **Date:** 2026-05-05  
@@ -193,7 +194,7 @@ All fixes are **backward compatible**:
 ### 🟡 MED-02: Tailscale pair injection — FIXED
 
 **Fix:** Added `allowed_tailscale_peers` config whitelist + hostname pattern filter.
-- Only peers with names containing 'neuromesh', 'neuro', 'brain', or in {'bug', 'pinky', 'brain'} are auto-discovered
+- Only peers with names containing 'neuromesh', 'brain', or in {'bug', 'pinky', 'brain'} are auto-discovered
 - Explicit `allowed_tailscale_peers` list overrides pattern filter
 
 **Code changes:** `PeerDiscovery._discover_tailscale()`, config handling
