@@ -104,7 +104,7 @@ copy_neuromesh_bug() {
     else
         # Télécharger depuis GitHub
         print_info "Téléchargement depuis GitHub..."
-        git clone https://github.com/dnshouet-cpu/NeuroMesh.git "${TEMP_DIR}/rootfs/NeuroMesh"
+        git clone https://github.com/NeuroMesh-ai/NeuroMesh.git "${TEMP_DIR}/rootfs/NeuroMesh"
     fi
 
     # Créer le script de démarrage automatique
