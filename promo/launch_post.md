@@ -32,6 +32,11 @@ A lightweight Python framework that connects machines running Ollama (or any LLM
 - Config templates only — real configs in .gitignore
 - SHA-256 + Ed25519 catalog integrity verification
 
+**Specialist Router**
+- 12 specialty schemas (code, reasoning, creative, math, conversation, general, multilingual, tool use, instruction, science, data, security)
+- Auto-detect prompt type → route to the best model
+- 6 multi-LLM modes: single, vote, chain, fuse, compare, specialist
+
 ### Tech
 - Pure Python, asyncio + aiohttp
 - 4 dependencies
@@ -53,3 +58,4 @@ python3 src/neuromesh_v5.py --config mynode.json
 ```
 
 ⭐ Star the repo: https://github.com/NeuroMesh-ai/neuromesh
+🌐 **Website & Live Demo:** https://neuromesh-ai.github.io/neuromesh/

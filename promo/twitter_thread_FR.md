@@ -24,6 +24,11 @@ Un réseau P2P distribué pour l'IA. Pas de serveur central. Pas de compte. Vos 
 ▸ Validation du schéma : pas de HTML/JS, pas de path traversal
 ▸ Aucune donnée perso dans le repo public (audit complet)
 
+🎯 Specialist Router :
+▸ 12 spécialités (code, math, créatif, raisonnement…)
+▸ Auto-détection du type de prompt → route vers le meilleur modèle
+▸ 6 modes multi-LLM : vote, chaîne, fusion, comparaison, spécialiste
+
 4/
 🏗️ Architecture décentralisée :
 
@@ -65,3 +70,4 @@ Pas de data center. Pas de cloud bill. Juste du P2P.
 ⭐ Star le repo : github.com/NeuroMesh-ai/neuromesh
 
 #NeuroMesh #P2P #AI #OpenSource #SelfHosted #Decentralized
+🌐 **Website & Live Demo:** https://neuromesh-ai.github.io/neuromesh/

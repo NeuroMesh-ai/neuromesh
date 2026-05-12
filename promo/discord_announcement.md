@@ -16,6 +16,8 @@ Just released **NeuroMesh v5.2** — a lightweight P2P distributed AI network.
 - **Model Registry** — rich model catalog with SHA-256 hash verification, Ed25519 signatures, schema validation
 - **Network Sync** — automatic DNS, node discovery on connect, mesh catalog sync
 - **Cloud = private by default** — API keys never shared on the mesh unless you explicitly opt-in
+- **Specialist Router** — auto-detect prompt type (code, math, creative…) and route to the best model
+- **6 multi-LLM modes** — vote, chain, fuse, compare, specialist
 - **Full security audit** — zero personal data in the public repo
 
 **How it works:**
@@ -35,3 +37,4 @@ python3 src/neuromesh_v5.py --config mynode.json
 0.16s startup, 17MB RAM, 4 dependencies. MIT license. Runs on a Core 2 Duo.
 
 ⭐ https://github.com/NeuroMesh-ai/neuromesh
+🌐 **Website & Live Demo:** https://neuromesh-ai.github.io/neuromesh/

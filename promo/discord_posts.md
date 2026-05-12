@@ -9,6 +9,8 @@ What's new:
 - **Network Sync** — auto-discover peers, sync model catalog, identify missing models
 - **Cloud = private by default** — API keys never shared on the mesh unless you explicitly opt-in
 - **Full security audit** — zero personal data in the public repo
+- **Specialist Router** — auto-detect prompt type, route to the best model
+- **6 multi-LLM modes** — vote, chain, fuse, compare, specialist routing
 
 No server, no accounts, no tracking. Runs on a Core 2 Duo. MIT license.
 
@@ -24,6 +26,7 @@ Running local LLMs on multiple machines? NeuroMesh v5.2 connects them into a P2P
 - CRDT memory sync (no conflicts)
 - Model catalog with verified integrity
 - Cloud models private by default
+- **Specialist Router** — code, math, creative, reasoning… auto-routed to the best model
 
 Your API keys, your rules. Opt-in sharing with clear warnings.
 
@@ -42,7 +45,9 @@ Built NeuroMesh v5.2 with security in mind:
 ✅ Ed25519 signatures for P2P catalog sharing
 ✅ Schema validation: no HTML/JS, no path traversal
 ✅ Zero personal data in public repo (IPs, secrets, usernames all removed)
+✅ Specialist Router — 12 specialties, auto-route prompts to the best model
 ✅ Config templates only — real configs in .gitignore
 ✅ Cloud API keys private by default, opt-in with explicit consent
 
 ⭐ https://github.com/NeuroMesh-ai/neuromesh
+🌐 **Website & Live Demo:** https://neuromesh-ai.github.io/neuromesh/

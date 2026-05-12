@@ -22,6 +22,11 @@ A P2P distributed AI network. No central server. No accounts. Your machines talk
 ▸ Schema validation: no HTML/JS, no path traversal, size limits
 ▸ Full security audit — zero personal data in public repo
 
+🎯 Specialist Router:
+▸ 12 specialties (code, math, creative, reasoning…)
+▸ Auto-detect prompt type → route to the best model
+▸ 6 multi-LLM modes: vote, chain, fuse, compare, specialist
+
 4/
 🏗️ Decentralized architecture:
 
@@ -57,3 +62,4 @@ Pinky & Bug — two nodes running 24/7 on recycled hardware. A Fujitsu Esprimo C
 No data center. No cloud bill. Just P2P.
 
 #NeuroMesh #P2P #AI #OpenSource #SelfHosted
+🌐 **Website & Live Demo:** https://neuromesh-ai.github.io/neuromesh/

@@ -11,6 +11,8 @@ What's new:
 - Auto-discovery when nodes join the mesh
 - Cloud models are private by default (your API keys stay yours)
 - Full security audit, zero personal data in repo
+- Specialist Router: auto-detect prompt type, route to best model
+- 6 multi-LLM modes: vote, chain, fuse, compare, specialist
 
 Runs on a Core 2 Duo with 2.5GB RAM. Seriously.
 
@@ -29,6 +31,8 @@ New in v5.2:
 - Network Sync: when a node joins, it auto-discovers peers and syncs the catalog
 - Cloud privacy: API keys never shared on the mesh by default
 - Ed25519 signatures for P2P catalog verification
+- Specialist Router: 12 specialties, auto-route to the best model
+- 6 multi-LLM modes (vote, chain, fuse, compare, specialist)
 
 4 dependencies, MIT license.
 
@@ -47,7 +51,10 @@ v5.2 brings:
 - Automatic mesh discovery and sync
 - Cloud API keys private by default (opt-in sharing with explicit consent)
 - Full security audit — zero personal data in the public repository
+- Specialist Router — 12 specialties, auto-detect and route prompts to the best model
+- 6 multi-LLM modes: vote, chain, fuse, compare, specialist
 
 MIT licensed, 4 dependencies, runs on recycled hardware.
 
 ⭐ https://github.com/NeuroMesh-ai/neuromesh
+🌐 **Website & Live Demo:** https://neuromesh-ai.github.io/neuromesh/

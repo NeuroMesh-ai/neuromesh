@@ -13,6 +13,8 @@ Connect machines running Ollama into a P2P mesh. Share compute, sync memory, rou
 - **Network Sync** — When a node joins, it automatically discovers peers, syncs the model catalog, and identifies models available on the mesh but not locally.
 - **Cloud = private by default** — Cloud model API keys are NEVER shared on the mesh. Period. You can opt in with explicit `force=True`, but you get a clear warning that other nodes will use YOUR key.
 - **Security audit** — Zero personal data (IPs, secrets, usernames) in the public repo. Config templates only.
+- **Specialist Router** — 12 specialties (code, math, creative, reasoning…), auto-detect prompt type and route to the best model
+- **6 multi-LLM modes** — vote, chain, fuse, compare, specialist routing
 
 **Tech stack:**
 - Pure Python, asyncio + aiohttp
@@ -32,3 +34,4 @@ python3 src/neuromesh_v5.py --config mynode.json
 MIT licensed. Feedback welcome.
 
 Repository: https://github.com/NeuroMesh-ai/neuromesh
+🌐 **Website & Live Demo:** https://neuromesh-ai.github.io/neuromesh/

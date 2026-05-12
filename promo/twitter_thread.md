@@ -9,7 +9,10 @@ Nouveautés :
 🔄 Network Sync auto
 🔒 Cloud privé par défaut
 🛡️ Audit sécurité complet
+🎯 Specialist Router — auto-détection, meilleur modèle
+🔀 6 modes multi-LLM
 
 ⭐ github.com/NeuroMesh-ai/neuromesh
 
 #NeuroMesh #P2P #AI #OpenSource
+🌐 **Website & Live Demo:** https://neuromesh-ai.github.io/neuromesh/

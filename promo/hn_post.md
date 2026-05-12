@@ -12,7 +12,10 @@ New in v5.2:
 - Network Sync: automatic peer discovery, DNS, and catalog sync when joining
 - Cloud models are private by default — API keys never leak to the mesh
 - Full security audit: zero personal data in the repo
+- Specialist Router: auto-detect prompt type (code, math, creative, reasoning) and route to the best model
+- 6 multi-LLM modes: vote, chain, fuse, compare, specialist
 
 It runs on a Core 2 Duo with 2.5GB RAM. 4 dependencies. MIT license.
 
 https://github.com/NeuroMesh-ai/neuromesh
+🌐 **Website & Live Demo:** https://neuromesh-ai.github.io/neuromesh/
