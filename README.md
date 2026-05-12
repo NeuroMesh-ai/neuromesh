@@ -79,8 +79,11 @@ Every AI tool wants your email, your phone number, and $20/month. Cloud APIs loc
 
 | | What you get |
 |---|---|
-| **LLM Providers** | Ollama · OpenAI · Anthropic · Any OpenAI-compatible API (LM Studio, vLLM, etc.) — plug in your keys, models are shared across the P2P network |
+| **LLM Providers** | Ollama · OpenAI · Anthropic · Any OpenAI-compatible API (LM Studio, vLLM, etc.) — local models shared on P2P, cloud models private by default |
 | **Specialist Router** | 12 specialty schemas (code, reasoning, creative, math, etc.) — auto-detect prompt type → best model · 6 multi-LLM modes (single, vote, chain, fuse, compare, specialist) |
+| **Network Sync** | Auto-discover peers · Sync model catalog · Identify missing models · Dynamic DNS |
+| **Model Registry** | Rich catalog cards (architecture, quantization, context window) · SHA-256 hash verification · Ed25519 signatures |
+| **Credit System** | Earn credits by sharing, spend credits by querying · Fair resource distribution |
 | **P2P Communication** | Bidirectional WebSocket (`/ws`) + HTTP REST — real-time sync with gossip protocol |
 | **Distributed Memory** | CRDT-based conflict-free state · Vector clocks · Gossip propagation · TTL support |
 | **Decentralized Auth** | Ed25519 identity · HMAC shared secret · Web of Trust (PGP-like) · Stealth mode |
@@ -90,6 +93,10 @@ Every AI tool wants your email, your phone number, and $20/month. Cloud APIs loc
 | **Auto-Discovery** | Static config · Tailscale auto-discovery · mDNS · Dynamic API registration |
 | **Interactive CLI** | `neuromesh` command — chat with AI, manage memory, check peers and quotas |
 | **Web UI** | 🌍 9 languages · Chat with specialist/multi-LLM controls · Share dashboard · Network monitor · Config panel |
+| **Conversation Store** | Persistent chat history · Search · Export · Privacy levels (private/synced/shared/public) |
+| **E2E Encryption** | Queries encrypted end-to-end through distributed inference · No peer can read your data |
+| **shared_models/** | Dedicated sharing zone · Cloud models NEVER shared by default · Instant unshare |
+| **4 Deploy Modes** | Service (headless) · App (GUI) · Sidekick (tray) · Plugin (VS Code/Obsidian) |
 | **Stats** | ⚡ 0.16s startup · 💾 17MB RAM · 📦 4 dependencies (aiohttp, psutil, PyYAML, PyNaCl optional) |
 
 ---
