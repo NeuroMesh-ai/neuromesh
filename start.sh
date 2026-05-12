@@ -18,4 +18,4 @@ if [ "$2" = "cli" ]; then
     exec python3 neuromesh_cli.py "$NODE"
 fi
 
-exec python3 neuromesh_v4.py "$NODE"
+exec python3 neuromesh_v5.py "$NODE"

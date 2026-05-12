@@ -193,7 +193,7 @@ All fixes are **backward compatible**:
 ### 🟡 MED-02: Tailscale pair injection — FIXED
 
 **Fix:** Added `allowed_tailscale_peers` config whitelist + hostname pattern filter.
-- Only peers with names containing 'unity', 'brain', or in {'bug', 'pinky', 'brain'} are auto-discovered
+- Only peers with names containing 'neuromesh', 'neuro', 'brain', or in {'bug', 'pinky', 'brain'} are auto-discovered
 - Explicit `allowed_tailscale_peers` list overrides pattern filter
 
 **Code changes:** `PeerDiscovery._discover_tailscale()`, config handling

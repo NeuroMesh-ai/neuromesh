@@ -1,6 +1,6 @@
 # 🌐 NeuroMesh v5
 
-[![Versión](https://img.shields.io/badge/versión-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Versión](https://img.shields.io/badge/versión-5.2.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![Licencia: MIT](https://img.shields.io/badge/Licencia-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-Descentralizado-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
@@ -37,6 +37,72 @@ NeuroMesh conecta máquinas en una red de IA peer-to-peer. Tus máquinas se comu
 | 📊 **Cuotas de contribución** | Comparte más, accede más. 0 compartición = 1 req/5min. Generoso = 20+ req/min. |
 | 🖥️ **Interfaz Desktop** | Chat, Compartir, Red, Config — 4 pestañas, cero terminal necesaria. |
 | 🔧 **4 modos de despliegue** | Servicio, App, Sidekick, Plugin — un binario, cuatro estilos de vida. |
+
+---
+
+## 🆕 Adiciones v5.2
+
+| Función | Descripción |
+|---------|-------------|
+| 🔄 **Network Sync** | Sincronización de estado en tiempo real entre todos los nodos P2P |
+| 📋 **Model Registry** | Catálogo centralizado de todos los modelos de la red con metadatos |
+| 💰 **Sistema de créditos** | Gana créditos compartiendo, gasta créditos consultando. Distribución justa de recursos. |
+| 🎯 **Specialist Router** | 12 esquemas de especialidad (código, razonamiento, creativo, matemáticas, etc.) con detección automática y enrutamiento al mejor modelo por especialidad |
+| 🔀 **6 modos multi-LLM** | Single, Vote, Chain, Fuse, Compare, Specialist |
+| 🔒 **Auditoría de seguridad** | Re-auditoría completa de seguridad con correcciones para v5.2 |
+
+---
+
+## 🎯 Specialist Router (v5.2)
+
+NeuroMesh detecta automáticamente qué tipo de prompt envías y lo enruta al mejor modelo.
+
+### 12 Esquemas de especialidad
+
+| Especialidad | Detecta | Mejor modelo (por defecto) |
+|------------|---------|--------------------------|
+| **Código** | `python`, `function`, `debug`, `implement` | deepseek-v3.1:671b |
+| **Razonamiento** | `analyze`, `explain`, `compare`, `evaluate` | deepseek-v3.1:671b |
+| **Creativo** | `write`, `story`, `poem`, `creative` | glm-5.1:cloud |
+| **Matemáticas** | `calculate`, `equation`, `theorem`, `proof` | deepseek-v3.1:671b |
+| **Conversación** | charla casual, saludos | glm-5.1:cloud |
+| **General** | fallback por defecto | glm-5.1:cloud |
+| **Multilingüe** | `translate`, detección de idioma | glm-5.1:cloud |
+| **Uso de herramientas** | `api`, `curl`, `http` | qwen3-coder-next |
+| **Instrucción** | paso a paso, cómo hacer | glm-5.1:cloud |
+| **Ciencia** | `research`, `hypothesis`, `experiment` | deepseek-v3.1:671b |
+| **Datos** | `csv`, `json`, `parse`, `dataset` | deepseek-v3.1:671b |
+| **Seguridad** | `encrypt`, `vulnerability`, `pentest` | deepseek-v3.1:671b |
+
+### 6 Modos multi-LLM
+
+| Modo | Cómo funciona |
+|------|---------------|
+| **1️⃣ Single** | Un modelo responde (por defecto) |
+| **🗳️ Vote** | 3 modelos responden → la mejor respuesta gana |
+| **🔗 Chain** | Modelo A → refina → Modelo B → final |
+| **🔀 Fuse** | 3 modelos → síntesis fusionada |
+| **⚖️ Compare** | 2+ modelos lado a lado |
+| **🎯 Specialist** | Detección automática de especialidad → mejor modelo por especialidad |
+
+### Ejemplos rápidos
+
+```bash
+# Detección automática de especialidad
+neuromesh -q "Escribe un scraper web en Python"
+
+# Forzar especialidad código
+curl -X POST http://localhost:8080/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Ordena este array","specialty":"code"}'
+
+# Comparar dos modelos
+neuromesh --multi compare -q "Explica el entrelazamiento cuántico"
+
+# Votación multi-modelo
+curl -X POST http://localhost:8080/api/multi \
+  -d '{"prompt":"¿Mejor enfoque para microservicios?","mode":"vote","models":["deepseek-v3.1:671b-cloud","glm-5.1:cloud","qwen3-coder-next:cloud"]}'
+```
 
 ---
 

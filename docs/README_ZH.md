@@ -1,6 +1,6 @@
 # 🌐 NeuroMesh v5
 
-[![版本](https://img.shields.io/badge/版本-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![版本](https://img.shields.io/badge/版本-5.2.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![许可证：MIT](https://img.shields.io/badge/许可证-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-去中心化-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
@@ -37,6 +37,72 @@ NeuroMesh 将机器连接成点对点人工智能网络。你的机器相互通�
 | 📊 **贡献配额** | 共享越多，获取越多。0 共享 = 1次/5分钟。慷慨共享 = 20+次/分钟。 |
 | 🖥️ **桌面界面** | 聊天、共享、网络、配置——4个标签页，无需终端。 |
 | 🔧 **4种部署模式** | 服务、应用、助手、插件——一个二进制文件，四种使用方式。 |
+
+---
+
+## 🆕 v5.2 新增功能
+
+| 功能 | 描述 |
+|------|------|
+| 🔄 **Network Sync** | 所有P2P节点之间的实时状态同步 |
+| 📋 **Model Registry** | 网络中所有模型的集中目录，附带元数据 |
+| 💰 **积分系统** | 分享赚积分，查询花积分。公平的资源分配。 |
+| 🎯 **Specialist Router** | 12个专业模式（代码、推理、创意、数学等），自动检测并路由到各专业最佳模型 |
+| 🔀 **6种多LLM模式** | 单一、投票、链式、融合、对比、专家 |
+| 🔒 **安全审计** | v5.2完整安全再审计及修复 |
+
+---
+
+## 🎯 Specialist Router（v5.2）
+
+NeuroMesh自动检测您发送的提示类型，并将其路由到最佳模型。
+
+### 12个专业模式
+
+| 专业 | 检测关键词 | 最佳模型（默认） |
+|------|-----------|------------------|
+| **代码** | `python`、`function`、`debug`、`implement` | deepseek-v3.1:671b |
+| **推理** | `analyze`、`explain`、`compare`、`evaluate` | deepseek-v3.1:671b |
+| **创意** | `write`、`story`、`poem`、`creative` | glm-5.1:cloud |
+| **数学** | `calculate`、`equation`、`theorem`、`proof` | deepseek-v3.1:671b |
+| **对话** | 闲聊、问候 | glm-5.1:cloud |
+| **通用** | 默认回退 | glm-5.1:cloud |
+| **多语言** | `translate`、语言检测 | glm-5.1:cloud |
+| **工具使用** | `api`、`curl`、`http` | qwen3-coder-next |
+| **指令** | 逐步指导、如何做 | glm-5.1:cloud |
+| **科学** | `research`、`hypothesis`、`experiment` | deepseek-v3.1:671b |
+| **数据** | `csv`、`json`、`parse`、`dataset` | deepseek-v3.1:671b |
+| **安全** | `encrypt`、`vulnerability`、`pentest` | deepseek-v3.1:671b |
+
+### 6种多LLM模式
+
+| 模式 | 工作方式 |
+|------|---------|
+| **1️⃣ 单一** | 一个模型回答（默认） |
+| **🗳️ 投票** | 3个模型回答 → 最佳答案胜出 |
+| **🔗 链式** | 模型A → 优化 → 模型B → 最终结果 |
+| **🔀 融合** | 3个模型 → 合成结果 |
+| **⚖️ 对比** | 2+个模型并列对比 |
+| **🎯 专家** | 自动检测专业 → 按专业选择最佳模型 |
+
+### 快速示例
+
+```bash
+# 自动检测专业
+neuromesh -q "写一个Python网页爬虫"
+
+# 强制代码专业
+curl -X POST http://localhost:8080/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"对这个数组排序","specialty":"code"}'
+
+# 对比两个模型
+neuromesh --multi compare -q "解释量子纠缠"
+
+# 多模型投票
+curl -X POST http://localhost:8080/api/multi \
+  -d '{"prompt":"微服务的最佳方案？","mode":"vote","models":["deepseek-v3.1:671b-cloud","glm-5.1:cloud","qwen3-coder-next:cloud"]}'
+```
 
 ---
 

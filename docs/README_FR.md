@@ -1,12 +1,12 @@
 # 🌐 NeuroMesh v5
 
-[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Version](https://img.shields.io/badge/version-5.2.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![License : MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-D%C3%A9centralis%C3%A9-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![Chiffrement E2E](https://img.shields.io/badge/E2E-Chiffr%C3%A9-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
-**Réseau IA P2P distribué avec mesh public. Partagez du calcul, partagez des modèles, restez privé. v5.1 : Routage spécialiste multi-LLM.**
+**Réseau IA P2P distribué avec mesh public. Partagez du calcul, partagez des modèles, restez privé. v5.2 : Routage spécialiste multi-LLM.**
 
 > 🌍 [English](./README_EN.md) | 🌐 [Documentación en español](./README_ES.md) | 🌐 [中文文档](./README_ZH.md) | 🌐 [हिन्दी](./README_HI.md) | 🌐 [العربية](./README_AR.md) | 🌐 [Português](./README_PT.md) | 🌐 [日本語](./README_JA.md)
 
@@ -37,6 +37,72 @@ NeuroMesh connecte vos machines en réseau IA pair-à-pair. Vos machines discute
 | 📊 **Quotas de contribution** | Partagez plus, accédez plus. 0 partage = 1 req/5min. Partage généreux = 20+ req/min. |
 | 🖥️ **Interface Desktop** | Chat, Partage, Réseau, Config — 4 onglets, zéro terminal requis. |
 | 🔧 **4 modes de déploiement** | Service, App, Sidekick, Plugin — un binaire, quatre modes de vie. |
+
+---
+
+## 🆕 Ajouts v5.2
+
+| Fonctionnalité | Description |
+|---------------|-------------|
+| 🔄 **Network Sync** | Synchronisation d'état en temps réel sur tous les nœuds P2P |
+| 📋 **Model Registry** | Catalogue centralisé de tous les modèles du réseau avec métadonnées |
+| 💰 **Système de crédits** | Gagnez des crédits en partageant, dépensez des crédits en interrogeant. Distribution équitable des ressources. |
+| 🎯 **Specialist Router** | 12 schémas de spécialité (code, raisonnement, créatif, maths, etc.) avec détection automatique et routage vers le meilleur modèle par spécialité |
+| 🔀 **6 modes multi-LLM** | Single, Vote, Chain, Fuse, Compare, Specialist |
+| 🔒 **Audit de sécurité** | Ré-audit complet de sécurité avec correctifs pour v5.2 |
+
+---
+
+## 🎯 Specialist Router (v5.2)
+
+NeuroMesh détecte automatiquement le type de prompt que vous envoyez et le route vers le meilleur modèle.
+
+### 12 Schémas de spécialité
+
+| Spécialité | Détecte | Meilleur modèle (défaut) |
+|-----------|---------|------------------------|
+| **Code** | `python`, `function`, `debug`, `implement` | deepseek-v3.1:671b |
+| **Raisonnement** | `analyze`, `explain`, `compare`, `evaluate` | deepseek-v3.1:671b |
+| **Créatif** | `write`, `story`, `poem`, `creative` | glm-5.1:cloud |
+| **Maths** | `calculate`, `equation`, `theorem`, `proof` | deepseek-v3.1:671b |
+| **Conversation** | discussion décontractée, salutations | glm-5.1:cloud |
+| **Général** | repli par défaut | glm-5.1:cloud |
+| **Multilingue** | `translate`, détection de langue | glm-5.1:cloud |
+| **Outils** | `api`, `curl`, `http` | qwen3-coder-next |
+| **Instruction** | étape par étape, comment faire | glm-5.1:cloud |
+| **Science** | `research`, `hypothesis`, `experiment` | deepseek-v3.1:671b |
+| **Données** | `csv`, `json`, `parse`, `dataset` | deepseek-v3.1:671b |
+| **Sécurité** | `encrypt`, `vulnerability`, `pentest` | deepseek-v3.1:671b |
+
+### 6 Modes multi-LLM
+
+| Mode | Fonctionnement |
+|------|---------------|
+| **1️⃣ Single** | Un seul modèle répond (défaut) |
+| **🗳️ Vote** | 3 modèles répondent → la meilleure réponse gagne |
+| **🔗 Chain** | Modèle A → affine → Modèle B → final |
+| **🔀 Fuse** | 3 modèles → synthèse fusionnée |
+| **⚖️ Compare** | 2+ modèles côte à côte |
+| **🎯 Specialist** | Détection auto de spécialité → meilleur modèle par spécialité |
+
+### Exemples rapides
+
+```bash
+# Détection automatique de spécialité
+neuromesh -q "Écrire un scraper web en Python"
+
+# Forcer la spécialité code
+curl -X POST http://localhost:8080/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"Trier ce tableau","specialty":"code"}'
+
+# Comparer deux modèles
+neuromesh --multi compare -q "Expliquer l'intrication quantique"
+
+# Vote multi-modèles
+curl -X POST http://localhost:8080/api/multi \
+  -d '{"prompt":"Meilleure approche pour microservices ?","mode":"vote","models":["deepseek-v3.1:671b-cloud","glm-5.1:cloud","qwen3-coder-next:cloud"]}'
+```
 
 ---
 

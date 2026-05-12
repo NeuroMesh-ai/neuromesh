@@ -1,6 +1,6 @@
 # 🌐 NeuroMesh v5
 
-[![الإصدار](https://img.shields.io/badge/الإصدار-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![الإصدار](https://img.shields.io/badge/الإصدار-5.2.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![الرخصة: MIT](https://img.shields.io/badge/الرخصة-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-لامركزي-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
@@ -37,6 +37,72 @@
 | 📊 **حصص المساهمة** | شارك أكثر، احصل على وصول أكثر. 0 مشاركة = 1 طلب/5 دقائق. مشاركة سخية = 20+ طلب/دقيقة. |
 | 🖥️ **واجهة سطح المكتب** | محادثة، مشاركة، شبكة، إعدادات — 4 علامات تبويب، صفر حاجة للطرفية. |
 | 🔧 **4 أوضاع نشر** | خدمة، تطبيق، مساعد، إضافة — ملف ثنائي واحد، أربع أنماط حياة. |
+
+---
+
+## 🆕 إضافات v5.2
+
+| الميزة | الوصف |
+|--------|------|
+| 🔄 **Network Sync** | مزامنة الحالة في الوقت الفعلي عبر جميع عقد P2P |
+| 📋 **Model Registry** | كتالوج مركزي لجميع النماذج في الشبكة مع البيانات الوصفية |
+| 💰 **نظام الائتمانات** | اكسب أرصدة بالمشاركة، أنفق أرصدة بالاستعلام. توزيع عادل للموارد. |
+| 🎯 **Specialist Router** | 12 مخطط تخصص (كود، استدلال، إبداع، رياضيات، إلخ) مع كشف تلقائي وتوجيه لأفضل نموذج لكل تخصص |
+| 🔀 **6 أوضاع متعددة LLM** | مفرد، تصويت، سلسلة، دمج، مقارنة، متخصص |
+| 🔒 **تدقيق أمني** | إعادة تدقيق أمني شامل مع إصلاحات لـ v5.2 |
+
+---
+
+## 🎯 Specialist Router (v5.2)
+
+يكتشف NeuroMesh تلقائيًا نوع المطالبة التي ترسلها ويوجهها إلى أفضل نموذج.
+
+### 12 مخطط تخصص
+
+| التخصص | يكتشف | أفضل نموذج (افتراضي) |
+|--------|--------|---------------------|
+| **الكود** | `python`, `function`, `debug`, `implement` | deepseek-v3.1:671b |
+| **الاستدلال** | `analyze`, `explain`, `compare`, `evaluate` | deepseek-v3.1:671b |
+| **الإبداع** | `write`, `story`, `poem`, `creative` | glm-5.1:cloud |
+| **الرياضيات** | `calculate`, `equation`, `theorem`, `proof` | deepseek-v3.1:671b |
+| **المحادثة** | دردشة عادية، تحيات | glm-5.1:cloud |
+| **عام** | الخيار الاحتياطي الافتراضي | glm-5.1:cloud |
+| **متعدد اللغات** | `translate`, كشف اللغة | glm-5.1:cloud |
+| **استخدام الأدوات** | `api`, `curl`, `http` | qwen3-coder-next |
+| **التعليمات** | خطوة بخطوة، كيفية | glm-5.1:cloud |
+| **العلوم** | `research`, `hypothesis`, `experiment` | deepseek-v3.1:671b |
+| **البيانات** | `csv`, `json`, `parse`, `dataset` | deepseek-v3.1:671b |
+| **الأمان** | `encrypt`, `vulnerability`, `pentest` | deepseek-v3.1:671b |
+
+### 6 أوضاع متعددة LLM
+
+| الوضع | كيف يعمل |
+|-------|----------|
+| **1️⃣ مفرد** | نموذج واحد يجيب (افتراضي) |
+| **🗳️ تصويت** | 3 نماذج تجيب → أفضل إجابة تفوز |
+| **🔗 سلسلة** | نموذج A → يحسن → نموذج B → نهائي |
+| **🔀 دمج** | 3 نماذج → توليف مدمج |
+| **⚖️ مقارنة** | نموذجان+ جنبًا إلى جنب |
+| **🎯 متخصص** | كشف تلقائي للتخصص → أفضل نموذج لكل تخصص |
+
+### أمثلة سريعة
+
+```bash
+# كشف تلقائي للتخصص
+neuromesh -q "اكتب مكشط ويب بلغة Python"
+
+# فرض تخصص الكود
+curl -X POST http://localhost:8080/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"رتب هذا المصفوفة","specialty":"code"}'
+
+# مقارنة نموذجين
+neuromesh --multi compare -q "اشرح التشابك الكمي"
+
+# تصويت متعدد النماذج
+curl -X POST http://localhost:8080/api/multi \
+  -d '{"prompt":"أفضل نهج للخدمات المصغرة؟","mode":"vote","models":["deepseek-v3.1:671b-cloud","glm-5.1:cloud","qwen3-coder-next:cloud"]}'
+```
 
 ---
 

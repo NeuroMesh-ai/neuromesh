@@ -145,7 +145,7 @@ def copy_files():
         (INSTALL_DIR / d).mkdir(parents=True, exist_ok=True)
 
     # Copy source
-    src_files = ["neuromesh_v4.py", "neuromesh_cli.py", "__init__.py"]
+    src_files = ["neuromesh_v5.py", "neuromesh_cli.py", "__init__.py"]
     for f in src_files:
         src = SCRIPT_DIR / "src" / f
         if src.exists():
@@ -255,7 +255,7 @@ case "${{1:-}}" in
         ;;
     start)
         shift
-        exec "$PYTHON" "$DIR/src/neuromesh_v4.py" "{node_name}" "$@"
+        exec "$PYTHON" "$DIR/src/neuromesh_v5.py" "{node_name}" "$@"
         ;;
     status|query|peers|models|memory)
         exec "$PYTHON" "$DIR/src/neuromesh_cli.py" "{node_name}" "$@"
@@ -286,7 +286,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory={INSTALL_DIR}/src
-ExecStart={python} neuromesh_v4.py {node_name}
+ExecStart={python} neuromesh_v5.py {node_name}
 Restart=on-failure
 RestartSec=5
 Environment=PYTHONPATH={INSTALL_DIR}/src
@@ -357,7 +357,7 @@ def check_install():
     print(f"   Venv: {'✅' if venv.exists() else '❌'}")
 
     # Check source
-    main = INSTALL_DIR / "src" / "neuromesh_v4.py"
+    main = INSTALL_DIR / "src" / "neuromesh_v5.py"
     cli = INSTALL_DIR / "src" / "neuromesh_cli.py"
     print(f"   Server: {'✅' if main.exists() else '❌'}")
     print(f"   CLI:    {'✅' if cli.exists() else '❌'}")

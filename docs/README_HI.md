@@ -1,6 +1,6 @@
 # 🌐 NeuroMesh v5
 
-[![संस्करण](https://img.shields.io/badge/संस्करण-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![संस्करण](https://img.shields.io/badge/संस्करण-5.2.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![लाइसेंस: MIT](https://img.shields.io/badge/लाइसेंस-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-विकेन्द्रीकृत-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
@@ -37,6 +37,72 @@ NeuroMesh मशीनों को पीयर-टू-पीयर AI ने�
 | 📊 **योगदान कोटा** | अधिक शेयर करें, अधिक एक्सेस पाएं। 0 शेयरिंग = 1 req/5min। उदार शेयरिंग = 20+ req/min। |
 | 🖥️ **डेस्कटॉप इंटरफेस** | चैट, शेयर, नेटवर्क, कॉन्फिग — 4 टैब, शून्य टर्मिनल आवश्यक। |
 | 🔧 **4 डिप्लॉयमेंट मोड** | सर्विस, ऐप, साइडकिक, प्लगइन — एक बाइनरी, चार लाइफस्टाइल। |
+
+---
+
+## 🆕 v5.2 अतिरिक्त
+
+| सुविधा | विवरण |
+|--------|--------|
+| 🔄 **Network Sync** | सभी P2P नोड्स पर रियल-टाइम स्टेट सिंक्रनाइज़ेशन |
+| 📋 **Model Registry** | नेटवर्क में सभी मॉडल्स की मेटाडेटा सहित केंद्रीकृत कैटलॉग |
+| 💰 **क्रेडिट सिस्टम** | शेयर करके क्रेडिट कमाएं, क्वेरी करके खर्च करें। निष्पक्ष संसाधन वितरण। |
+| 🎯 **Specialist Router** | 12 विशेषता स्कीमा (कोड, रीजनिंग, क्रिएटिव, मैथ, आदि) ऑटो-डिटेक्शन और प्रति विशेषता सर्वोत्तम मॉडल पर राउटिंग |
+| 🔀 **6 मल्टी-LLM मोड** | सिंगल, वोट, चेन, फ्यूज, कंपेयर, स्पेशलिस्ट |
+| 🔒 **सुरक्षा ऑडिट** | v5.2 के लिए पूर्ण सुरक्षा पुनः ऑडिट और सुधार |
+
+---
+
+## 🎯 Specialist Router (v5.2)
+
+NeuroMesh ऑटो-डिटेक्ट करता है कि आप किस प्रकार का प्रॉम्प्ट भेज रहे हैं और उसे सर्वोत्तम मॉडल पर रूट करता है।
+
+### 12 विशेषता स्कीमा
+
+| विशेषता | पहचान कीवर्ड | सर्वोत्तम मॉडल (डिफ़ॉल्ट) |
+|---------|-------------|---------------------|
+| **कोड** | `python`, `function`, `debug`, `implement` | deepseek-v3.1:671b |
+| **रीजनिंग** | `analyze`, `explain`, `compare`, `evaluate` | deepseek-v3.1:671b |
+| **क्रिएटिव** | `write`, `story`, `poem`, `creative` | glm-5.1:cloud |
+| **मैथ** | `calculate`, `equation`, `theorem`, `proof` | deepseek-v3.1:671b |
+| **वार्तालाप** | कैज़ुअल चैट, अभिवादन | glm-5.1:cloud |
+| **जनरल** | डिफ़ॉल्ट फ़ॉलबैक | glm-5.1:cloud |
+| **बहुभाषी** | `translate`, भाषा पहचान | glm-5.1:cloud |
+| **टूल उपयोग** | `api`, `curl`, `http` | qwen3-coder-next |
+| **निर्देश** | स्टेप-बाय-स्टेप, कैसे करें | glm-5.1:cloud |
+| **विज्ञान** | `research`, `hypothesis`, `experiment` | deepseek-v3.1:671b |
+| **डेटा** | `csv`, `json`, `parse`, `dataset` | deepseek-v3.1:671b |
+| **सुरक्षा** | `encrypt`, `vulnerability`, `pentest` | deepseek-v3.1:671b |
+
+### 6 मल्टी-LLM मोड
+
+| मोड | कार्यप्रणाली |
+|------|-------------|
+| **1️⃣ सिंगल** | एक मॉडल जवाब देता है (डिफ़ॉल्ट) |
+| **🗳️ वोट** | 3 मॉडल जवाब देते हैं → सर्वोत्तम उत्तर जीतता है |
+| **🔗 चेन** | मॉडल A → संशोधित → मॉडल B → अंतिम |
+| **🔀 फ्यूज** | 3 मॉडल → मिश्रित सिंथेसिस |
+| **⚖️ कंपेयर** | 2+ मॉडल साइड बाय साइड |
+| **🎯 स्पेशलिस्ट** | ऑटो-डिटेक्ट विशेषता → प्रति विशेषता सर्वोत्तम मॉडल |
+
+### त्वरित उदाहरण
+
+```bash
+# विशेषता ऑटो-डिटेक्ट
+neuromesh -q "Python वेब स्क्रैपर लिखें"
+
+# कोड विशेषता फोर्स करें
+curl -X POST http://localhost:8080/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"इस ऐरे को सॉर्ट करें","specialty":"code"}'
+
+# दो मॉडल तुलना
+neuromesh --multi compare -q "क्वांटम एंटैंगलमेंट समझाएं"
+
+# मल्टी-मॉडल वोट
+curl -X POST http://localhost:8080/api/multi \
+  -d '{"prompt":"माइक्रोसर्विस का सर्वोत्तम तरीका?","mode":"vote","models":["deepseek-v3.1:671b-cloud","glm-5.1:cloud","qwen3-coder-next:cloud"]}'
+```
 
 ---
 
