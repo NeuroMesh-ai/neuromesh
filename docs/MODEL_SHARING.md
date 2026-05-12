@@ -1,4 +1,4 @@
-# UnityBrain Model Sharing — P2P Model Distribution
+# NeuroMesh Model Sharing — P2P Model Distribution
 
 **Les models DOIVENT être partagés, pas seulement les queries.**
 
@@ -106,12 +106,12 @@ qwen3:8b.gguf (8GB)
 
 ### Étape 1 : File-based (actuel)
 ```
-/tmp/unitybrain_models/qwen3:8b/ ← 8 GB sur disque
+/tmp/neuromesh_models/qwen3:8b/ ← 8 GB sur disque
 ```
 
 ### Étape 2 : RAM + File (mixed)
 ```
-/tmp/unitybrain_models/qwen3:8b/chunks/
+/tmp/neuromesh_models/qwen3:8b/chunks/
 - Part de chunks en RAM (/dev/shm)
 - Part de chunks en cache disque
 ```
@@ -198,14 +198,14 @@ if sha256(chunk_data) != expected_hash:
 
 ---
 
-## 🚀 Comment cela fonctionne avec UnityBrain
+## 🚀 Comment cela fonctionne avec NeuroMesh
 
 ### Configuration dans p2p_config.toml
 
 ```toml
 [model_sharing]
 enabled = true
-storage_dir = "/tmp/unitybrain_models"  # ou /dev/shm pour RAM
+storage_dir = "/tmp/neuromesh_models"  # ou /dev/shm pour RAM
 chunk_size_mb = 80
 max_parallel_downloads = 5
 download_timeout_seconds = 600  # 10 min pour 8 GB
@@ -223,11 +223,11 @@ file_path = "/home/user/.ollama/models/qwen3:8b.gguf"
 
 ```
 1. Discovery
-   unitybrain query "who has qwen3:8b?"
+   neuromesh query "who has qwen3:8b?"
    → Réponse: Peer A, Peer B, Peer C
 
 2. Request
-   unitybrain download qwen3:8b
+   neuromesh download qwen3:8b
    → Chunk discovery: Peer A (0-30), Peer B (30-70), Peer C (70-99)
 
 3. Parallel download
@@ -302,14 +302,14 @@ file_path = "/home/user/.ollama/models/qwen3:8b.gguf"
 
 ## 🔚 Conclusion
 
-UnityBrain devient **vraiment réseau de modèles**, pas seulement service de queries.
+NeuroMesh devient **vraiment réseau de modèles**, pas seulement service de queries.
 
 **Le "file sharing P2P pour modèles" est indispensable.**
 
 Sans ça → les utilisateurs doivent telecharger chaque modele manuellement
-Avec ça → UnityBrain auto-distribue les modèles
+Avec ça → NeuroMesh auto-distribue les modèles
 
-C'est ce qui rend UnityBrain unique et democratique.
+C'est ce qui rend NeuroMesh unique et democratique.
 
 —
 

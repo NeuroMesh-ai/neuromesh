@@ -1,12 +1,12 @@
 # Resource Limits — Contrôle CPU/RAM
 
-**UnityBrain permet de contrôler les ressources utilisées pour éviter de consommer tout le système.**
+**NeuroMesh permet de contrôler les ressources utilisées pour éviter de consommer tout le système.**
 
 ---
 
 ## 🎯 Pourquoi ?
 
-Par défaut, UnityBrain peut utiliser beaucoup de ressources car :
+Par défaut, NeuroMesh peut utiliser beaucoup de ressources car :
 - Il peut gérer plusieurs queries simultanées
 - Les queries d'LLM sont CPU-intensive
 - Les modèles consomment plusieurs GB RAM
@@ -38,7 +38,7 @@ query_queue_max_size = 50       # Taille max de queue
 
 | Option | Valeur par défaut | Description |
 |--------|------------------|-------------|
-| `cpu_limit_percent` | 50 | Pourcentage max de CPU utilisé. Si le système est à 40% et un query arrive, UnityBrain peut le prendre. Si à 50%, il refuse. |
+| `cpu_limit_percent` | 50 | Pourcentage max de CPU utilisé. Si le système est à 40% et un query arrive, NeuroMesh peut le prendre. Si à 50%, il refuse. |
 | `ram_limit_percent` | 70 | Pourcentage max de RAM utilisé. Fonctionne comme CPU. |
 | `max_concurrent_requests` | 3 | Nombre maximum de queries en même temps. Plus = plus rapide mais plus gourmand. |
 | `request_timeout_seconds` | 60 | Temps max pour une query. Si dépassé, annuler et retourner erreur. |
@@ -116,11 +116,11 @@ query_queue_max_size = 10
 
 Le système peut afficher l'utilisation actuelle des ressources.
 
-### Avec UnityBrain CLI
+### Avec NeuroMesh CLI
 
 ```bash
 # Vérifier l'utilisation actuelle
-unitybrain status
+neuromesh status
 
 # Affiche :
 #   CPU usage : 25%
@@ -131,7 +131,7 @@ unitybrain status
 ### Avec le script de test
 
 ```bash
-cd ~/.unitybrain
+cd ~/.neuromesh
 python3 -c "from resource_limits import print_current_usage; print_current_usage()"
 ```
 
@@ -147,7 +147,7 @@ python3 -c "from resource_limits import print_current_usage; print_current_usage
 
 ## 🚨 Comportement quand limites sont atteintes
 
-Si UnityBrain atteint les limites :
+Si NeuroMesh atteint les limites :
 
 1. **CPU/RAM limite atteinte** → Rejette la request immédiatement
    - Renvoie : `{ 'error': 'Resource limit exceeded', 'reason': 'CPU/RAM too high' }`
@@ -201,14 +201,14 @@ wmic process where "name='ollama.exe'" get ProcessId,WorkingSetSize,CPU
 
 **4. Surveiller les logs :**
 ```bash
-unitybrain logs | grep "Resource limit"
+neuromesh logs | grep "Resource limit"
 ```
 
 ---
 
 ## 📈 Monitoring
 
-UnityBrain inclut des stats pour les ressources :
+NeuroMesh inclut des stats pour les ressources :
 
 ```json
 {
@@ -236,13 +236,13 @@ UnityBrain inclut des stats pour les ressources :
 
 **Disponible via :**
 - HTTP GET `/status` endpoint
-- CLI `unitybrain status`
+- CLI `neuromesh status`
 
 ---
 
 ## 🐛 Debug
 
-Si UnityBrain refuse trop de requests :
+Si NeuroMesh refuse trop de requests :
 
 1. **Vérifier les limites sont trop strictes**
    - Augmenter `cpu_limit_percent` / `ram_limit_percent`
@@ -254,7 +254,7 @@ Si UnityBrain refuse trop de requests :
    - Augmenter `max_concurrent_requests` si la machine le peut
 
 4. **Vérifier la CPU**
-   - Si CPU à 80%+, UnityBrain va refuser
+   - Si CPU à 80%+, NeuroMesh va refuser
 
 5. **Vérifier la RAM**
    - Ouvrir un terminal et `free -h` (Linux) ou `top` (macOS)

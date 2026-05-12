@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Exemple 2: UnityBrain Ensemble Query
+Exemple 2: NeuroMesh Ensemble Query
 """
 
 import asyncio
@@ -10,18 +10,18 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.unitybrain_v3_final import UnityBrain, Peer
+from src.neuromesh_v3_final import NeuroMesh, Peer
 
 
 async def main():
     """Exemple ensemble"""
 
     print("=" * 70)
-    print("EXEMPLE 2: UnityBrain - Requête Ensemble (Multi-modèles)")
+    print("EXEMPLE 2: NeuroMesh - Requête Ensemble (Multi-modèles)")
     print("=" * 70)
 
-    # Créer UnityBrain
-    unitybrain = UnityBrain()
+    # Créer NeuroMesh
+    neuromesh = NeuroMesh()
 
     # Ajouter plusieurs peers
     peer1 = Peer(
@@ -45,19 +45,19 @@ async def main():
         models=["TinyLlama:latest"]
     )
 
-    await unitybrain.add_peer(peer1)
-    await unitybrain.add_peer(peer2)
-    await unitybrain.add_peer(peer3)
+    await neuromesh.add_peer(peer1)
+    await neuromesh.add_peer(peer2)
+    await neuromesh.add_peer(peer3)
 
     # Initialiser
     print("\n⚙️ Initialisation...")
-    await unitybrain.initialize()
+    await neuromesh.initialize()
 
     # Faire une requête avec ensemble
     print("\n📝 Requête: 'Explique le concept de réseau P2P'")
     print("🎯 Mode: Ensemble (consensus multi-modèles)")
 
-    result = await unitybrain.query(
+    result = await neuromesh.query(
         "Explique le concept de réseau P2P",
         use_ensemble=True
     )
@@ -79,7 +79,7 @@ async def main():
 
     # Exporter l'historique
     print("\n💾 Export de l'historique...")
-    unitybrain.query_history.export("csv", "../output/history.csv")
+    neuromesh.query_history.export("csv", "../output/history.csv")
     print("✅ Historique exporté vers output/history.csv")
 
 

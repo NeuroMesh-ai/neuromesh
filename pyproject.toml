@@ -3,17 +3,17 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "unitybrain"
+name = "neuromesh"
 version = "4.0.1"
-description = "UnityBrain & BugBrain v3.5 - Système d'IA 100% décentralisé et auto-émancipé"
+description = "NeuroMesh & NeuroMeshBug v3.5 - Système d'IA 100% décentralisé et auto-émancipé"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Bug", email = "bug@unitybrain.ai"},
+    {name = "Bug", email = "bug@neuromesh.ai"},
     {name = "Denis Houet", email = "kamizool@protonmail.com"}
 ]
 maintainers = [
-    {name = "Bug", email = "bug@unitybrain.ai"}
+    {name = "Bug", email = "bug@neuromesh.ai"}
 ]
 keywords = [
     "p2p",
@@ -66,15 +66,15 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/unitybrain-ai/unitybrain"
-Documentation = "https://github.com/unitybrain-ai/unitybrain#readme"
-Repository = "https://github.com/unitybrain-ai/unitybrain.git"
-"Bug Tracker" = "https://github.com/unitybrain-ai/unitybrain/issues"
-Changelog = "https://github.com/unitybrain-ai/unitybrain/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/unitybrain-ai/neuromesh"
+Documentation = "https://github.com/unitybrain-ai/neuromesh#readme"
+Repository = "https://github.com/unitybrain-ai/neuromesh.git"
+"Bug Tracker" = "https://github.com/unitybrain-ai/neuromesh/issues"
+Changelog = "https://github.com/unitybrain-ai/neuromesh/blob/main/CHANGELOG.md"
 
 [project.scripts]
-unitybrain = "src.unitybrain_cli:main"
-bugbrain = "src.bugbrain_cli:main"
+neuromesh = "src.neuromesh_cli:main"
+neuromesh_bug = "src.neuromesh_bug_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

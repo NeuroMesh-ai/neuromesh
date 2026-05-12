@@ -1,11 +1,11 @@
-# 🔒 UnityBrain v4 — Audit de Sécurité
+# 🔒 NeuroMesh v4 — Audit de Sécurité
 
 **Date:** 2026-05-05  
-**Auditeur:** Bug 🐛 (UnityBrain Security)  
+**Auditeur:** Bug 🐛 (NeuroMesh Security)  
 **Version auditée:** v4.2.0 (code), v4.1.5 (config)  
 **Fichiers analysés:**
-- `src/unitybrain_v4.py` — Serveur principal
-- `src/unitybrain_cli.py` — Client CLI
+- `src/neuromesh_v4.py` — Serveur principal
+- `src/neuromesh_cli.py` — Client CLI
 - `src/auth/auth/token_auth.py` — Authentification JWT/HMAC
 - `src/auth/auth/circuit_breaker.py` — Circuit breaker
 - `config/bug.json`, `config/pinky.json` — Configuration
@@ -47,7 +47,7 @@ Ce secret est commité dans le dépôt Git. Toute personne avec accès au repo p
 # N'importe qui avec le secret peut forger un header HMAC valide
 ts=$(date +%s)
 sig=$(echo -n "/api/query:${ts}" | openssl dgst -sha256 -hmac "your-secret-here-change-me" | awk '{print $NF}')
-curl -H "X-UnityBrain-Auth: ${sig}" -H "X-UnityBrain-TS: ${ts}" http://target:8080/api/query
+curl -H "X-NeuroMesh-Auth: ${sig}" -H "X-NeuroMesh-TS: ${ts}" http://target:8080/api/query
 ```
 
 **Fix:**
@@ -70,7 +70,7 @@ if not self.p2p_secret or self.p2p_secret == "changeme-configure-in-config":
 
 **Type:** Auth bypass  
 **Sévérité:** CRITIQUE  
-**Fichier:** `src/unitybrain_v4.py` — `_verify_auth()`, `_auth_headers()`
+**Fichier:** `src/neuromesh_v4.py` — `_verify_auth()`, `_auth_headers()`
 
 La vérification Ed25519/HMAC dans `_verify_auth()` accepte une signature sans lier le chemin de la requête au challenge signé.
 
@@ -114,7 +114,7 @@ verified = self.identity.verify(challenge, sig, node_key)
 
 **Type:** Command injection / RCE  
 **Sévérité:** CRITIQUE  
-**Fichier:** `src/unitybrain_v4.py` — `auto_heal()`
+**Fichier:** `src/neuromesh_v4.py` — `auto_heal()`
 
 ```python
 async def auto_heal(self):
@@ -147,7 +147,7 @@ Bien que `subprocess_exec` soit utilisé (plus sûr que `shell=True`), le fait d
 
 **Type:** Input validation / Injection  
 **Sévérité:** ÉLEVÉE  
-**Fichier:** `src/unitybrain_v4.py` — `handle_query()`
+**Fichier:** `src/neuromesh_v4.py` — `handle_query()`
 
 ```python
 async def handle_query(self, request: web.Request) -> web.Response:
@@ -198,7 +198,7 @@ async def handle_query(self, request):
 
 **Type:** Auth bypass  
 **Sévérité:** ÉLEVÉE  
-**Fichier:** `src/unitybrain_v4.py` — `handle_websocket()`
+**Fichier:** `src/neuromesh_v4.py` — `handle_websocket()`
 
 ```python
 async def handle_websocket(self, request):
@@ -238,7 +238,7 @@ async for msg in ws:
 
 **Type:** Information leak  
 **Sévérité:** ÉLEVÉE  
-**Fichier:** `src/unitybrain_v4.py` — `handle_status()`, `handle_dashboard()`
+**Fichier:** `src/neuromesh_v4.py` — `handle_status()`, `handle_dashboard()`
 
 Les endpoints `/api/status`, `/api/ping`, `/api/peers`, `/api/monitor`, `/api/capabilities`, `/api/agent`, etc. sont **accessibles sans authentification**.
 
@@ -281,7 +281,7 @@ async def handle_peers(self, request):
 
 **Type:** Auth bypass / DoS  
 **Sévérité:** ÉLEVÉE  
-**Fichier:** `src/unitybrain_v4.py` — `_verify_auth()`
+**Fichier:** `src/neuromesh_v4.py` — `_verify_auth()`
 
 ```python
 def _verify_auth(self, request):
@@ -308,7 +308,7 @@ De plus, le rate limiter n'est appliqué QUE dans `_verify_auth()`. Les endpoint
 
 **Type:** Auth bypass  
 **Sévérité:** ÉLEVÉE  
-**Fichier:** `src/unitybrain_v4.py` — `NodeIdentity.verify()`
+**Fichier:** `src/neuromesh_v4.py` — `NodeIdentity.verify()`
 
 ```python
 def verify(self, message, signature_hex, public_key_hex=None):
@@ -371,7 +371,7 @@ def verify(self, message, signature_hex, public_key_hex=None):
 
 **Type:** CORS / CSRF  
 **Sévérité:** ÉLEVÉE  
-**Fichier:** `src/unitybrain_v4.py` — `create_app()`
+**Fichier:** `src/neuromesh_v4.py` — `create_app()`
 
 Aucune configuration CORS n'est présente. Par défaut, aiohttp autorise TOUTES les origines pour les réponses JSON (pas de `Access-Control-Allow-Origin`). Cependant:
 1. Le dashboard HTML est servi sur `/` — un site malicieux peut iframer ce dashboard
@@ -402,13 +402,13 @@ Ou au minimum, ajouter les headers de sécurité sur toutes les réponses.
 
 **Type:** Auth bypass / Spoofing  
 **Sévérité:** MOYENNE  
-**Fichier:** `src/unitybrain_v4.py` — `ZeroConfigDiscovery`
+**Fichier:** `src/neuromesh_v4.py` — `ZeroConfigDiscovery`
 
 Les beacons de découverte mDNS ne sont pas authentifiés:
 ```python
 def _parse_beacon(self, data, addr):
     msg = json.loads(data.decode())
-    if msg.get('type') != 'unitybrain_discovery':
+    if msg.get('type') != 'neuromesh_discovery':
         return None
     if msg['node'] == self.node_name:
         return None
@@ -447,7 +447,7 @@ def _parse_beacon(self, data, addr):
 
 **Type:** Spoofing  
 **Sévérité:** MOYENNE  
-**Fichier:** `src/unitybrain_v4.py` — `PeerDiscovery._discover_tailscale()`
+**Fichier:** `src/neuromesh_v4.py` — `PeerDiscovery._discover_tailscale()`
 
 ```python
 proc = await asyncio.create_subprocess_exec(
@@ -455,7 +455,7 @@ proc = await asyncio.create_subprocess_exec(
 # Parse tous les peers trouvés sans vérification
 ```
 
-Un pair Tailscale malicieux peut se faire passer pour un nœud UnityBrain. Les pairs sont ajoutés automatiquement sans vérification de leur identité. Le filtrage des doublons est insuffisant (comparaison IP:port uniquement).
+Un pair Tailscale malicieux peut se faire passer pour un nœud NeuroMesh. Les pairs sont ajoutés automatiquement sans vérification de leur identité. Le filtrage des doublons est insuffisant (comparaison IP:port uniquement).
 
 **Fix:**
 - Vérifier l'identité Ed25519 de chaque pair découvert avant de l'ajouter
@@ -467,7 +467,7 @@ Un pair Tailscale malicieux peut se faire passer pour un nœud UnityBrain. Les p
 
 **Type:** Information leak  
 **Sévérité:** MOYENNE  
-**Fichier:** `src/unitybrain_v4.py` — `_verify_auth()`
+**Fichier:** `src/neuromesh_v4.py` — `_verify_auth()`
 
 ```python
 logger.info(
@@ -492,7 +492,7 @@ De plus, le secret P2P est stocké en clair dans la config JSON et accessible vi
 
 **Type:** Input validation / Deserialization  
 **Sévérité:** MOYENNE  
-**Fichier:** `src/unitybrain_v4.py` — `CRDTMemory`, `handle_memory_set()`
+**Fichier:** `src/neuromesh_v4.py` — `CRDTMemory`, `handle_memory_set()`
 
 ```python
 async def handle_memory_set(self, request):
@@ -543,7 +543,7 @@ async def handle_memory_set(self, request):
 
 **Type:** Replay attack  
 **Sévérité:** MOYENNE  
-**Fichier:** `src/unitybrain_v4.py` — `_verify_auth()`
+**Fichier:** `src/neuromesh_v4.py` — `_verify_auth()`
 
 ```python
 # Ed25519: 60 secondes
@@ -570,7 +570,7 @@ self._used_nonces = deque(maxlen=10000)  # Garde les 10K derniers nonces
 
 def _verify_auth(self, request):
     # ...
-    nonce = request.headers.get('X-UnityBrain-Nonce', '')
+    nonce = request.headers.get('X-NeuroMesh-Nonce', '')
     if nonce and nonce in self._used_nonces:
         return None  # Déjà utilisé
     # Après vérification:
@@ -624,7 +624,7 @@ La blacklist de tokens est en mémoire seulement. Si le serveur redémarre, tous
 
 **Type:** Information leak  
 **Sévérité:** BASSE  
-**Fichier:** `src/unitybrain_v4.py` — `log_event()`
+**Fichier:** `src/neuromesh_v4.py` — `log_event()`
 
 ```python
 log_file = Path(__file__).parent.parent / "logs" / "events.jsonl"
@@ -647,13 +647,13 @@ os.chmod(log_file, 0o600)  # Après chaque écriture
 
 **Type:** Information leak / DoS  
 **Sévérité:** BASSE  
-**Fichier:** `src/unitybrain_v4.py` — `SystrayDaemon`
+**Fichier:** `src/neuromesh_v4.py` — `SystrayDaemon`
 
 ```python
-self.pid_file = pid_file or os.path.expanduser('~/.unitybrain/daemon.pid')
+self.pid_file = pid_file or os.path.expanduser('~/.neuromesh/daemon.pid')
 ```
 
-Le PID file est dans `~/.unitybrain/` sans permissions restrictives. Un attaquant local pourrait:
+Le PID file est dans `~/.neuromesh/` sans permissions restrictives. Un attaquant local pourrait:
 - Lire le PID pour cibler le processus
 - Écraser le PID file pour perturber la gestion du daemon
 
@@ -668,7 +668,7 @@ os.chmod(self.pid_file, 0o600)
 
 **Type:** Information leak / MITM  
 **Sévérité:** BASSE  
-**Fichier:** `src/unitybrain_v4.py` — toutes les requêtes HTTP
+**Fichier:** `src/neuromesh_v4.py` — toutes les requêtes HTTP
 
 Toutes les communications (HTTP REST + WebSocket) sont en clair. Les tokens, secrets et données transitent non chiffrés. Sur Tailscale (WireGuard), c'est mitigé car le tunnel est chiffré, mais sur un réseau local c'est exploitable.
 
@@ -690,7 +690,7 @@ ctx.verify_mode = ssl.CERT_NONE
 
 **Type:** XSS / Clickjacking  
 **Sévérité:** BASSE  
-**Fichier:** `src/unitybrain_v4.py` — `handle_dashboard()`
+**Fichier:** `src/neuromesh_v4.py` — `handle_dashboard()`
 
 Le dashboard HTML est servi sans headers de sécurité:
 - Pas de `Content-Security-Policy`
@@ -716,7 +716,7 @@ async def handle_dashboard(self, request):
 
 **Type:** XSS  
 **Sévérité:** BASSE  
-**Fichier:** `src/unitybrain_v4.py` — `handle_dashboard()`
+**Fichier:** `src/neuromesh_v4.py` — `handle_dashboard()`
 
 Les noms de pairs sont insérés directement dans le HTML sans échappement:
 ```python
@@ -738,7 +738,7 @@ html += f'<span ...>{icon} {safe_name}</span>'
 
 **Type:** Supply chain attack  
 **Sévérité:** BASSE  
-**Fichier:** `src/unitybrain_v4.py` — `AutoUpdater`
+**Fichier:** `src/neuromesh_v4.py` — `AutoUpdater`
 
 ```python
 async def check(self):
@@ -767,7 +767,7 @@ Un attaquant MITM pourrait injecter une mise à jour malicieuse.
 
 **Type:** DoS  
 **Sévérité:** BASSE  
-**Fichier:** `src/unitybrain_v4.py` — `handle_websocket()`
+**Fichier:** `src/neuromesh_v4.py` — `handle_websocket()`
 
 ```python
 async for msg in ws:
@@ -792,10 +792,10 @@ ws = web.WebSocketResponse(
 
 **Type:** Information leak  
 **Sévérité:** BASSE  
-**Fichier:** `src/unitybrain_cli.py`
+**Fichier:** `src/neuromesh_cli.py`
 
 ```python
-HISTORY_FILE = os.path.expanduser("~/.unitybrain_history.json")
+HISTORY_FILE = os.path.expanduser("~/.neuromesh_history.json")
 # ...
 with open(HISTORY_FILE, "w") as f:
     json.dump(self.history[-100:], f, indent=2)
@@ -814,29 +814,29 @@ L'historique contient les prompts et réponses en clair. N'importe quel utilisat
 | ID | Sévérité | Type | Fichier(s) | Priorité |
 |----|----------|------|------------|----------|
 | CRIT-01 | 🔴 CRITIQUE | Secret en dur | config/*.json | P0 — Immédiat |
-| CRIT-02 | 🔴 CRITIQUE | Auth bypass (replay) | unitybrain_v4.py | P0 — Immédiat |
-| CRIT-03 | 🔴 CRITIQUE | RCE (auto_heal) | unitybrain_v4.py | P0 — Immédiat |
-| HIGH-01 | 🟠 ÉLEVÉE | Input validation | unitybrain_v4.py | P1 — Cette semaine |
-| HIGH-02 | 🟠 ÉLEVÉE | WS sans auth | unitybrain_v4.py | P1 — Cette semaine |
-| HIGH-03 | 🟠 ÉLEVÉE | Info leak (status) | unitybrain_v4.py | P1 — Cette semaine |
-| HIGH-04 | 🟠 ÉLEVÉE | Rate limit bypass | unitybrain_v4.py | P1 — Cette semaine |
-| HIGH-05 | 🟠 ÉLEVÉE | HMAC auth bypass | unitybrain_v4.py | P1 — Cette semaine |
-| HIGH-06 | 🟠 ÉLEVÉE | CORS absent | unitybrain_v4.py | P1 — Cette semaine |
-| MED-01 | 🟡 MOYENNE | mDNS spoofing | unitybrain_v4.py | P2 — Ce mois |
-| MED-02 | 🟡 MOYENNE | Tailscale injection | unitybrain_v4.py | P2 — Ce mois |
-| MED-03 | 🟡 MOYENNE | Log leak | unitybrain_v4.py | P2 — Ce mois |
-| MED-04 | 🟡 MOYENNE | Memory DoS | unitybrain_v4.py | P2 — Ce mois |
-| MED-05 | 🟡 MOYENNE | Timestamp window | unitybrain_v4.py | P2 — Ce mois |
+| CRIT-02 | 🔴 CRITIQUE | Auth bypass (replay) | neuromesh_v4.py | P0 — Immédiat |
+| CRIT-03 | 🔴 CRITIQUE | RCE (auto_heal) | neuromesh_v4.py | P0 — Immédiat |
+| HIGH-01 | 🟠 ÉLEVÉE | Input validation | neuromesh_v4.py | P1 — Cette semaine |
+| HIGH-02 | 🟠 ÉLEVÉE | WS sans auth | neuromesh_v4.py | P1 — Cette semaine |
+| HIGH-03 | 🟠 ÉLEVÉE | Info leak (status) | neuromesh_v4.py | P1 — Cette semaine |
+| HIGH-04 | 🟠 ÉLEVÉE | Rate limit bypass | neuromesh_v4.py | P1 — Cette semaine |
+| HIGH-05 | 🟠 ÉLEVÉE | HMAC auth bypass | neuromesh_v4.py | P1 — Cette semaine |
+| HIGH-06 | 🟠 ÉLEVÉE | CORS absent | neuromesh_v4.py | P1 — Cette semaine |
+| MED-01 | 🟡 MOYENNE | mDNS spoofing | neuromesh_v4.py | P2 — Ce mois |
+| MED-02 | 🟡 MOYENNE | Tailscale injection | neuromesh_v4.py | P2 — Ce mois |
+| MED-03 | 🟡 MOYENNE | Log leak | neuromesh_v4.py | P2 — Ce mois |
+| MED-04 | 🟡 MOYENNE | Memory DoS | neuromesh_v4.py | P2 — Ce mois |
+| MED-05 | 🟡 MOYENNE | Timestamp window | neuromesh_v4.py | P2 — Ce mois |
 | MED-06 | 🟡 MOYENNE | Supply chain | setup.py | P2 — Ce mois |
 | MED-07 | 🟡 MOYENNE | Token blacklist | token_auth.py | P2 — Ce mois |
-| LOW-01 | 🟢 BASSE | Log permissions | unitybrain_v4.py | P3 — Quand possible |
-| LOW-02 | 🟢 BASSE | PID file perms | unitybrain_v4.py | P3 — Quand possible |
-| LOW-03 | 🟢 BASSE | Pas de TLS | unitybrain_v4.py | P3 — Quand possible |
-| LOW-04 | 🟢 BASSE | Pas de CSP | unitybrain_v4.py | P3 — Quand possible |
-| LOW-05 | 🟢 BASSE | XSS dashboard | unitybrain_v4.py | P3 — Quand possible |
-| LOW-06 | 🟢 BASSE | Update integrity | unitybrain_v4.py | P3 — Quand possible |
-| LOW-07 | 🟢 BASSE | WS msg size | unitybrain_v4.py | P3 — Quand possible |
-| LOW-08 | 🟢 BASSE | CLI history leak | unitybrain_cli.py | P3 — Quand possible |
+| LOW-01 | 🟢 BASSE | Log permissions | neuromesh_v4.py | P3 — Quand possible |
+| LOW-02 | 🟢 BASSE | PID file perms | neuromesh_v4.py | P3 — Quand possible |
+| LOW-03 | 🟢 BASSE | Pas de TLS | neuromesh_v4.py | P3 — Quand possible |
+| LOW-04 | 🟢 BASSE | Pas de CSP | neuromesh_v4.py | P3 — Quand possible |
+| LOW-05 | 🟢 BASSE | XSS dashboard | neuromesh_v4.py | P3 — Quand possible |
+| LOW-06 | 🟢 BASSE | Update integrity | neuromesh_v4.py | P3 — Quand possible |
+| LOW-07 | 🟢 BASSE | WS msg size | neuromesh_v4.py | P3 — Quand possible |
+| LOW-08 | 🟢 BASSE | CLI history leak | neuromesh_cli.py | P3 — Quand possible |
 
 ### Actions immédiates (P0):
 
@@ -855,5 +855,5 @@ L'historique contient les prompts et réponses en clair. N'importe quel utilisat
 
 ---
 
-*Audit réalisé par Bug 🐛 — UnityBrain Security*  
+*Audit réalisé par Bug 🐛 — NeuroMesh Security*  
 *Ce rapport doit être revu et les corrections prioritaires appliquées avant tout déploiement en production.*

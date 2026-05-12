@@ -1,4 +1,4 @@
-# 🔒 AUDIT DE SÉCURITÉ — UnityBrain v5.2
+# 🔒 AUDIT DE SÉCURITÉ — NeuroMesh v5.2
 *Date : 2026-05-12 — Auditeur : Pinky 🩷*
 
 ## Résultat : 🔴 CRITIQUE — Ne PAS push sur GitHub sans corrections
@@ -22,14 +22,14 @@
 
 ### CRIT-03: IPs hardcoded dans le code source
 - **brain_llm.py** : IPs internes en fallback (remplacées par `localhost`)
-- **unitybrain_v5.py** : IPs de broadcast hardcodées (remplacées par auto-détection)
-- **unitybrain_v4.py** : même pattern
+- **neuromesh_v5.py** : IPs de broadcast hardcodées (remplacées par auto-détection)
+- **neuromesh_v4.py** : même pattern
 - **Fix**: ✅ Remplacé par des variables d'environnement avec fallback `localhost`
 
 ### CRIT-04: Username GitHub dans le code
-- **unitybrain_v4.py** : username GitHub hardcodé (remplacé par variable d'env)
-- **unitybrain_v5.py** : username GitHub hardcodé (remplacé par variable d'env)
-- **Fix**: ✅ Remplacé par `UNITYBRAIN_GITHUB_API` env var
+- **neuromesh_v4.py** : username GitHub hardcodé (remplacé par variable d'env)
+- **neuromesh_v5.py** : username GitHub hardcodé (remplacé par variable d'env)
+- **Fix**: ✅ Remplacé par `NEUROMESH_GITHUB_API` env var
 
 ---
 
@@ -47,11 +47,11 @@
 - **Fix**: ✅ Remplacé par `localhost` ou IP de test générique
 
 ### WARN-03: Fichiers de logs dans git
-- **`logs/events.jsonl`**, **`logs/unitybrain.log`** : peuvent contenir des données d'utilisation
+- **`logs/events.jsonl`**, **`logs/neuromesh.log`** : peuvent contenir des données d'utilisation
 - **Fix**: Ajouter `logs/` au `.gitignore` + `git rm --cached`
 
 ### WARN-04: `shared_memory/` dans git
-- **`shared_memory/unitybrain_persistent_memory`** : mémoire persistante potentiellement sensible
+- **`shared_memory/neuromesh_persistent_memory`** : mémoire persistante potentiellement sensible
 - **Fix**: Ajouter au `.gitignore` + `git rm --cached`
 
 ### WARN-05: model_catalog.json.sha256 dans git
@@ -65,7 +65,7 @@
 
 ### OK-01: Pas de clés API dans le code source
 - Aucune clé API (Brave, Telegram, etc.) dans les fichiers Python
-- Les clés sont dans TOOLS.md/OpenClaw, pas dans le repo UnityBrain
+- Les clés sont dans TOOLS.md/OpenClaw, pas dans le repo NeuroMesh
 
 ### OK-02: model_catalog.json est propre
 - Aucune donnée sensible (pas d'emails, pas de clés, pas d'IPs)

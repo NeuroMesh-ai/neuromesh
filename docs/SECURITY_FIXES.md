@@ -1,7 +1,7 @@
-# 🔒 UnityBrain v4 — Security Fixes Applied
+# 🔒 NeuroMesh v4 — Security Fixes Applied
 
 **Date:** 2026-05-05  
-**Fixes applied by:** Bug 🐛 (UnityBrain Security)  
+**Fixes applied by:** Bug 🐛 (NeuroMesh Security)  
 **Version:** v4.2.1-security  
 **Based on:** SECURITY_AUDIT.md findings  
 
@@ -9,7 +9,7 @@
 
 ## Summary
 
-All 3 **CRITICAL** and 6 **HIGH** severity vulnerabilities have been fixed in `src/unitybrain_v4.py`. The fixes are surgical — existing functionality is preserved while closing security gaps.
+All 3 **CRITICAL** and 6 **HIGH** severity vulnerabilities have been fixed in `src/neuromesh_v4.py`. The fixes are surgical — existing functionality is preserved while closing security gaps.
 
 ---
 
@@ -169,7 +169,7 @@ All fixes are **backward compatible**:
 
 ## Verification
 
-- ✅ Code compiles: `python3 -c "import unitybrain_v4"` passes
+- ✅ Code compiles: `python3 -c "import neuromesh_v4"` passes
 - ✅ Identity verification works for same-secret nodes
 - ✅ Forged HMAC signatures using public key are rejected
 - ✅ `_auth_headers()` includes path in signed challenge
@@ -238,13 +238,13 @@ All fixes are **backward compatible**:
 ### 🟡 MED-07: Token blacklist non persistée — FIXED
 
 **Fix:** New `TokenBlacklist` class with file persistence.
-- Revoked tokens stored in `~/.unitybrain/token_blacklist.json`
+- Revoked tokens stored in `~/.neuromesh/token_blacklist.json`
 - Survives restarts (loaded on init)
 - Expired entries auto-cleaned on load and periodically
 - File permissions restricted to 0o600
 - Integrated into `_verify_auth()` — checks blacklist before accepting tokens
 
-**Code changes:** New `TokenBlacklist` class, `_verify_auth()`, `UnityBrain.__init__`
+**Code changes:** New `TokenBlacklist` class, `_verify_auth()`, `NeuroMesh.__init__`
 
 ---
 
@@ -265,7 +265,7 @@ All fixes are **backward compatible**:
 ### 🔵 LOW-03: Pas de HTTPS/TLS — FIXED
 
 **Fix:** Added SSL/TLS support via environment variables.
-- `UNITYBRAIN_CERT` and `UNITYBRAIN_KEY` env vars for cert/key paths
+- `NEUROMESH_CERT` and `NEUROMESH_KEY` env vars for cert/key paths
 - If both set and files exist, `ssl.SSLContext` is used with `TCPSite`
 - Warning logged if running on public interface without TLS
 
@@ -310,7 +310,7 @@ All fixes are **backward compatible**:
 - `chmod 0o600` on history file (load and save)
 - Prompts longer than 80 chars are truncated with '...' before saving
 
-**Code changes:** `unitybrain_cli.py` — `_load_history()`, `_save_history()`
+**Code changes:** `neuromesh_cli.py` — `_load_history()`, `_save_history()`
 
 ---
 
@@ -326,4 +326,4 @@ All fixes are **backward compatible**:
 
 ---
 
-*Fixes applied by Bug 🐛 + Pinky 🩷 + DeepSeek-V4-Flash — UnityBrain Security*
+*Fixes applied by Bug 🐛 + Pinky 🩷 + DeepSeek-V4-Flash — NeuroMesh Security*

@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# 🔧 CREATE BUGBRAIN USB - Script pour créer une clé USB bootable
-# BugBrain v3.0 - Plug & Play sur n'importe quelle machine
+# 🔧 CREATE NEUROMESH_BUG USB - Script pour créer une clé USB bootable
+# NeuroMeshBug v3.0 - Plug & Play sur n'importe quelle machine
 #
 # Usage:
-#   sudo ./create_bugbrain_usb.sh /dev/sdX
+#   sudo ./create_neuromesh_bug_usb.sh /dev/sdX
 #
 
 set -e
@@ -15,9 +15,9 @@ set -e
 
 # Variables
 VERSION="3.0.0"
-ISO_FILE="bugbrain-${VERSION}.iso"
+ISO_FILE="neuromesh_bug-${VERSION}.iso"
 USB_DEVICE="${1:-}"
-TEMP_DIR="/tmp/bugbrain-usb-$$"
+TEMP_DIR="/tmp/neuromesh_bug-usb-$$"
 MOUNT_DIR="${TEMP_DIR}/mount"
 IMAGE_SIZE="4G"  # Taille de l'image (4GB)
 
@@ -35,7 +35,7 @@ NC='\033[0m' # No Color
 print_header() {
     echo ""
     echo "============================================================"
-    echo "🐛 BUGBRAIN v${VERSION} - CREATE USB BOOTABLE"
+    echo "🐛 NEUROMESH_BUG v${VERSION} - CREATE USB BOOTABLE"
     echo "============================================================"
     echo ""
 }
@@ -95,32 +95,32 @@ create_temp_dirs() {
     print_success "Répertoires créés"
 }
 
-copy_bugbrain() {
-    print_info "Copie de BugBrain..."
+copy_neuromesh_bug() {
+    print_info "Copie de NeuroMeshBug..."
 
     # Copier le code source
-    if [ -d "Unitybrain" ]; then
-        cp -r Unitybrain "${TEMP_DIR}/rootfs/"
+    if [ -d "NeuroMesh" ]; then
+        cp -r NeuroMesh "${TEMP_DIR}/rootfs/"
     else
         # Télécharger depuis GitHub
         print_info "Téléchargement depuis GitHub..."
-        git clone https://github.com/dnshouet-cpu/Unitybrain.git "${TEMP_DIR}/rootfs/Unitybrain"
+        git clone https://github.com/dnshouet-cpu/NeuroMesh.git "${TEMP_DIR}/rootfs/NeuroMesh"
     fi
 
     # Créer le script de démarrage automatique
-    cat > "${TEMP_DIR}/rootfs/start_bugbrain.sh" << 'EOF'
+    cat > "${TEMP_DIR}/rootfs/start_neuromesh_bug.sh" << 'EOF'
 #!/bin/bash
 #
-# 🐛 BugBrain - Démarrage automatique
+# 🐛 NeuroMeshBug - Démarrage automatique
 #
 
 echo ""
 echo "============================================================"
-echo "🐛 BUGBRAIN v3.0 - Démarrage automatique"
+echo "🐛 NEUROMESH_BUG v3.0 - Démarrage automatique"
 echo "============================================================"
 echo ""
 
-cd /rootfs/Unitybrain
+cd /rootfs/NeuroMesh
 
 # Vérifier Ollama
 if ! command -v ollama &> /dev/null; then
@@ -139,14 +139,14 @@ echo "📥 Téléchargement des modèles..."
 ollama pull SmolLM2:1.7b
 ollama pull phi3:mini
 
-# Lancer BugBrain
-echo "🚀 Lancement de BugBrain..."
-python3 -m src.bugbrain_v3_final
+# Lancer NeuroMeshBug
+echo "🚀 Lancement de NeuroMeshBug..."
+python3 -m src.neuromesh_bug_v3_final
 EOF
 
-    chmod +x "${TEMP_DIR}/rootfs/start_bugbrain.sh"
+    chmod +x "${TEMP_DIR}/rootfs/start_neuromesh_bug.sh"
 
-    print_success "BugBrain copié"
+    print_success "NeuroMeshBug copié"
 }
 
 create_grub_config() {
@@ -156,12 +156,12 @@ create_grub_config() {
 set timeout=10
 set default=0
 
-menuentry "🐛 BugBrain v3.0 - Démarrage automatique" {
+menuentry "🐛 NeuroMeshBug v3.0 - Démarrage automatique" {
     linux /boot/vmlinuz boot=live quiet splash
     initrd /boot/initrd
 }
 
-menuentry "🐛 BugBrain v3.0 - Démarrage (verbose)" {
+menuentry "🐛 NeuroMeshBug v3.0 - Démarrage (verbose)" {
     linux /boot/vmlinuz boot=live
     initrd /boot/initrd
 }
@@ -185,38 +185,38 @@ create_readme() {
     print_info "Création du README..."
 
     cat > "${TEMP_DIR}/rootfs/README.txt" << 'EOF'
-🐛 BUGBRAIN v3.0 - CLÉ USB BOOTABLE
+🐛 NEUROMESH_BUG v3.0 - CLÉ USB BOOTABLE
 ===================================
 
-Bienvenue sur BugBrain !
+Bienvenue sur NeuroMeshBug !
 
 📋 INSTRUCTIONS:
 
 1. Démarrage Automatique:
-   BugBrain démarrera automatiquement au boot.
+   NeuroMeshBug démarrera automatiquement au boot.
 
 2. Setup Interactif:
-   Exécutez: cd /rootfs/Unitybrain && python3 scripts/setup_interactive.py
+   Exécutez: cd /rootfs/NeuroMesh && python3 scripts/setup_interactive.py
 
 3. Documentation:
-   Voir: /rootfs/Unitybrain/README.md
-   Et: /rootfs/Unitybrain/docs/
+   Voir: /rootfs/NeuroMesh/README.md
+   Et: /rootfs/NeuroMesh/docs/
 
 4. Auto-Support:
-   BugBrain répond lui-même aux questions de support !
+   NeuroMeshBug répond lui-même aux questions de support !
    Exécutez: python3 -m src.auto_support
 
 🔧 CONFIGURATION:
 
 - Ollama: Installé automatiquement
 - Modèles: SmolLM2:1.7b, phi3:mini (téléchargés auto)
-- Configuration: /rootfs/Unitybrain/config.json
+- Configuration: /rootfs/NeuroMesh/config.json
 
 📞 SUPPORT:
 
-Questions ? BugBrain répond lui-même !
+Questions ? NeuroMeshBug répond lui-même !
 
-Généré par BugBrain 🐛 - v3.0.0
+Généré par NeuroMeshBug 🐛 - v3.0.0
 EOF
 
     print_success "README créé"
@@ -242,7 +242,7 @@ create_iso() {
     print_info "Génération de l'ISO..."
     xorriso -as mkisofs \
         -rational-rock \
-        -volid "BUGBRAIN" \
+        -volid "NEUROMESH_BUG" \
         -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
         -b boot/grub/bios.img \
         -c boot/boot.catalog \
@@ -261,7 +261,7 @@ create_iso() {
 write_to_usb() {
     if [ -z "$USB_DEVICE" ]; then
         print_warning "Aucun périphérique USB spécifié"
-        print_info "Utilisation: sudo ./create_bugbrain_usb.sh /dev/sdX"
+        print_info "Utilisation: sudo ./create_neuromesh_bug_usb.sh /dev/sdX"
         print_info "L'ISO est disponible: $ISO_FILE"
         print_info "Vous pouvez la graver manuellement avec:"
         echo "  dd if=$ISO_FILE of=/dev/sdX bs=4M status=progress"
@@ -306,7 +306,7 @@ main() {
     check_root
     check_dependencies
     create_temp_dirs
-    copy_bugbrain
+    copy_neuromesh_bug
     create_grub_config
     create_readme
     create_iso

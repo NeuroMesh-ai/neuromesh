@@ -15,7 +15,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.bugbrain_v3_final import BugBrain
+from src.neuromesh_bug_v3_final import NeuroMeshBug
 
 # 5 questions représentatives de niveau doctoral
 EXTREME_QUERIES_SAMPLE = [
@@ -54,10 +54,10 @@ class CapableBenchmark:
         print(f"   Modèle: {MODEL} (8B paramètres)")
         print(f"   Total tests: {len(EXTREME_QUERIES_SAMPLE)}")
 
-        # Créer BugBrain avec qwen3:8b
-        bugbrain = BugBrain()
-        bugbrain.model = MODEL
-        await bugbrain.initialize()
+        # Créer NeuroMeshBug avec qwen3:8b
+        neuromesh_bug = NeuroMeshBug()
+        neuromesh_bug.model = MODEL
+        await neuromesh_bug.initialize()
 
         self.start_time = datetime.utcnow()
 
@@ -67,7 +67,7 @@ class CapableBenchmark:
             start = time.time()
 
             try:
-                result = await bugbrain.query(query)
+                result = await neuromesh_bug.query(query)
                 latency = (time.time() - start) * 1000
 
                 response = result.get("response", "")

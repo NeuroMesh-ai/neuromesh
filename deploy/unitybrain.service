@@ -1,15 +1,15 @@
 [Unit]
-Description=UnityBrain P2P AI Network
-Documentation=https://github.com/unitybrain/unitybrain
+Description=NeuroMesh P2P AI Network
+Documentation=https://github.com/neuromesh/neuromesh
 After=network.target ollama.service
 Wants=ollama.service
 
 [Service]
 Type=simple
-User=unitybrain
-Group=unitybrain
-WorkingDirectory=/opt/unitybrain
-ExecStart=/usr/local/bin/unitybrain serve --config /etc/unitybrain/config.json
+User=neuromesh
+Group=neuromesh
+WorkingDirectory=/opt/neuromesh
+ExecStart=/usr/local/bin/neuromesh serve --config /etc/neuromesh/config.json
 Restart=always
 RestartSec=5
 StartLimitBurst=5
@@ -17,13 +17,13 @@ StartLimitIntervalSec=60
 
 # Environment
 Environment=OLLAMA_HOST=127.0.0.1:11434
-EnvironmentFile=-/etc/unitybrain/env
+EnvironmentFile=-/etc/neuromesh/env
 
 # Security hardening
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths=/var/lib/unitybrain /var/log/unitybrain /run/unitybrain
+ReadWritePaths=/var/lib/neuromesh /var/log/neuromesh /run/neuromesh
 PrivateTmp=yes
 PrivateDevices=yes
 ProtectKernelTunables=yes
@@ -43,7 +43,7 @@ LimitNPROC=512
 # Logging
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=unitybrain
+SyslogIdentifier=neuromesh
 
 [Install]
 WantedBy=multi-user.target

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 SETUP INTERACTIF - UnityBrain & BugBrain v3.0
+🚀 SETUP INTERACTIF - NeuroMesh & NeuroMeshBug v3.0
 Installation interactive avec configuration complète
 
 Usage:
@@ -14,8 +14,8 @@ import shutil
 from pathlib import Path
 from typing import Dict, Any
 
-class UnityBrainSetup:
-    """Setup interactif UnityBrain"""
+class NeuroMeshSetup:
+    """Setup interactif NeuroMesh"""
 
     def __init__(self):
         self.config_file = "config.json"
@@ -25,7 +25,7 @@ class UnityBrainSetup:
     def print_header(self):
         """Affiche le header"""
         print("=" * 70)
-        print("🚀 UNITYBRAIN & BUGBRAIN v3.0 - SETUP INTERACTIF")
+        print("🚀 NEUROMESH & NEUROMESH_BUG v3.0 - SETUP INTERACTIF")
         print("=" * 70)
         print()
         print("Bienvenue dans l'assistant d'installation !")
@@ -62,7 +62,7 @@ class UnityBrainSetup:
         self.config["agent"] = {
             "name": self.get_input(
                 "Nom de votre agent",
-                "BugBrain"
+                "NeuroMeshBug"
             ),
             "emoji": self.get_input(
                 "Emoji de l'agent",
@@ -198,7 +198,7 @@ class UnityBrainSetup:
         print("\n" + "=" * 70)
         print("🤖 CONFIGURATION AUTO-SUPPORT")
         print("=" * 70)
-        print("L'auto-support permet à BugBrain de répondre lui-même aux questions.")
+        print("L'auto-support permet à NeuroMeshBug de répondre lui-même aux questions.")
         print()
 
         self.config["auto_support"] = {
@@ -332,7 +332,7 @@ class UnityBrainSetup:
         print()
         print("Prochaines étapes:")
         print("1. Vérifiez la configuration dans config.json")
-        print("2. Lancez l'agent: python3 -m src.bugbrain_v3_final")
+        print("2. Lancez l'agent: python3 -m src.neuromesh_bug_v3_final")
         print("3. Testez avec: python3 examples/example1_simple_query.py")
         print()
         print("Pour le support, utilisez l'auto-support intégré !")
@@ -341,7 +341,7 @@ class UnityBrainSetup:
 
 def main():
     """Point d'entrée principal"""
-    setup = UnityBrainSetup()
+    setup = NeuroMeshSetup()
     setup.run()
 
 

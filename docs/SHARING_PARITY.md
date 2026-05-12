@@ -270,7 +270,7 @@ uptime_min_hours = 1           # Au moins 1h de uptime
 
 ### Cas 1 : Testeur
 
-Un user veut juste tester UnityBrain :
+Un user veut juste tester NeuroMesh :
 - Start → 1 query/minute
 - Test 2-3 queries, OK
 - Si aime → héberger un modèle
@@ -299,7 +299,7 @@ Un user veut contribuer massivement :
 ### Affichage de Sharing Score
 
 ```bash
-unitybrain status
+neuromesh status
 
 Output :
 📊 Sharing Score ─────────────────────────────
@@ -317,7 +317,7 @@ Output :
 ### Pour augmenter le quota
 
 ```bash
-unitybrain increase-quota
+neuromesh increase-quota
 
 Suggestions :
 [ ] Héberger un modèle (+20 score)

@@ -1,5 +1,5 @@
 # 🎮 GUIDE D'UTILISATION - Interface Interactive
-## UnityBrain & BugBrain v3.0
+## NeuroMesh & NeuroMeshBug v3.0
 
 ---
 
@@ -15,8 +15,8 @@ python3 interactive_interface.py
 ### Initialisation
 
 L'interface initialise automatiquement :
-- **UnityBrain v3.0** - Réseau P2P distribué
-- **BugBrain v3.0** - Système auto-émancipé
+- **NeuroMesh v3.0** - Réseau P2P distribué
+- **NeuroMeshBug v3.0** - Système auto-émancipé
 - **Web Server** - Interface web sur http://0.0.0.0:8080
 
 ---
@@ -28,20 +28,20 @@ L'interface initialise automatiquement :
 Tapez simplement votre prompt et appuyez sur Entrée :
 
 ```
-[UNITYBRAIN]> Qu'est-ce que UnityBrain v3.0 ?
+[NEUROMESH]> Qu'est-ce que NeuroMesh v3.0 ?
 
 📝 Envoi de la requête...
-   Prompt: Qu'est-ce que UnityBrain v3.0 ?...
+   Prompt: Qu'est-ce que NeuroMesh v3.0 ?...
 
 ✅ Réponse reçue!
-   Mode: UNITYBRAIN
+   Mode: NEUROMESH
    Peer: Pinky
    Model: SmolLM2:1.7b
    Latency: 15ms
 
 💬 Réponse:
    ----------------------------------------------------------------------
-   UnityBrain v3.0 est un réseau P2P distribué qui permet de partager...
+   NeuroMesh v3.0 est un réseau P2P distribué qui permet de partager...
    ----------------------------------------------------------------------
 ```
 
@@ -50,7 +50,7 @@ Tapez simplement votre prompt et appuyez sur Entrée :
 Vous pouvez aussi utiliser la commande `query` :
 
 ```
-[UNITYBRAIN]> query Explique le consensus d'ensemble
+[NEUROMESH]> query Explique le consensus d'ensemble
 
 📝 Envoi de la requête...
    Prompt: Explique le consensus d'ensemble...
@@ -63,29 +63,29 @@ Vous pouvez aussi utiliser la commande `query` :
 
 ## 🔄 Changer de Mode
 
-### UnityBrain (Réseau P2P)
+### NeuroMesh (Réseau P2P)
 
 ```
-[UNITYBRAIN]> mode unitybrain
+[NEUROMESH]> mode neuromesh
 
-✅ Mode changé vers: UNITYBRAIN
+✅ Mode changé vers: NEUROMESH
 ```
 
-**Pourquoi UnityBrain ?**
+**Pourquoi NeuroMesh ?**
 - Requêtes P2P distribuées
 - Multi-modèles avec consensus
 - Web interface
 - Export d'historique
 
-### BugBrain (Auto-émancipé)
+### NeuroMeshBug (Auto-émancipé)
 
 ```
-[UNITYBRAIN]> mode bug
+[NEUROMESH]> mode bug
 
 ✅ Mode changé vers: BUG
 ```
 
-**Pourquoi BugBrain ?**
+**Pourquoi NeuroMeshBug ?**
 - Auto-émancipation continue
 - Distributed memory
 - UX Monitor
@@ -98,13 +98,13 @@ Vous pouvez aussi utiliser la commande `query` :
 ### `help` - Afficher l'aide
 
 ```
-[UNITYBRAIN]> help
+[NEUROMESH]> help
 
 📚 COMMANDES DISPONIBLES
 ==========================
 
 🎯 Commandes Principales:
-   mode [unitybrain|bugbrain]  Change de mode
+   mode [neuromesh|neuromesh_bug]  Change de mode
    query <votre prompt>        Envoie une requête
    status                      Affiche le statut
    help                        Affiche cette aide
@@ -114,11 +114,11 @@ Vous pouvez aussi utiliser la commande `query` :
 
 ### `status` - Voir le statut
 
-**UnityBrain :**
+**NeuroMesh :**
 ```
-[UNITYBRAIN]> status
+[NEUROMESH]> status
 
-📊 STATUT - UNITYBRAIN
+📊 STATUT - NEUROMESH
 ==========================
 
 🌐 Peers:
@@ -134,7 +134,7 @@ Vous pouvez aussi utiliser la commande `query` :
 ⏱️ Uptime: 120.5s
 ```
 
-**BugBrain :**
+**NeuroMeshBug :**
 ```
 [BUG]> status
 
@@ -174,18 +174,18 @@ Vous pouvez aussi utiliser la commande `query` :
 
 ---
 
-## 🌐 Commandes UnityBrain
+## 🌐 Commandes NeuroMesh
 
 ### `ensemble <prompt>` - Query avec multi-modèles
 
 ```
-[UNITYBRAIN]> ensemble Explique le P2P
+[NEUROMESH]> ensemble Explique le P2P
 
 📝 Envoi de la requête...
    Prompt: Explique le P2P...
 
 ✅ Réponse reçue!
-   Mode: UNITYBRAIN
+   Mode: NEUROMESH
    Peer: Pinky
    Model: SmolLM2:1.7b
    Latency: 45ms
@@ -205,7 +205,7 @@ Vous pouvez aussi utiliser la commande `query` :
 ### `peers` - Voir les peers connectés
 
 ```
-[UNITYBRAIN]> peers
+[NEUROMESH]> peers
 
 🌐 PEERS CONNECTÉS:
    ✅ Pinky
@@ -224,12 +224,12 @@ Vous pouvez aussi utiliser la commande `query` :
 ### `history [limit]` - Historique des requêtes
 
 ```
-[UNITYBRAIN]> history 5
+[NEUROMESH]> history 5
 
 📜 HISTORIQUE (derniers 5 requêtes):
 
    #1 [1743612345.123]
-   Prompt: Qu'est-ce que UnityBrain v3.0 ?...
+   Prompt: Qu'est-ce que NeuroMesh v3.0 ?...
 
    #2 [1743612350.456]
    Prompt: Explique le consensus d'ensemble...
@@ -247,15 +247,15 @@ Vous pouvez aussi utiliser la commande `query` :
 ### `export [json|txt|code]` - Exporter l'historique
 
 ```
-[UNITYBRAIN]> export json
+[NEUROMESH]> export json
 
 📤 EXPORT (JSON):
 ----------------------------------------------------------------------
 [
   {
     "timestamp": 1743612345.123,
-    "prompt": "Qu'est-ce que UnityBrain v3.0 ?",
-    "response": "UnityBrain v3.0 est...",
+    "prompt": "Qu'est-ce que NeuroMesh v3.0 ?",
+    "response": "NeuroMesh v3.0 est...",
     "peer": "Pinky",
     "model": "SmolLM2:1.7b",
     ...
@@ -266,7 +266,7 @@ Vous pouvez aussi utiliser la commande `query` :
 
 ---
 
-## 🧠 Commandes BugBrain
+## 🧠 Commandes NeuroMeshBug
 
 ### `emancipate` - Lancer cycle d'auto-émancipation
 
@@ -282,7 +282,7 @@ Vous pouvez aussi utiliser la commande `query` :
 ```
 
 **Ce qui se passe :**
-1. Self-Reflection - BugBrain s'auto-analyse
+1. Self-Reflection - NeuroMeshBug s'auto-analyse
 2. Self-Analysis - Identifie les opportunités
 3. Self-Improvement - Lance des experiments
 4. Self-Direction - Définit de nouveaux buts
@@ -356,7 +356,7 @@ Vous pouvez aussi utiliser la commande `query` :
 
 ## 🌐 Interface Web
 
-UnityBrain inclut une interface web accessible à :
+NeuroMesh inclut une interface web accessible à :
 
 ```
 http://0.0.0.0:8080
@@ -375,23 +375,23 @@ http://0.0.0.0:8080
 ### Exemple 1: Query simple
 
 ```
-[UNITYBRAIN]> Qu'est-ce que UnityBrain ?
+[NEUROMESH]> Qu'est-ce que NeuroMesh ?
 
-✅ Réponse: UnityBrain est un réseau P2P distribué...
+✅ Réponse: NeuroMesh est un réseau P2P distribué...
 ```
 
 ### Exemple 2: Query avec ensemble
 
 ```
-[UNITYBRAIN]> ensemble Explique le consensus
+[NEUROMESH]> ensemble Explique le consensus
 
 ✅ Réponse: Le consensus est un processus de vote...
 ```
 
-### Exemple 3: Mode BugBrain
+### Exemple 3: Mode NeuroMeshBug
 
 ```
-[UNITYBRAIN]> mode bug
+[NEUROMESH]> mode bug
 ✅ Mode changé vers: BUG
 
 [BUG]> Explique l'auto-émancipation
@@ -431,36 +431,36 @@ http://0.0.0.0:8080
 
 ### Q: Comment puis-je savoir quel mode utiliser ?
 A:
-- **UnityBrain** → Pour des requêtes P2P distribuées avec multi-modèles
-- **BugBrain** → Pour de l'auto-émancipation et de l'apprentissage autonome
+- **NeuroMesh** → Pour des requêtes P2P distribuées avec multi-modèles
+- **NeuroMeshBug** → Pour de l'auto-émancipation et de l'apprentissage autonome
 
 ### Q: Qu'est-ce que l'ensemble ?
 A: L'ensemble query plusieurs modèles en parallèle et consensue les résultats pour améliorer la qualité (+23%).
 
 ### Q: Comment fonctionne l'auto-émancipation ?
-A: BugBrain s'auto-analyse, identifie les opportunités d'amélioration, lance des experiments, et apprend de ses expériences.
+A: NeuroMeshBug s'auto-analyse, identifie les opportunités d'amélioration, lance des experiments, et apprend de ses expériences.
 
 ### Q: Puis-je utiliser les deux modes ensemble ?
-A: Oui ! Changez de mode avec `mode unitybrain` ou `mode bug` selon vos besoins.
+A: Oui ! Changez de mode avec `mode neuromesh` ou `mode bug` selon vos besoins.
 
 ---
 
 ## 🚀 Commandes Rapides
 
 ```
-mode unitybrain    → Change vers UnityBrain
-mode bug          → Change vers BugBrain
+mode neuromesh    → Change vers NeuroMesh
+mode bug          → Change vers NeuroMeshBug
 query <prompt>    → Envoie une requête
 ensemble <prompt> → Query avec multi-modèles
 status            → Voir le statut
-peers             → Voir les peers (UnityBrain)
-history           → Voir l'historique (UnityBrain)
-export <format>   → Exporter l'historique (UnityBrain)
-emancipate        → Auto-émancipation (BugBrain)
-memory search <q> → Rechercher mémoire (BugBrain)
-skills            → Voir compétences (BugBrain)
-goals             → Voir buts (BugBrain)
-lessons           → Voir leçons (BugBrain)
+peers             → Voir les peers (NeuroMesh)
+history           → Voir l'historique (NeuroMesh)
+export <format>   → Exporter l'historique (NeuroMesh)
+emancipate        → Auto-émancipation (NeuroMeshBug)
+memory search <q> → Rechercher mémoire (NeuroMeshBug)
+skills            → Voir compétences (NeuroMeshBug)
+goals             → Voir buts (NeuroMeshBug)
+lessons           → Voir leçons (NeuroMeshBug)
 help              → Afficher l'aide
 quit              → Quitter
 ```

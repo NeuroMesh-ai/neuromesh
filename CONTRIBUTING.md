@@ -1,13 +1,13 @@
 # Contributing Guide
 
-Merci de vouloir contribuer à UnityBrain & BugBrain ! 🎉
+Merci de vouloir contribuer à NeuroMesh & NeuroMeshBug ! 🎉
 
 ## 🤝 Comment Contribuer
 
 ### Signaler des Bugs
 
 Si vous trouvez un bug :
-1. Vérifiez qu'il n'existe pas déjà dans les [Issues](https://github.com/unitybrain-ai/unitybrain/issues)
+1. Vérifiez qu'il n'existe pas déjà dans les [Issues](https://github.com/NeuroMesh-ai/neuromesh/issues)
 2. Ouvrez une nouvelle issue avec :
    - Un titre descriptif
    - La description du bug
@@ -31,8 +31,8 @@ Pour contribuer du code :
 1. **Fork** le repo
 2. **Clonez** votre fork :
    ```bash
-   git clone https://github.com/votre-username/Unitybrain.git
-   cd Unitybrain
+   git clone https://github.com/votre-username/NeuroMesh.git
+   cd NeuroMesh
    ```
 
 3. **Créez une branche** :
@@ -97,7 +97,7 @@ Les releases sont gérées via GitHub Releases avec un changelog.
 
 ## 📞 Contact
 
-- GitHub Issues: https://github.com/unitybrain-ai/unitybrain/issues
+- GitHub Issues: https://github.com/NeuroMesh-ai/neuromesh/issues
 - Discord: https://discord.com/invite/clawd
 
 MERCI de contribuer ! 🙏

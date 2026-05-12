@@ -1,10 +1,10 @@
-# 🌐 UnityBrain v5
+# 🌐 NeuroMesh v5
 
-[![版本](https://img.shields.io/badge/版本-5.0.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![版本](https://img.shields.io/badge/版本-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![许可证：MIT](https://img.shields.io/badge/许可证-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-去中心化-green.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![端到端加密](https://img.shields.io/badge/E2E-加密-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-去中心化-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![端到端加密](https://img.shields.io/badge/E2E-加密-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
 **分布式P2P人工智能网络，支持公共网格。共享算力，共享模型，保持隐私。**
 
@@ -12,9 +12,9 @@
 
 ---
 
-## ✨ 什么是 UnityBrain？
+## ✨ 什么是 NeuroMesh？
 
-UnityBrain 将机器连接成点对点人工智能网络。你的机器相互通信，共享算力和模型——不依赖云，没有中心服务器，没有单点故障。
+NeuroMesh 将机器连接成点对点人工智能网络。你的机器相互通信，共享算力和模型——不依赖云，没有中心服务器，没有单点故障。
 
 **v5 新增公共网格：** 加入全球共享 CPU、RAM、GPU 和 AI 模型的网络。你的私有网络保持私密。公共网格是你自愿加入的额外层。
 
@@ -51,14 +51,14 @@ UnityBrain 将机器连接成点对点人工智能网络。你的机器相互通
 
 ```bash
 # 克隆
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
 
 # 运行
-python3 src/unitybrain_v5.py
+python3 src/neuromesh_v5.py
 
 # 或使用配置文件
-python3 src/unitybrain_v5.py --config config/bug.json
+python3 src/neuromesh_v5.py --config config/bug.json
 ```
 
 ### 连接你的网络
@@ -209,7 +209,7 @@ class ResourceGuard:
 你的对话留在你的机器上。毋庸置疑。
 
 - **自动保存** — 每条消息本地保存。无需"保存"按钮。
-- **恢复** — 明天打开 UnityBrain，你的对话还在。
+- **恢复** — 明天打开 NeuroMesh，你的对话还在。
 - **搜索** — 按关键词、日期、模型或标签查找任何历史对话。
 - **导出** — Markdown、JSON、纯文本。你的数据，你的格式。
 - **隐私** — 对话永远不会离开你的机器，除非你通过私有 P2P 明确同步。
@@ -254,7 +254,7 @@ class ResourceGuard:
 一个专用文件夹，是你的模型和公共网格之间的**唯一接口**。
 
 ```
-~/.unitybrain/
+~/.neuromesh/
 ├── conversations/        → 🔒 私有（永不共享）
 ├── memory/               → 🔒 私有（永不共享）
 ├── config/               → 🔒 私有（永不共享）
@@ -266,9 +266,9 @@ class ResourceGuard:
 ```
 
 ```bash
-unitybrain share glm-5.1    # 共享模型（创建符号链接）
-unitybrain unshare glm-5.1  # 停止共享（仅删除符号链接）
-unitybrain shared            # 列出已共享的模型
+neuromesh share glm-5.1    # 共享模型（创建符号链接）
+neuromesh unshare glm-5.1  # 停止共享（仅删除符号链接）
+neuromesh shared            # 列出已共享的模型
 ```
 
 **网格永远不会读取 `shared_models/` 之外的内容。** 停止共享是即时的——符号链接删除后，网格立即失去访问权限。
@@ -298,10 +298,10 @@ unitybrain shared            # 列出已共享的模型
 | 🔌 **插件** | 集成到工作流 | VS Code、浏览器、Obsidian、终端 |
 
 ```bash
-unitybrain serve          # 服务（无头）
-unitybrain app            # 应用（GUI）
-unitybrain sidekick       # 助手（系统托盘）
-unitybrain plugin --vscode  # 插件（VS Code）
+neuromesh serve          # 服务（无头）
+neuromesh app            # 应用（GUI）
+neuromesh sidekick       # 助手（系统托盘）
+neuromesh plugin --vscode  # 插件（VS Code）
 ```
 
 4种模式共享同一个核心。一个二进制文件，四种使用方式。
@@ -312,7 +312,7 @@ unitybrain plugin --vscode  # 插件（VS Code）
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   UnityBrain 核心                    │
+│                   NeuroMesh 核心                    │
 │  ┌────────────┐ ┌──────────────┐ ┌────────────────┐ │
 │  │ 资源守卫    │ │ 自适应调度器 │ │ 对话存储       │ │
 │  │ Resource   │ │ Adaptive     │ │ Conversation   │ │
@@ -354,7 +354,7 @@ unitybrain plugin --vscode  # 插件（VS Code）
   },
   "public_mesh": {
     "enabled": true,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,

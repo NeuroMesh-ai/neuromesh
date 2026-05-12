@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# UnityBrain — Installation script
+# NeuroMesh — Installation script
 # Supports: Linux (systemd), macOS (launchd)
 # Usage: sudo ./install.sh [options]
 #
 # Options:
-#   --user USER         Run as USER (default: unitybrain)
-#   --config PATH       Config file path (default: /etc/unitybrain/config.json)
-#   --data-dir PATH     Data directory (default: /var/lib/unitybrain)
+#   --user USER         Run as USER (default: neuromesh)
+#   --config PATH       Config file path (default: /etc/neuromesh/config.json)
+#   --data-dir PATH     Data directory (default: /var/lib/neuromesh)
 #   --no-service        Install without registering the service
 #   --unattended        Non-interactive mode (use defaults)
 
@@ -25,13 +25,13 @@ err()  { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 ok()   { echo -e "${GREEN}[OK]${NC} $*"; }
 
 # ─── Defaults ────────────────────────────────────────────────
-UB_USER="unitybrain"
-UB_GROUP="unitybrain"
-UB_CONFIG="/etc/unitybrain/config.json"
-UB_DATA_DIR="/var/lib/unitybrain"
-UB_LOG_DIR="/var/log/unitybrain"
-UB_SERVICE_NAME="unitybrain"
-UB_BIN="/usr/local/bin/unitybrain"
+UB_USER="neuromesh"
+UB_GROUP="neuromesh"
+UB_CONFIG="/etc/neuromesh/config.json"
+UB_DATA_DIR="/var/lib/neuromesh"
+UB_LOG_DIR="/var/log/neuromesh"
+UB_SERVICE_NAME="neuromesh"
+UB_BIN="/usr/local/bin/neuromesh"
 UB_NO_SERVICE=false
 UB_UNATTENDED=false
 
@@ -93,7 +93,7 @@ check_ollama() {
     elif systemctl is-active --quiet ollama 2>/dev/null; then
         ok "Ollama service is running"
     else
-        warn "Ollama not found. UnityBrain requires Ollama for local AI models."
+        warn "Ollama not found. NeuroMesh requires Ollama for local AI models."
         warn "Install Ollama: https://ollama.com/download"
         if [[ "$UB_UNATTENDED" != "true" ]]; then
             read -rp "Continue without Ollama? [y/N] " REPLY
@@ -157,7 +157,7 @@ generate_config() {
     log "Generating default config..."
     cat > "$UB_CONFIG" << 'CONFIGEOF'
 {
-  "node_name": "unitybrain-node",
+  "node_name": "neuromesh-node",
   "private": {
     "p2p_secret": "CHANGE_ME_TO_A_STRONG_SECRET",
     "peers": [],
@@ -165,7 +165,7 @@ generate_config() {
   },
   "public_mesh": {
     "enabled": false,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,
@@ -198,7 +198,7 @@ CONFIGEOF
 }
 
 install_package() {
-    log "Installing UnityBrain..."
+    log "Installing NeuroMesh..."
     SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
     PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
@@ -206,15 +206,15 @@ install_package() {
         pip install --no-cache-dir "$PROJECT_DIR" 2>/dev/null || \
         pip3 install --no-cache-dir "$PROJECT_DIR"
     else
-        pip install --no-cache-dir unitybrain 2>/dev/null || \
-        pip3 install --no-cache-dir unitybrain
+        pip install --no-cache-dir neuromesh 2>/dev/null || \
+        pip3 install --no-cache-dir neuromesh
     fi
 
     # Verify
-    if command -v unitybrain &>/dev/null; then
-        ok "UnityBrain installed: $(unitybrain --version 2>/dev/null || echo 'OK')"
+    if command -v neuromesh &>/dev/null; then
+        ok "NeuroMesh installed: $(neuromesh --version 2>/dev/null || echo 'OK')"
     else
-        err "Installation failed — 'unitybrain' command not found"
+        err "Installation failed — 'neuromesh' command not found"
         exit 1
     fi
 }
@@ -225,32 +225,32 @@ install_systemd() {
     SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
     # Copy service file
-    cp "$SCRIPT_DIR/unitybrain.service" /etc/systemd/system/unitybrain.service
+    cp "$SCRIPT_DIR/neuromesh.service" /etc/systemd/system/neuromesh.service
 
     # Update paths in the service file
-    sed -i "s|User=unitybrain|User=$UB_USER|" /etc/systemd/system/unitybrain.service
-    sed -i "s|Group=unitybrain|Group=$UB_GROUP|" /etc/systemd/system/unitybrain.service
-    sed -i "s|ReadWritePaths=.*|ReadWritePaths=$UB_DATA_DIR $UB_LOG_DIR|" /etc/systemd/system/unitybrain.service
+    sed -i "s|User=neuromesh|User=$UB_USER|" /etc/systemd/system/neuromesh.service
+    sed -i "s|Group=neuromesh|Group=$UB_GROUP|" /etc/systemd/system/neuromesh.service
+    sed -i "s|ReadWritePaths=.*|ReadWritePaths=$UB_DATA_DIR $UB_LOG_DIR|" /etc/systemd/system/neuromesh.service
 
     # Create environment file
-    cat > /etc/unitybrain/env << 'ENVEOF'
-# UnityBrain environment variables
+    cat > /etc/neuromesh/env << 'ENVEOF'
+# NeuroMesh environment variables
 # Add secrets here — this file is read by systemd and should be root-only
 # P2P_SECRET=your-secret-here
 # OLLAMA_HOST=127.0.0.1:11434
 ENVEOF
-    chmod 600 /etc/unitybrain/env
+    chmod 600 /etc/neuromesh/env
 
     # Reload and enable
     systemctl daemon-reload
-    systemctl enable unitybrain
+    systemctl enable neuromesh
     ok "systemd service installed and enabled"
 }
 
 # ─── macOS launchd ──────────────────────────────────────────
 install_launchd() {
     log "Installing launchd plist..."
-    PLIST_PATH="/Library/LaunchDaemons/com.unitybrain.server.plist"
+    PLIST_PATH="/Library/LaunchDaemons/com.neuromesh.server.plist"
 
     cat > "$PLIST_PATH" << PLISTEOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -258,10 +258,10 @@ install_launchd() {
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.unitybrain.server</string>
+    <string>com.neuromesh.server</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/local/bin/unitybrain</string>
+        <string>/usr/local/bin/neuromesh</string>
         <string>serve</string>
         <string>--config</string>
         <string>${UB_CONFIG}</string>
@@ -275,9 +275,9 @@ install_launchd() {
     <key>WorkingDirectory</key>
     <string>${UB_DATA_DIR}</string>
     <key>StandardOutPath</key>
-    <string>${UB_LOG_DIR}/unitybrain.stdout.log</string>
+    <string>${UB_LOG_DIR}/neuromesh.stdout.log</string>
     <key>StandardErrorPath</key>
-    <string>${UB_LOG_DIR}/unitybrain.stderr.log</string>
+    <string>${UB_LOG_DIR}/neuromesh.stderr.log</string>
     <key>EnvironmentVariables</key>
     <dict>
         <key>OLLAMA_HOST</key>
@@ -300,26 +300,26 @@ PLISTEOF
 
 # ─── Start service ──────────────────────────────────────────
 start_service() {
-    log "Starting UnityBrain service..."
+    log "Starting NeuroMesh service..."
     if [[ "$OS" == "linux-systemd" ]]; then
-        systemctl start unitybrain
+        systemctl start neuromesh
         sleep 2
-        if systemctl is-active --quiet unitybrain; then
-            ok "UnityBrain is running"
-            systemctl status unitybrain --no-pager
+        if systemctl is-active --quiet neuromesh; then
+            ok "NeuroMesh is running"
+            systemctl status neuromesh --no-pager
         else
-            err "UnityBrain failed to start. Check: journalctl -u unitybrain -n 50"
+            err "NeuroMesh failed to start. Check: journalctl -u neuromesh -n 50"
             exit 1
         fi
     elif [[ "$OS" == "macos" ]]; then
-        launchctl start com.unitybrain.server
-        ok "UnityBrain started (check logs at $UB_LOG_DIR)"
+        launchctl start com.neuromesh.server
+        ok "NeuroMesh started (check logs at $UB_LOG_DIR)"
     fi
 }
 
 # ─── Main ────────────────────────────────────────────────────
 main() {
-    log "UnityBrain Installer"
+    log "NeuroMesh Installer"
     log "====================="
 
     check_root
@@ -338,7 +338,7 @@ main() {
         elif [[ "$OS" == "macos" ]]; then
             install_launchd
         else
-            warn "No service manager detected. Run manually: unitybrain serve"
+            warn "No service manager detected. Run manually: neuromesh serve"
         fi
 
         start_service
@@ -349,13 +349,13 @@ main() {
     echo ""
     log "Next steps:"
     echo "  1. Edit config:  sudo nano $UB_CONFIG"
-    echo "  2. Set secrets:  sudo nano /etc/unitybrain/env"
+    echo "  2. Set secrets:  sudo nano /etc/neuromesh/env"
     if [[ "$OS" == "linux-systemd" ]]; then
-        echo "  3. Restart:       sudo systemctl restart unitybrain"
-        echo "  4. View logs:    journalctl -u unitybrain -f"
+        echo "  3. Restart:       sudo systemctl restart neuromesh"
+        echo "  4. View logs:    journalctl -u neuromesh -f"
     elif [[ "$OS" == "macos" ]]; then
-        echo "  3. Restart:      sudo launchctl unload -w /Library/LaunchDaemons/com.unitybrain.server.plist && sudo launchctl load -w /Library/LaunchDaemons/com.unitybrain.server.plist"
-        echo "  4. View logs:    tail -f $UB_LOG_DIR/unitybrain.stdout.log"
+        echo "  3. Restart:      sudo launchctl unload -w /Library/LaunchDaemons/com.neuromesh.server.plist && sudo launchctl load -w /Library/LaunchDaemons/com.neuromesh.server.plist"
+        echo "  4. View logs:    tail -f $UB_LOG_DIR/neuromesh.stdout.log"
     fi
     echo "  5. Open UI:      http://localhost:8080"
     echo ""

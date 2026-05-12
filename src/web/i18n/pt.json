@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "UnityBrain Desktop",
+        "title": "NeuroMesh Desktop",
         "version": "v{version}"
     },
     "header": {
@@ -27,7 +27,7 @@
         "ram": "RAM"
     },
     "chat": {
-        "welcomeTitle": "UnityBrain",
+        "welcomeTitle": "NeuroMesh",
         "welcomeText": "Rede P2P de IA distribuída. Faça uma pergunta ou comece uma conversa.",
         "placeholder": "Escreva sua mensagem…",
         "send": "▶",
@@ -137,7 +137,7 @@
         "ipRequired": "Endereço IP obrigatório",
         "peerAdded": "Par {name} adicionado (em breve)",
         "inviteTitle": "🔑 Convite",
-        "inviteText": "Compartilhe este código com outro nó UnityBrain para conectar:",
+        "inviteText": "Compartilhe este código com outro nó NeuroMesh para conectar:",
         "copy": "📋 Copiar",
         "close": "Fechar"
     },
@@ -156,7 +156,7 @@
         "publicMesh": "🌐 Mesh Público",
         "enableMesh": "Ativar mesh público",
         "tracker": "Tracker",
-        "trackerPlaceholder": "https://tracker.unitybrain.ai",
+        "trackerPlaceholder": "https://tracker.neuromesh.ai",
         "priority": "Prioridade",
         "priorityLocalFirst": "Local primeiro",
         "priorityMeshFirst": "Mesh primeiro",

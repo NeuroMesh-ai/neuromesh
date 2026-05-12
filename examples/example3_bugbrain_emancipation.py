@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Exemple 3: BugBrain Auto-Émancipé
+Exemple 3: NeuroMeshBug Auto-Émancipé
 """
 
 import asyncio
@@ -10,22 +10,22 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.bugbrain_v3_final import BugBrain
+from src.neuromesh_bug_v3_final import NeuroMeshBug
 
 
 async def main():
-    """Exemple BugBrain"""
+    """Exemple NeuroMeshBug"""
 
     print("=" * 70)
-    print("EXEMPLE 3: BugBrain - Auto-Émancipation")
+    print("EXEMPLE 3: NeuroMeshBug - Auto-Émancipation")
     print("=" * 70)
 
-    # Créer BugBrain
-    bugbrain = BugBrain()
+    # Créer NeuroMeshBug
+    neuromesh_bug = NeuroMeshBug()
 
     # Initialiser
     print("\n⚙️ Initialisation...")
-    await bugbrain.initialize()
+    await neuromesh_bug.initialize()
 
     # Faire plusieurs requêtes
     queries = [
@@ -39,7 +39,7 @@ async def main():
     print("\n📝 Test de plusieurs requêtes...")
     for i, query in enumerate(queries, 1):
         print(f"\n{i}. {query}")
-        result = await bugbrain.query(query)
+        result = await neuromesh_bug.query(query)
 
         if result["status"] == "success":
             print(f"   ✅ Success ({result['latency']:.0f}ms)")
@@ -47,7 +47,7 @@ async def main():
 
     # Lancer un cycle d'émancipation
     print("\n🔄 Cycle d'émancipation...")
-    analysis = await bugbrain.emancipation.run_cycle()
+    analysis = await neuromesh_bug.emancipation.run_cycle()
 
     print(f"\n📊 Analyse de l'émancipation:")
     print(f"   Cycles: {analysis['cycles_run']}")
@@ -60,7 +60,7 @@ async def main():
             print(f"   • {lesson}")
 
     # Statistiques de l'émancipation
-    status = bugbrain.emancipation.get_status()
+    status = neuromesh_bug.emancipation.get_status()
 
     print(f"\n🧠 Statistiques d'émancipation:")
     print(f"   Âge: {status['awareness']['age']} interactions")

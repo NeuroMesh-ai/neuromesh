@@ -1,4 +1,4 @@
-# UnityBrain — Model Sharing Design (v4.1)
+# NeuroMesh — Model Sharing Design (v4.1)
 
 ## The Problem
 

@@ -1,5 +1,5 @@
 /**
- * UnityBrain — Internationalization (i18n) Module
+ * NeuroMesh — Internationalization (i18n) Module
  * Supports: fr (default), en, es, zh, hi, ar, pt, ja
  * RTL support for Arabic.
  */

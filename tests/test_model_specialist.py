@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 Model Specialist Tests — UnityBrain v5
+🧪 Model Specialist Tests — NeuroMesh v5
 =========================================
 
 Tests couvrant:

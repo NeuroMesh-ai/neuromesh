@@ -37,7 +37,7 @@ Les grands modèles (LLaMA 3 70B, Mixtral 8x7B, qwen3:8b, etc.) ont besoin de pl
 
 ## 🚀 Solution: Timeouts Dynamiques
 
-BugBrain v3.1+ supporte des **timeouts dynamiques** adaptés à la taille du modèle.
+NeuroMeshBug v3.1+ supporte des **timeouts dynamiques** adaptés à la taille du modèle.
 
 ### Activation
 
@@ -46,16 +46,16 @@ Par défaut, les timeouts dynamiques sont activés.
 ### Configuration
 
 ```python
-from src.bugbrain_v3_final import BugBrain
+from src.neuromesh_bug_v3_final import NeuroMeshBug
 
-# Créer BugBrain
-bugbrain = BugBrain()
+# Créer NeuroMeshBug
+neuromesh_bug = NeuroMeshBug()
 
 # Optionnel: Surcharge de timeout pour un modèle
-bugbrain.set_timeout_override("qwen3:8b", 300)  # Force 5 minutes
+neuromesh_bug.set_timeout_override("qwen3:8b", 300)  # Force 5 minutes
 
 # Optionnel: Timeout par défaut global
-bugbrain.set_default_timeout(180)  # 3 minutes
+neuromesh_bug.set_default_timeout(180)  # 3 minutes
 ```
 
 ### Table des Timeouts par Défaut
@@ -118,40 +118,40 @@ qwen3:8b + prompt long    → 270s (4.5 min)
 ### 1. Recherche Scientifique (Questions longues)
 
 ```python
-bugbrain = BugBrain()
-bugbrain.model = "llama3:70b"
+neuromesh_bug = NeuroMeshBug()
+neuromesh_bug.model = "llama3:70b"
 
 # Question complexe de 2000 caractères
 question = "Expliquez en détail le mécanisme de photosynthèse..."
 
 # Timeout automatique: 600s + 50% = 900s (15 min)
-result = await bugbrain.query(question)
+result = await neuromesh_bug.query(question)
 ```
 
 ### 2. Code Generation (Prompts moyens)
 
 ```python
-bugbrain = BugBrain()
-bugbrain.model = "mixtral:8x7b"
+neuromesh_bug = NeuroMeshBug()
+neuromesh_bug.model = "mixtral:8x7b"
 
 # Prompt de 800 caractères
 prompt = "Écrivez une fonction Python pour..."
 
 # Timeout automatique: 600s + 20% = 720s (12 min)
-result = await bugbrain.query(prompt)
+result = await neuromesh_bug.query(prompt)
 ```
 
 ### 3. Chat Simple (Prompts courts)
 
 ```python
-bugbrain = BugBrain()
-bugbrain.model = "phi3:mini"
+neuromesh_bug = NeuroMeshBug()
+neuromesh_bug.model = "phi3:mini"
 
 # Question courte
 question = "Quelle est la capitale de la France ?"
 
 # Timeout: 60s (pas d'ajustement)
-result = await bugbrain.query(question)
+result = await neuromesh_bug.query(question)
 ```
 
 ---
@@ -172,7 +172,7 @@ Si une requête timeout :
 
 3. **Override:**
    ```python
-   bugbrain.set_timeout_override("qwen3:8b", 600)  # Force 10 min
+   neuromesh_bug.set_timeout_override("qwen3:8b", 600)  # Force 10 min
    ```
 
 ---
@@ -182,23 +182,23 @@ Si une requête timeout :
 ### Désactiver les Timeouts Dynamiques
 
 ```python
-bugbrain = BugBrain()
-bugbrain.enable_dynamic_timeouts = False  # Toujours utiliser default_timeout
-bugbrain.set_default_timeout(120)  # 2 minutes pour tout
+neuromesh_bug = NeuroMeshBug()
+neuromesh_bug.enable_dynamic_timeouts = False  # Toujours utiliser default_timeout
+neuromesh_bug.set_default_timeout(120)  # 2 minutes pour tout
 ```
 
 ### Ajouter un Nouveau Modèle
 
 ```python
-bugbrain = BugBrain()
-bugbrain.add_model_timeout("nouveau_modele:20b", 300)  # 5 minutes
+neuromesh_bug = NeuroMeshBug()
+neuromesh_bug.add_model_timeout("nouveau_modele:20b", 300)  # 5 minutes
 ```
 
 ### Surcharge Globale
 
 ```python
-bugbrain = BugBrain()
-bugbrain.set_timeout_override("default", 300)  # Tout à 5 minutes
+neuromesh_bug = NeuroMeshBug()
+neuromesh_bug.set_timeout_override("default", 300)  # Tout à 5 minutes
 ```
 
 ---
@@ -250,7 +250,7 @@ llama3:70b    → 600s ✅ (ajusté)
 
 ## 📝 Note Importante
 
-Les timeouts dynamiques sont une **amélioration proposée** par Denis Houet et seront disponibles dans **BugBrain v3.1**.
+Les timeouts dynamiques sont une **amélioration proposée** par Denis Houet et seront disponibles dans **NeuroMeshBug v3.1**.
 
 Pour l'instant (v3.0), le timeout est fixe à 60s.
 

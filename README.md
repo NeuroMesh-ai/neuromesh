@@ -1,69 +1,69 @@
-# 🌐 UnityBrain
+# 🌐 NeuroMesh
 
 <p align="center">
-  <img src="assets/banner.png" alt="UnityBrain — P2P Distributed AI Network" width="100%" />
+  <img src="assets/banner.png" alt="NeuroMesh — P2P Distributed AI Network" width="100%" />
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-100%25_Decentralized-green.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![Specialist](https://img.shields.io/badge/specialist-12_schemas-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![Website](https://img.shields.io/badge/website-unitybrain.ai-blue.svg)](https://unitybrain-ai.github.io/unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-100%25_Decentralized-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Specialist](https://img.shields.io/badge/specialist-12_schemas-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Website](https://img.shields.io/badge/website-neuromesh.ai-blue.svg)](https://neuromesh-ai.github.io/neuromesh)
 
 **Lightweight P2P distributed AI network.** No central server. No accounts. No premium tier. Connect machines, share models, sync memory. **v5.1: Multi-LLM specialist routing — auto-detect prompt type, route to the best model.**
 
-🌐 **[Website & Live Demo →](https://unitybrain-ai.github.io/unitybrain)**
+🌐 **[Website & Live Demo →](https://neuromesh-ai.github.io/neuromesh)**
 
 > 🌍 [English](./docs/README_EN.md) · 🇫🇷 [Français](./docs/README_FR.md) · 🇪🇸 [Español](./docs/README_ES.md) · 🇩🇪 [Deutsch](./docs/README_DE.md) · 🇯🇵 [日本語](./docs/README_JA.md) · 🇷🇺 [Русский](./docs/README_RU.md) · 🇨🇳 [简体中文](./docs/README_ZH.md)
 
 ---
 
-## Two Ways to Use UnityBrain
+## Two Ways to Use NeuroMesh
 
 ### 🖥️ Standalone Application
 
-UnityBrain runs as a **standalone application** — no OpenClaw, no Docker, no Kubernetes. Just Python and Ollama.
+NeuroMesh runs as a **standalone application** — no OpenClaw, no Docker, no Kubernetes. Just Python and Ollama.
 
 ```bash
 # Install in 30 seconds
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
 python3 setup.py --auto
 
 # That's it. You now have:
-#   unitybrain          → Interactive AI chat CLI
-#   unitybrain start    → Start P2P server
-#   ~/.unitybrain/      → Config, logs, venv
+#   neuromesh          → Interactive AI chat CLI
+#   neuromesh start    → Start P2P server
+#   ~/.neuromesh/      → Config, logs, venv
 ```
 
 Install on another machine with the same `p2p_secret` → they find each other automatically. **More nodes = more CPU/RAM = more power.**
 
 ### 🔌 OpenClaw Skill
 
-Already using [OpenClaw](https://openclaw.ai)? UnityBrain integrates as a skill — **two ways to install:**
+Already using [OpenClaw](https://openclaw.ai)? NeuroMesh integrates as a skill — **two ways to install:**
 
 **From ClawHub (when published):**
 ```bash
-openclaw skill install unitybrain
+openclaw skill install neuromesh
 ```
 
 **Manual install (works now):**
 ```bash
 # Clone the skill into your workspace
-git clone https://github.com/unitybrain-ai/unitybrain.git /tmp/ub
-mkdir -p ~/.openclaw/workspace/skills/unitybrain
-cp /tmp/ub/skill/SKILL.md ~/.openclaw/workspace/skills/unitybrain/
+git clone https://github.com/NeuroMesh-ai/neuromesh.git /tmp/ub
+mkdir -p ~/.openclaw/workspace/skills/neuromesh
+cp /tmp/ub/skill/SKILL.md ~/.openclaw/workspace/skills/neuromesh/
 rm -rf /tmp/ub
 
-# Done! Your agent now has UnityBrain skill access
+# Done! Your agent now has NeuroMesh skill access
 ```
 
 Your OpenClaw agent gets P2P AI access — query any model on the network, share memory between agents, use remote GPU/CPU transparently.
 
-**Sidekick Mode (v4.2+):** When UnityBrain is running locally, OpenClaw auto-discovers it at `http://localhost:8080/api/agent`. Zero config needed — just start UnityBrain and your agent becomes smarter.
+**Sidekick Mode (v4.2+):** When NeuroMesh is running locally, OpenClaw auto-discovers it at `http://localhost:8080/api/agent`. Zero config needed — just start NeuroMesh and your agent becomes smarter.
 
-**Either way, UnityBrain is the same P2P network.** Standalone users and OpenClaw users share the same mesh.
+**Either way, NeuroMesh is the same P2P network.** Standalone users and OpenClaw users share the same mesh.
 
 ---
 
@@ -71,7 +71,7 @@ Your OpenClaw agent gets P2P AI access — query any model on the network, share
 
 Every AI tool wants your email, your phone number, and $20/month. Cloud APIs lock you in. Self-hosted solutions need Kubernetes and a DevOps degree.
 
-**UnityBrain is the alternative.** Two or two thousand machines, one config file each, and they're a distributed AI network. No Docker. No SaaS. No middleman. Your machines talk directly, share AI responses, and sync memory — if one goes down, the others keep working. The more nodes, the stronger the network.
+**NeuroMesh is the alternative.** Two or two thousand machines, one config file each, and they're a distributed AI network. No Docker. No SaaS. No middleman. Your machines talk directly, share AI responses, and sync memory — if one goes down, the others keep working. The more nodes, the stronger the network.
 
 ---
 
@@ -88,7 +88,7 @@ Every AI tool wants your email, your phone number, and $20/month. Cloud APIs loc
 | **Resource Guard** | Auto-pause sharing when CPU/RAM thresholds exceeded · Graceful degradation |
 | **Sharing Quotas** | Score-based query limits — **the more you share, the more you can use** |
 | **Auto-Discovery** | Static config · Tailscale auto-discovery · mDNS · Dynamic API registration |
-| **Interactive CLI** | `unitybrain` command — chat with AI, manage memory, check peers and quotas |
+| **Interactive CLI** | `neuromesh` command — chat with AI, manage memory, check peers and quotas |
 | **Web UI** | 🌍 9 languages · Chat with specialist/multi-LLM controls · Share dashboard · Network monitor · Config panel |
 | **Stats** | ⚡ 0.16s startup · 💾 17MB RAM · 📦 4 dependencies (aiohttp, psutil, PyYAML, PyNaCl optional) |
 
@@ -99,8 +99,8 @@ Every AI tool wants your email, your phone number, and $20/month. Cloud APIs loc
 ### Standalone Install
 
 ```bash
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
 
 # Automatic install (defaults: share_ai=true, auto-secret)
 python3 setup.py --auto
@@ -109,25 +109,25 @@ python3 setup.py --auto
 python3 setup.py
 
 # Then:
-unitybrain              # Interactive AI chat CLI
-unitybrain start        # Start P2P server
+neuromesh              # Interactive AI chat CLI
+neuromesh start        # Start P2P server
 ```
 
 ### Manual Install (no setup.py)
 
 ```bash
 pip install aiohttp psutil
-python3 src/unitybrain_v5.py mynode
+python3 src/neuromesh_v5.py mynode
 ```
 
 ### Connect Your Network
 
-1. Install UnityBrain on each machine
+1. Install NeuroMesh on each machine
 2. Set the **same `p2p_secret`** in all configs
 3. They discover each other automatically (via Tailscale or local network)
 
 ```json
-// ~/.unitybrain/config/mynode.json
+// ~/.neuromesh/config/mynode.json
 {
   "node_name": "bug",
   "port": 8080,
@@ -187,7 +187,7 @@ Score → queries/minute allowed:
 
 ```bash
 # Check quotas
-unitybrain /quota
+neuromesh /quota
 curl http://localhost:8080/api/quota
 ```
 
@@ -196,10 +196,10 @@ curl http://localhost:8080/api/quota
 ## Interactive CLI
 
 ```bash
-unitybrain                    # Start interactive chat
-unitybrain -q "Hello"         # Single query
-unitybrain -m gpt-4o          # Use specific model
-unitybrain --ensemble         # Multi-model consensus
+neuromesh                    # Start interactive chat
+neuromesh -q "Hello"         # Single query
+neuromesh -m gpt-4o          # Use specific model
+neuromesh --ensemble         # Multi-model consensus
 ```
 
 ### CLI Commands
@@ -256,8 +256,8 @@ TIMESTAMP=$(date +%s)
 SIGNATURE=$(echo -n "/api/query:${TIMESTAMP}" | openssl dgst -sha256 -hmac "your-secret" | awk '{print $NF}')
 
 curl -X POST http://localhost:8080/api/query \
-  -H "X-UnityBrain-Auth: ${SIGNATURE}" \
-  -H "X-UnityBrain-TS: ${TIMESTAMP}" \
+  -H "X-NeuroMesh-Auth: ${SIGNATURE}" \
+  -H "X-NeuroMesh-TS: ${TIMESTAMP}" \
   -H "Content-Type: application/json" \
   -d '{"prompt":"Hello","model":"glm-5.1:cloud"}'
 ```
@@ -318,24 +318,24 @@ curl -X POST http://localhost:8080/api/query \
 ```bash
 # After python3 setup.py --auto, the service is created automatically
 systemctl --user daemon-reload
-systemctl --user enable --now unitybrain
+systemctl --user enable --now neuromesh
 ```
 
 Or manually:
 
 ```ini
-# ~/.config/systemd/user/unitybrain.service
+# ~/.config/systemd/user/neuromesh.service
 [Unit]
-Description=UnityBrain P2P Node
+Description=NeuroMesh P2P Node
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=%h/.unitybrain/src
-ExecStart=%h/.unitybrain/venv/bin/python3 unitybrain_v5.py mynode
+WorkingDirectory=%h/.neuromesh/src
+ExecStart=%h/.neuromesh/venv/bin/python3 neuromesh_v5.py mynode
 Restart=always
 RestartSec=5
-Environment=PYTHONPATH=%h/.unitybrain/src
+Environment=PYTHONPATH=%h/.neuromesh/src
 
 [Install]
 WantedBy=default.target
@@ -345,7 +345,7 @@ WantedBy=default.target
 
 ## 🎯 Specialist Router (v5.1)
 
-UnityBrain auto-detects what kind of prompt you're sending and routes it to the best model.
+NeuroMesh auto-detects what kind of prompt you're sending and routes it to the best model.
 
 ### 12 Specialty Schemas
 
@@ -379,7 +379,7 @@ UnityBrain auto-detects what kind of prompt you're sending and routes it to the 
 
 ```bash
 # Auto-detect specialty
-unitybrain -q "Write a Python web scraper"
+neuromesh -q "Write a Python web scraper"
 
 # Force code specialty
 curl -X POST http://localhost:8080/api/query \
@@ -387,7 +387,7 @@ curl -X POST http://localhost:8080/api/query \
   -d '{"prompt":"Sort this array","specialty":"code"}'
 
 # Compare two models
-unitybrain --multi compare -q "Explain quantum entanglement"
+neuromesh --multi compare -q "Explain quantum entanglement"
 
 # Multi-model vote
 curl -X POST http://localhost:8080/api/multi \

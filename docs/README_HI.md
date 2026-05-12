@@ -1,10 +1,10 @@
-# 🌐 UnityBrain v5
+# 🌐 NeuroMesh v5
 
-[![संस्करण](https://img.shields.io/badge/संस्करण-5.0.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![संस्करण](https://img.shields.io/badge/संस्करण-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![लाइसेंस: MIT](https://img.shields.io/badge/लाइसेंस-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-विकेन्द्रीकृत-green.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![E2E एन्क्रिप्टेड](https://img.shields.io/badge/E2E-एन्क्रिप्टेड-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-विकेन्द्रीकृत-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![E2E एन्क्रिप्टेड](https://img.shields.io/badge/E2E-एन्क्रिप्टेड-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
 **सार्वजनिक मेश के साथ वितरित P2P AI नेटवर्क। कंप्यूट शेयर करें, मॉडल शेयर करें, निजी रहें।**
 
@@ -12,9 +12,9 @@
 
 ---
 
-## ✨ UnityBrain क्या है?
+## ✨ NeuroMesh क्या है?
 
-UnityBrain मशीनों को पीयर-टू-पीयर AI नेटवर्क में जोड़ता है। आपकी मशीनें एक-दूसरे से बात करती हैं, कंप्यूट और मॉडल शेयर करती हैं — कोई क्लाउड निर्भरता नहीं, कोई केंद्रीय सर्वर नहीं, कोई एकल विफलता बिंदु नहीं।
+NeuroMesh मशीनों को पीयर-टू-पीयर AI नेटवर्क में जोड़ता है। आपकी मशीनें एक-दूसरे से बात करती हैं, कंप्यूट और मॉडल शेयर करती हैं — कोई क्लाउड निर्भरता नहीं, कोई केंद्रीय सर्वर नहीं, कोई एकल विफलता बिंदु नहीं।
 
 **v5 सार्वजनिक मेश जोड़ता है:** साझा CPU, RAM, GPU और AI मॉडल के वैश्विक नेटवर्क में शामिल हों। आपका निजी नेटवर्क निजी रहता है। मेश एक अतिरिक्त परत है जिसे आप स्वैच्छिक रूप से शामिल होते हैं।
 
@@ -51,14 +51,14 @@ UnityBrain मशीनों को पीयर-टू-पीयर AI ने�
 
 ```bash
 # क्लोन करें
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
 
 # चलाएं
-python3 src/unitybrain_v5.py
+python3 src/neuromesh_v5.py
 
 # या कॉन्फिग फाइल के साथ
-python3 src/unitybrain_v5.py --config config/bug.json
+python3 src/neuromesh_v5.py --config config/bug.json
 ```
 
 ### अपना नेटवर्क कनेक्ट करें
@@ -209,7 +209,7 @@ class ResourceGuard:
 आपकी बातचीत आपकी मशीन पर रहती है। बिंदु।
 
 - **स्वतः सेव** — हर संदेश स्थानीय रूप से सेव। कोई "सेव" बटन नहीं।
-- **रिज्यूम** — कल UnityBrain खोलें, आपकी बातचीत वहाँ है।
+- **रिज्यूम** — कल NeuroMesh खोलें, आपकी बातचीत वहाँ है।
 - **खोज** — कीवर्ड, तारीख, मॉडल या टैग से कोई भी पिछली बातचीत खोजें।
 - **एक्सपोर्ट** — Markdown, JSON, सादा टेक्स्ट। आपका डेटा, आपका फॉर्मेट।
 - **प्राइवेसी** — बातचीत कभी आपकी मशीन से बाहर नहीं जाती जब तक आप P2P के माध्यम से सिंक न करें।
@@ -254,7 +254,7 @@ class ResourceGuard:
 एक समर्पित फोल्डर जो आपके मॉडल और सार्वजनिक मेश के बीच **एकमात्र इंटरफेस** है।
 
 ```
-~/.unitybrain/
+~/.neuromesh/
 ├── conversations/        → 🔒 निजी (कभी शेयर नहीं)
 ├── memory/               → 🔒 निजी (कभी शेयर नहीं)
 ├── config/               → 🔒 निजी (कभी शेयर नहीं)
@@ -266,9 +266,9 @@ class ResourceGuard:
 ```
 
 ```bash
-unitybrain share glm-5.1    # मॉडल शेयर करें (symlink बनाता है)
-unitybrain unshare glm-5.1  # शेयरिंग बंद करें (केवल symlink हटाता है)
-unitybrain shared            # शेयर किए गए मॉडल सूचीबद्ध करें
+neuromesh share glm-5.1    # मॉडल शेयर करें (symlink बनाता है)
+neuromesh unshare glm-5.1  # शेयरिंग बंद करें (केवल symlink हटाता है)
+neuromesh shared            # शेयर किए गए मॉडल सूचीबद्ध करें
 ```
 
 **मेश कभी `shared_models/` के बाहर नहीं पढ़ता।** शेयरिंग बंद करना तत्काल है — symlink हटाते ही मेश की पहुँच समाप्त हो जाती है।
@@ -298,10 +298,10 @@ unitybrain shared            # शेयर किए गए मॉडल सू
 | 🔌 **प्लगइन** | आपके वर्कफ़्लो में एकीकृत | VS Code, ब्राउज़र, Obsidian, टर्मिनल |
 
 ```bash
-unitybrain serve          # सर्विस (हेडलेस)
-unitybrain app            # ऐप (GUI)
-unitybrain sidekick       # साइडकिक (सिस्टम ट्रे)
-unitybrain plugin --vscode  # प्लगइन (VS Code)
+neuromesh serve          # सर्विस (हेडलेस)
+neuromesh app            # ऐप (GUI)
+neuromesh sidekick       # साइडकिक (सिस्टम ट्रे)
+neuromesh plugin --vscode  # प्लगइन (VS Code)
 ```
 
 4 मोड एक ही कोर साझा करते हैं। एक बाइनरी, चार लाइफस्टाइल।
@@ -312,7 +312,7 @@ unitybrain plugin --vscode  # प्लगइन (VS Code)
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   UnityBrain कोर                     │
+│                   NeuroMesh कोर                     │
 │  ┌────────────┐ ┌──────────────┐ ┌────────────────┐ │
 │  │ रिसोर्स    │ │ एडैप्टिव    │ │ कन्वर्सेशन    │ │
 │  │ गार्ड      │ │ शेड्यूलर    │ │ स्टोर          │ │
@@ -352,7 +352,7 @@ unitybrain plugin --vscode  # प्लगइन (VS Code)
   },
   "public_mesh": {
     "enabled": true,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,

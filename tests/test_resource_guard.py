@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 Resource Guard Tests — UnityBrain v5
+🧪 Resource Guard Tests — NeuroMesh v5
 ========================================
 
 Comprehensive test suite covering:

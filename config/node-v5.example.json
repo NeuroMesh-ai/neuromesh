@@ -40,7 +40,7 @@
   "discovery_interval": 300,
   "public_mesh": {
     "enabled": false,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 256,
     "max_cpu_percent": 10,
     "gpu_share": false,
@@ -52,7 +52,7 @@
   },
   "conversation_store": {
     "enabled": true,
-    "storage_dir": "~/.unitybrain/conversations",
+    "storage_dir": "~/.neuromesh/conversations",
     "encryption": false,
     "max_conversation_size_mb": 100,
     "default_privacy": "private",

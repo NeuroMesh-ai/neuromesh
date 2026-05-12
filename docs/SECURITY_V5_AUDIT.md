@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-12  
 **Fichiers comparés:**
-- `src/unitybrain_v4.py` (4243 lignes) — version auditée + corrigée
-- `src/unitybrain_v5.py` (4800+ lignes) — **version en production**, non corrigée
+- `src/neuromesh_v4.py` (4243 lignes) — version auditée + corrigée
+- `src/neuromesh_v5.py` (4800+ lignes) — **version en production**, non corrigée
 
 ## Résultat Global
 
@@ -45,7 +45,7 @@
 | **MED-07** | TokenBlacklist | Pas de révocation de tokens | MEDIUM |
 | **LOW-01** | Log file permissions 0o600/0o700 | Logs lisibles par tout le monde | LOW |
 | **LOW-02** | PID file permissions 0o600 | PID lisible par tout le monde | LOW |
-| **LOW-03** | TLS support (UNITYBRAIN_CERT/KEY) | Pas de HTTPS | LOW |
+| **LOW-03** | TLS support (NEUROMESH_CERT/KEY) | Pas de HTTPS | LOW |
 | **LOW-04** | CSP header on dashboard | XSS risque | LOW |
 | **LOW-05** | XSS html_escape on dashboard | XSS via peer names | MEDIUM |
 | **LOW-07** | WS max_msg_size limit | DoS par messages géants | LOW |

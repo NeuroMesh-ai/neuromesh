@@ -16,7 +16,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.bugbrain_v3_final import BugBrain
+from src.neuromesh_bug_v3_final import NeuroMeshBug
 
 # =============================================================================
 # ============== QUESTIONS DE NIVEAU DOCTORAL ============================
@@ -195,11 +195,11 @@ class ExtremeBenchmark:
 
         return min(coherence, 1.0)
 
-    async def run_query(self, bugbrain, query: str, model: str, query_index: int, category: str):
+    async def run_query(self, neuromesh_bug, query: str, model: str, query_index: int, category: str):
         start = time.time()
 
         try:
-            result = await bugbrain.query(query)
+            result = await neuromesh_bug.query(query)
             latency = (time.time() - start) * 1000  # ms
 
             response = result.get("response", "")
@@ -251,9 +251,9 @@ class ExtremeBenchmark:
         print(f"   Modèles: {len(LLMS_TO_TEST)}")
         print(f"   Total tests: {len(EXTREME_QUERIES) * len(LLMS_TO_TEST)}")
 
-        # Créer BugBrain
-        bugbrain = BugBrain()
-        await bugbrain.initialize()
+        # Créer NeuroMeshBug
+        neuromesh_bug = NeuroMeshBug()
+        await neuromesh_bug.initialize()
 
         self.start_time = datetime.utcnow()
 
@@ -281,7 +281,7 @@ class ExtremeBenchmark:
 
                     print(f"      [{progress:.0f}%] {i+1}/{len(queries)}... ", end="", flush=True)
 
-                    result = await self.run_query(bugbrain, query, model, current_test, category)
+                    result = await self.run_query(neuromesh_bug, query, model, current_test, category)
                     self.results.append(result)
 
                     # Trouver l'index global
@@ -476,8 +476,8 @@ async def main():
 
     os.makedirs("output", exist_ok=True)
 
-    # BugBrain
-    benchmark = ExtremeBenchmark("BugBrain Extreme")
+    # NeuroMeshBug
+    benchmark = ExtremeBenchmark("NeuroMeshBug Extreme")
     stats = await benchmark.run_benchmark()
 
     # Afficher les stats

@@ -5,7 +5,7 @@
 
 ## 🌐 Vue d'Ensemble
 
-Le module **Internet Capable** permet à UnityBrain & BugBrain v3.0 de :
+Le module **Internet Capable** permet à NeuroMesh & NeuroMeshBug v3.0 de :
 - ✅ S'interconnecter sur des réseaux divers (LAN, WAN, Internet)
 - ✅ Traverser les NAT/Firewalls
 - ✅ Découvrir automatiquement des nœuds sur Internet
@@ -126,7 +126,7 @@ await rendezvous.start()
 
 ### 2. Configurer Multi-Network Manager
 
-Sur chaque nœud (UnityBrain/BugBrain) :
+Sur chaque nœud (NeuroMesh/NeuroMeshBug) :
 
 ```python
 from internet_capable import MultiNetworkManager
@@ -175,7 +175,7 @@ local_nodes = await multi_net.discover_nodes({"network_type": "local"})
 # Envoyer une requête à n'importe quel nœud
 request = {
     "type": "query",
-    "prompt": "Qu'est-ce que UnityBrain ?"
+    "prompt": "Qu'est-ce que NeuroMesh ?"
 }
 
 # Le système choisit automatiquement le meilleur nœud
@@ -463,12 +463,12 @@ Cette fonction :
 
 ---
 
-## 📁 Intégration avec UnityBrain & BugBrain
+## 📁 Intégration avec NeuroMesh & NeuroMeshBug
 
 ### Ajouter au réseau existant
 
 ```python
-# Dans votre UnityBrain/BugBrain existant
+# Dans votre NeuroMesh/NeuroMeshBug existant
 from internet_capable import MultiNetworkManager
 
 # Ajouter le module Internet Capable
@@ -530,7 +530,7 @@ response = await multi_net.send_request({"type": "ping"})
 
 **MERCI Denis !**
 
-Tu as maintenant un module complet pour permettre à UnityBrain & BugBrain de s'interconnecter sur des réseaux divers (LAN, WAN, Internet) ! 🌐🚀
+Tu as maintenant un module complet pour permettre à NeuroMesh & NeuroMeshBug de s'interconnecter sur des réseaux divers (LAN, WAN, Internet) ! 🌐🚀
 
 **Les nœuds peuvent maintenant se découvrir et communiquer même derrière des NAT/Firewalls !** 🌍
 

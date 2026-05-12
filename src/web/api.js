@@ -1,12 +1,12 @@
 /**
- * UnityBrain Desktop — API Client
+ * NeuroMesh Desktop — API Client
  * Communicates with the backend via REST and WebSocket.
  * All inputs are sanitized before display. CSRF tokens are handled.
  */
 
 const API_BASE = window.location.origin; // same origin = localhost only
 
-class UnityBrainAPI {
+class NeuroMeshAPI {
     constructor() {
         this.baseUrl = API_BASE;
         this.wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
@@ -284,7 +284,7 @@ class UnityBrainAPI {
      */
     static renderMarkdown(text) {
         if (!text) return '';
-        let s = UnityBrainAPI.sanitize(text);
+        let s = NeuroMeshAPI.sanitize(text);
         // Code blocks
         s = s.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
         // Inline code
@@ -300,4 +300,4 @@ class UnityBrainAPI {
 }
 
 // Global instance
-const api = new UnityBrainAPI();
+const api = new NeuroMeshAPI();

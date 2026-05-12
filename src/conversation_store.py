@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-💾 CONVERSATION STORE — UnityBrain v5 Persistent Conversation Memory
+💾 CONVERSATION STORE — NeuroMesh v5 Persistent Conversation Memory
 ====================================================================
 
 Your conversations stay on YOUR machine. Period.
@@ -35,12 +35,12 @@ from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
 
-logger = logging.getLogger('UnityBrain.ConversationStore')
+logger = logging.getLogger('NeuroMesh.ConversationStore')
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-DEFAULT_CONVERSATIONS_DIR = os.path.expanduser("~/.unitybrain/conversations")
+DEFAULT_CONVERSATIONS_DIR = os.path.expanduser("~/.neuromesh/conversations")
 MAX_CONVERSATION_SIZE_BYTES = 100 * 1024 * 1024  # 100MB
 MAX_FILENAME_LENGTH = 255
 SAFE_FILENAME_PATTERN = re.compile(r'^[a-zA-Z0-9_\-]+$')
@@ -350,7 +350,7 @@ class ConversationStore:
     """
     Persistent conversation storage.
 
-    Stores conversations as JSON files in ~/.unitybrain/conversations/.
+    Stores conversations as JSON files in ~/.neuromesh/conversations/.
     Each conversation = 1 JSON file with metadata + messages.
 
     Privacy levels:

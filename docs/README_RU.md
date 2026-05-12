@@ -1,9 +1,9 @@
-# 🌐 UnityBrain v4.1.0
+# 🌐 NeuroMesh v4.1.0
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-100%25_Децентрализовано-green.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-100%25_Децентрализовано-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
 **Лёгкая P2P распределённая ИИ-сеть.** Без центрального сервера. Без аккаунтов. Без премиума. Подключайте машины, делитесь моделями, синхронизируйте память.
 
@@ -15,7 +15,7 @@
 
 Каждый ИИ-инструмент хочет ваш email, номер телефона и $20/мес. Облачные API привязывают вас. Самохостинговые решения требуют Kubernetes и диплом DevOps.
 
-**UnityBrain — это альтернатива.** Две машины, по одному конфигурационному файлу на каждую — и у вас распределённая ИИ-сеть. Без Docker. Без SaaS. Без посредников.
+**NeuroMesh — это альтернатива.** Две машины, по одному конфигурационному файлу на каждую — и у вас распределённая ИИ-сеть. Без Docker. Без SaaS. Без посредников.
 
 ---
 
@@ -35,9 +35,9 @@
 ## Быстрый старт
 
 ```bash
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
-python3 src/unitybrain_v4.py --config config/bug.json
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
+python3 src/neuromesh_v4.py --config config/bug.json
 ```
 
 ### Добавление OpenAI или Anthropic

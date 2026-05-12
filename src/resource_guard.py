@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🛡️ RESOURCE GUARD — UnityBrain v5 Self-Protection Module
+🛡️ RESOURCE GUARD — NeuroMesh v5 Self-Protection Module
 ==========================================================
 
 Ensures public mesh sharing NEVER impacts the local user's experience.
@@ -21,7 +21,7 @@ from collections import deque
 from typing import Dict, Optional, Any, List
 from enum import Enum
 
-logger = logging.getLogger('UnityBrain.ResourceGuard')
+logger = logging.getLogger('NeuroMesh.ResourceGuard')
 
 # ---------------------------------------------------------------------------
 # psutil availability — fail-safe: if we can't monitor, we don't share

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🎯 MODEL SPECIALIST — UnityBrain v5
+🎯 MODEL SPECIALIST — NeuroMesh v5
 ====================================
 
 Système de spécialités et sélection multi-LLM.
@@ -39,7 +39,7 @@ from typing import List, Dict, Any, Optional, Tuple, Set
 from dataclasses import dataclass, field
 from pathlib import Path
 
-logger = logging.getLogger('UnityBrain.Specialist')
+logger = logging.getLogger('NeuroMesh.Specialist')
 
 # ============================================================================
 # CONSTANTES
@@ -54,7 +54,7 @@ SPECIALTY_PATTERN = re.compile(r'^[a-zA-Z0-9._:/-]+$')
 # ============================================================================
 
 class ModelSpecialty(Enum):
-    """Spécialités de modèles reconnues par UnityBrain."""
+    """Spécialités de modèles reconnues par NeuroMesh."""
     CODE = "code"
     REASONING = "reasoning"
     CREATIVE = "creative"

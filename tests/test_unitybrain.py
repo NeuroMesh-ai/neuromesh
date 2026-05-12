@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tests Unitaires - UnityBrain v5.1.0
+Tests Unitaires - NeuroMesh v5.1.0
 """
 
 import asyncio
@@ -13,8 +13,8 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.unitybrain_v5 import (
-    UnityBrain,
+from src.neuromesh_v5 import (
+    NeuroMesh,
     Peer,
     RateLimiter,
     SharingQuota,
@@ -156,18 +156,18 @@ class TestSharingQuota:
 
 
 # =============================================================================
-# TESTS UNITYBRAIN INIT
+# TESTS NEUROMESH INIT
 # =============================================================================
 
-class TestUnityBrainInit:
+class TestNeuroMeshInit:
     def test_init_with_config(self):
-        brain = UnityBrain(TEST_CONFIG)
+        brain = NeuroMesh(TEST_CONFIG)
         assert brain.node_name == "test_node"
         assert brain.version == "5.1.0"
         assert brain.port == 18080
 
     def test_has_v5_modules(self):
-        brain = UnityBrain(TEST_CONFIG)
+        brain = NeuroMesh(TEST_CONFIG)
         # Check v5 module attributes exist (may be None if not installed)
         assert hasattr(brain, 'resource_guard')
         assert hasattr(brain, 'adaptive_scheduler')
@@ -176,7 +176,7 @@ class TestUnityBrainInit:
         assert hasattr(brain, 'tracker_client')
 
     def test_status_includes_v5(self):
-        brain = UnityBrain(TEST_CONFIG)
+        brain = NeuroMesh(TEST_CONFIG)
         status = brain.get_status()
         assert "resource_guard" in status
         assert "adaptive_scheduler" in status

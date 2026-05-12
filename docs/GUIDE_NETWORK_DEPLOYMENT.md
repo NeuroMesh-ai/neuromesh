@@ -1,5 +1,5 @@
 # 🌐🚀 GUIDE - Spécialisation Réseau & Déploiement
-## Modules d'interconnexion et de déploiement pour UnityBrain & BugBrain v3.0
+## Modules d'interconnexion et de déploiement pour NeuroMesh & NeuroMeshBug v3.0
 
 ---
 
@@ -76,7 +76,7 @@ await network.start()
 # Envoyer une requête
 request = {
     "type": "query",
-    "prompt": "Qu'est-ce que UnityBrain ?"
+    "prompt": "Qu'est-ce que NeuroMesh ?"
 }
 
 response = await network.send_request(request)
@@ -131,7 +131,7 @@ from deployment_module import DeploymentManager, DeploymentConfig
 
 # Créer la configuration
 config = DeploymentConfig(
-    deployment_name="unitybrain-deployment",
+    deployment_name="neuromesh-deployment",
     node_count=3,
     min_nodes=1,
     max_nodes=5,
@@ -147,8 +147,8 @@ deployment = DeploymentManager(config)
 
 ```python
 # Déployer des nœuds
-await deployment.deploy_node("node-1", "0.0.0.0", 9999, "/tmp/unitybrain_v3_final.py")
-await deployment.deploy_node("node-2", "0.0.0.0", 10000, "/tmp/bugbrain_v3_final.py")
+await deployment.deploy_node("node-1", "0.0.0.0", 9999, "/tmp/neuromesh_v3_final.py")
+await deployment.deploy_node("node-2", "0.0.0.0", 10000, "/tmp/neuromesh_bug_v3_final.py")
 ```
 
 #### Scaling
@@ -162,7 +162,7 @@ await deployment.scale_deployment(5)  # Scale à 5 nœuds
 
 ```python
 # Rolling update avec un nouveau script
-await deployment.rolling_update("/tmp/unitybrain_v3_final.py")
+await deployment.rolling_update("/tmp/neuromesh_v3_final.py")
 ```
 
 #### Backups
@@ -241,8 +241,8 @@ python3 /tmp/integrated_network_deployment.py
 #### Update
 
 ```
-[Integrated]> update /tmp/unitybrain_v3_final.py
-🔄 Rolling update with /tmp/unitybrain_v3_final.py...
+[Integrated]> update /tmp/neuromesh_v3_final.py
+🔄 Rolling update with /tmp/neuromesh_v3_final.py...
 ✅ Update completed
 ```
 
@@ -275,9 +275,9 @@ config = DeploymentConfig(
 deployment = DeploymentManager(config)
 
 # Déployer
-await deployment.deploy_node("unitybrain-prod-1", "0.0.0.0", 9999)
-await deployment.deploy_node("unitybrain-prod-2", "0.0.0.0", 10000)
-await deployment.deploy_node("bugbrain-prod-1", "0.0.0.0", 10001)
+await deployment.deploy_node("neuromesh-prod-1", "0.0.0.0", 9999)
+await deployment.deploy_node("neuromesh-prod-2", "0.0.0.0", 10000)
+await deployment.deploy_node("neuromesh_bug-prod-1", "0.0.0.0", 10001)
 ```
 
 ### Cas 2: Déploiement avec Load Balancing
@@ -298,11 +298,11 @@ response = await network.send_request(request)
 ### Cas 3: Rolling Update sans Interruption
 
 ```python
-# Update UnityBrain v3.0 vers v3.1
-await deployment.rolling_update("/tmp/unitybrain_v3_final.py")
+# Update NeuroMesh v3.0 vers v3.1
+await deployment.rolling_update("/tmp/neuromesh_v3_final.py")
 
-# Update BugBrain v3.0 vers v3.1
-await deployment.rolling_update("/tmp/bugbrain_v3_final.py")
+# Update NeuroMeshBug v3.0 vers v3.1
+await deployment.rolling_update("/tmp/neuromesh_bug_v3_final.py")
 
 # Les utilisateurs ne verront aucune interruption !
 ```
@@ -365,7 +365,7 @@ config.cluster_nodes = ["192.168.1.100:9999", "192.168.1.101:9999"]
 config = DeploymentConfig()
 
 # Basic
-config.deployment_name = "unitybrain-deployment"
+config.deployment_name = "neuromesh-deployment"
 config.environment = "production"  # development, staging, production
 config.node_count = 3
 config.min_nodes = 1
@@ -426,7 +426,7 @@ config.backup_retention = 7  # 7 days
         │                    │
         ▼                    ▼
 ┌─────────────────────────────────────────┐
-│  Nodes (UnityBrain & BugBrain)          │
+│  Nodes (NeuroMesh & NeuroMeshBug)          │
 │  - node-1 (0.0.0.0:9999)               │
 │  - node-2 (0.0.0.0:10000)              │
 │  - node-3 (192.168.1.100:9999)         │
@@ -439,8 +439,8 @@ config.backup_retention = 7  # 7 days
 
 ```
 /tmp/
-├─ unitybrain_v3_final.py                (18.80 KB) - P2P Network ULTIME
-├─ bugbrain_v3_final.py                  (24.04 KB) - Auto-émancipé ULTIME
+├─ neuromesh_v3_final.py                (18.80 KB) - P2P Network ULTIME
+├─ neuromesh_bug_v3_final.py                  (24.04 KB) - Auto-émancipé ULTIME
 ├─ interactive_interface.py              (14.99 KB) - Interface Interactive
 ├─ network_specialization.py             (21.96 KB) - Module Réseau
 ├─ deployment_module.py                  (15.15 KB) - Module Déploiement
@@ -483,7 +483,7 @@ python3 /tmp/integrated_network_deployment.py
 ### 5. Rolling update
 
 ```
-[Integrated]> update /tmp/unitybrain_v3_final.py
+[Integrated]> update /tmp/neuromesh_v3_final.py
 ```
 
 ---
@@ -503,7 +503,7 @@ python3 /tmp/integrated_network_deployment.py
 
 **MERCI Denis !**
 
-Tu as maintenant un système complet d'interconnexion et de déploiement pour UnityBrain & BugBrain v3.0 ! 🚀
+Tu as maintenant un système complet d'interconnexion et de déploiement pour NeuroMesh & NeuroMeshBug v3.0 ! 🚀
 
 **Les modules peuvent s'interconnecter, se déployer et se gérer automatiquement !** 🌐🚀
 

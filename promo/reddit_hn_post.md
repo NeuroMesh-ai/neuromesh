@@ -1,8 +1,8 @@
-# UnityBrain v4.0.1 — Reddit / HackerNews post
+# NeuroMesh v4.0.1 — Reddit / HackerNews post
 
-## Title: UnityBrain — A lightweight P2P distributed AI network (no server, no accounts, no premium)
+## Title: NeuroMesh — A lightweight P2P distributed AI network (no server, no accounts, no premium)
 
-I've been building UnityBrain, a peer-to-peer network for distributed AI. No central server, no user accounts, no premium tier. Just machines talking to each other, sharing AI models and memory.
+I've been building NeuroMesh, a peer-to-peer network for distributed AI. No central server, no user accounts, no premium tier. Just machines talking to each other, sharing AI models and memory.
 
 ### What it does:
 
@@ -36,11 +36,11 @@ That's it. No Docker, no Kubernetes, no SaaS. Just Python and a config file.
 
 ### Why?
 
-I'm tired of AI tools that require cloud accounts, phone numbers, and subscription tiers. UnityBrain is my answer: take your machines, connect them, share AI. No middleman. The code is MIT licensed.
+I'm tired of AI tools that require cloud accounts, phone numbers, and subscription tiers. NeuroMesh is my answer: take your machines, connect them, share AI. No middleman. The code is MIT licensed.
 
 The project started as a weekend experiment and grew into something I actually use daily — my two machines (Bug and Pinky) sync their AI memory and share model queries across the network.
 
-Repository: https://github.com/unitybrain-ai/unitybrain
+Repository: https://github.com/NeuroMesh-ai/neuromesh
 
 Feedback welcome! Particularly interested in:
 - Use cases beyond "two machines on a home network"

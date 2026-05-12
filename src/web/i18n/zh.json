@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "UnityBrain 桌面版",
+        "title": "NeuroMesh 桌面版",
         "version": "v{version}"
     },
     "header": {
@@ -27,7 +27,7 @@
         "ram": "内存"
     },
     "chat": {
-        "welcomeTitle": "UnityBrain",
+        "welcomeTitle": "NeuroMesh",
         "welcomeText": "分布式P2P AI网络。提问或开始对话。",
         "placeholder": "输入消息…",
         "send": "▶",
@@ -137,7 +137,7 @@
         "ipRequired": "需要IP地址",
         "peerAdded": "节点 {name} 已添加（即将推出）",
         "inviteTitle": "🔑 邀请",
-        "inviteText": "将此代码分享给另一个UnityBrain节点以连接：",
+        "inviteText": "将此代码分享给另一个NeuroMesh节点以连接：",
         "copy": "📋 复制",
         "close": "关闭"
     },
@@ -156,7 +156,7 @@
         "publicMesh": "🌐 公共Mesh",
         "enableMesh": "启用公共Mesh",
         "tracker": "Tracker",
-        "trackerPlaceholder": "https://tracker.unitybrain.ai",
+        "trackerPlaceholder": "https://tracker.neuromesh.ai",
         "priority": "优先级",
         "priorityLocalFirst": "本地优先",
         "priorityMeshFirst": "Mesh优先",

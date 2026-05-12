@@ -1,10 +1,10 @@
-# Installing UnityBrain
+# Installing NeuroMesh
 
 ## Quick Install
 
 ```bash
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
 python3 setup.py --auto
 ```
 
@@ -37,24 +37,24 @@ python3 setup.py --check
 
 ```bash
 # Start the server
-unitybrain start
+neuromesh start
 
 # Or as a systemd service
 systemctl --user daemon-reload
-systemctl --user enable --now unitybrain
+systemctl --user enable --now neuromesh
 
 # Use the interactive CLI
-unitybrain
+neuromesh
 ```
 
 ## Connect Multiple Machines
 
-1. Install UnityBrain on each machine
+1. Install NeuroMesh on each machine
 2. Set the **same `p2p_secret`** in all configs
 3. They discover each other automatically (via Tailscale or local network)
 
 ```json
-// ~/.unitybrain/config/mynode.json
+// ~/.neuromesh/config/mynode.json
 {
   "p2p_secret": "your-shared-secret-here",
   "share_ai": true
@@ -65,7 +65,7 @@ unitybrain
 
 ## Configuration
 
-Config files live in `~/.unitybrain/config/<node_name>.json`.
+Config files live in `~/.neuromesh/config/<node_name>.json`.
 
 | Key | Default | Description |
 |-----|---------|-------------|
@@ -79,8 +79,8 @@ Config files live in `~/.unitybrain/config/<node_name>.json`.
 ## Uninstall
 
 ```bash
-rm -rf ~/.unitybrain
-rm ~/.local/bin/unitybrain
-rm ~/.config/systemd/user/unitybrain.service
+rm -rf ~/.neuromesh
+rm ~/.local/bin/neuromesh
+rm ~/.config/systemd/user/neuromesh.service
 systemctl --user daemon-reload
 ```

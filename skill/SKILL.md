@@ -1,32 +1,32 @@
 ---
-name: unitybrain
-description: "UnityBrain P2P distributed AI network — Plug & Play Sidekick mode. OpenClaw auto-discovers UnityBrain API and routes queries through the P2P mesh."
+name: neuromesh
+description: "NeuroMesh P2P distributed AI network — Plug & Play Sidekick mode. OpenClaw auto-discovers NeuroMesh API and routes queries through the P2P mesh."
 metadata:
   openclaw:
     requires:
       bins: [python3]
       env:
-        - UNITYBRAIN_CONFIG
+        - NEUROMESH_CONFIG
     install:
       - id: git-clone
         kind: shell
-        cmd: "git clone https://github.com/unitybrain-ai/unitybrain.git ${UNITYBRAIN_PATH:-$HOME/Unitybrain}"
+        cmd: "git clone https://github.com/NeuroMesh-ai/neuromesh.git ${NEUROMESH_PATH:-$HOME/NeuroMesh}"
     auto-discover:
       - kind: http
         method: GET
-        url: "http://localhost:${UNITYBRAIN_PORT:-8080}/api/status"
+        url: "http://localhost:${NEUROMESH_PORT:-8080}/api/status"
         expect:
           status: 200
-          body_contains: "UnityBrain"
+          body_contains: "NeuroMesh"
         on_found:
           set_env:
-            UNITYBRAIN_URL: "http://localhost:${UNITYBRAIN_PORT:-8080}"
-          notify: "🌐 UnityBrain detected on localhost! P2P AI available."
+            NEUROMESH_URL: "http://localhost:${NEUROMESH_PORT:-8080}"
+          notify: "🌐 NeuroMesh detected on localhost! P2P AI available."
 ---
 
-# UnityBrain Skill — Sidekick Mode 🐛🤝🌐
+# NeuroMesh Skill — Sidekick Mode 🐛🤝🌐
 
-UnityBrain as a **Sidekick** for OpenClaw agents: zero-config P2P AI augmentation.
+NeuroMesh as a **Sidekick** for OpenClaw agents: zero-config P2P AI augmentation.
 
 ## The Two Modes
 
@@ -34,16 +34,16 @@ UnityBrain as a **Sidekick** for OpenClaw agents: zero-config P2P AI augmentatio
 ```bash
 python3 start.sh --config config/bug.json
 ```
-UnityBrain runs independently. OpenClaw skill can query it.
+NeuroMesh runs independently. OpenClaw skill can query it.
 
 ### 🔌 Sidekick Mode (Plug & Play)
-When UnityBrain is running locally (or on the network), OpenClaw **auto-discovers** it:
+When NeuroMesh is running locally (or on the network), OpenClaw **auto-discovers** it:
 1. On heartbeat, check `localhost:8080/api/status`
 2. If found → P2P AI is available, no config needed
 3. Agent can route queries to any model on the mesh
 4. Memory syncs across all agents automatically
 
-**That's it.** Install UnityBrain, start it, and OpenClaw becomes instantly smarter.
+**That's it.** Install NeuroMesh, start it, and OpenClaw becomes instantly smarter.
 
 ## What the Agent Can Do
 
@@ -51,13 +51,13 @@ When UnityBrain is running locally (or on the network), OpenClaw **auto-discover
 ```
 Ask Bug: "Ask the P2P network about quantum entanglement"
 ```
-→ Bug queries UnityBrain, which routes to the best available model (local or peer)
+→ Bug queries NeuroMesh, which routes to the best available model (local or peer)
 
 ### Distributed Memory
 ```
 Ask Bug: "Remember on the mesh that the server port is 8080"
 ```
-→ Bug writes to UnityBrain CRDT memory, synced to all peers
+→ Bug writes to NeuroMesh CRDT memory, synced to all peers
 
 ### Status Check
 ```
@@ -69,12 +69,12 @@ Ask Bug: "How's the P2P network?"
 ```
 Ask Bug: "Run llama-3-70b on the network"
 ```
-→ UnityBrain routes to the GPU peer automatically
+→ NeuroMesh routes to the GPU peer automatically
 
 ## Sidekick Auto-Discovery
 
 The skill checks these locations in order:
-1. `UNITYBRAIN_URL` env var (explicit override)
+1. `NEUROMESH_URL` env var (explicit override)
 2. `http://localhost:8080` (default Bug port)
 3. `http://localhost:8081` (default Pinky port)
 4. Zero-Config discovered peers (mDNS)

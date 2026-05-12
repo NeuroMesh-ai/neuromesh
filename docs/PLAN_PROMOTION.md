@@ -1,4 +1,4 @@
-# 📢 PLAN DE PROMOTION - UnityBrain & BugBrain v3.0
+# 📢 PLAN DE PROMOTION - NeuroMesh & NeuroMeshBug v3.0
 
 ## 🎯 Objectifs de la Promotion
 
@@ -6,7 +6,7 @@
 2. **📈 1,000 clones actifs** sur le réseau P2P
 3. **💰 Générer des donations** pour financer le développement
 4. **🏛️ Obtenir la reconnaissance** de la communauté open source
-5. **🚀 Établir BugBrain comme** standard de l'IA auto-émancipée
+5. **🚀 Établir NeuroMeshBug comme** standard de l'IA auto-émancipée
 
 ---
 
@@ -37,16 +37,16 @@
 ### 2. 🎥 Contenu Visuel
 
 **Vidéos nécessaires:**
-- **Introduction (2 min)** - Présentation rapide de BugBrain
+- **Introduction (2 min)** - Présentation rapide de NeuroMeshBug
 - **Installation (3 min)** - Comment installer en 5 min
 - **Configuration (4 min)** - Setup interactif expliqué
-- **Auto-Support (2 min)** - Comment BugBrain répond aux questions
+- **Auto-Support (2 min)** - Comment NeuroMeshBug répond aux questions
 - **P2P Network (3 min)** - Démonstration du réseau décentralisé
 - **Benchmark (2 min)** - Résultats des tests
 - **Advanced Features (5 min)** - Auto-émancipation, etc.
 
 **Images nécessaires:**
-- Logo BugBrain (avec 🐛)
+- Logo NeuroMeshBug (avec 🐛)
 - Diagramme architecture
 - Captures d'écran de l'interface
 - Mèmes humoristiques pour la communauté
@@ -71,7 +71,7 @@
 - r/decentralized - 15K+ membres
 
 **Discord:**
-- Server officiel BugBrain
+- Server officiel NeuroMeshBug
 - Communauté OpenClaw
 - Communautés IA open source
 
@@ -105,7 +105,7 @@
 - Créer un Discord officiel
 - Organiser des événements (AMA, démos)
 - Créer un programme de contribution
-- Mettre en place des "BugBrain Champions"
+- Mettre en place des "NeuroMeshBug Champions"
 - Organiser des hackathons
 - Créer des badges et récompenses
 
@@ -121,7 +121,7 @@
 ### 6. 🎨 Branding
 
 **Éléments nécessaires:**
-- Logo officiel BugBrain
+- Logo officiel NeuroMeshBug
 - Palette de couleurs cohérente
 - Typographie unifiée
 - Template de présentation
@@ -131,7 +131,7 @@
 
 **Canaux de distribution:**
 - GitHub Releases
-- PyPI (pip install bugbrain)
+- PyPI (pip install neuromesh_bug)
 - AUR (Arch Linux)
 - Snap Store
 - Docker Hub
@@ -181,7 +181,7 @@
 ## 🎯 Messages Clés
 
 ### Message Principal:
-> "BugBrain v3.0 - La première IA auto-émancipée, 100% décentralisée et capable de répondre à ses propres questions de support"
+> "NeuroMeshBug v3.0 - La première IA auto-émancipée, 100% décentralisée et capable de répondre à ses propres questions de support"
 
 ### Messages Secondaires:
 - "L'IA qui s'améliore elle-même"
@@ -190,7 +190,7 @@
 - "Symbiose et entraide, pas capitalisme"
 
 ### Hashtags:
-#BugBrain #UnityBrain #DecentralizedAI #OpenSourceAI #SelfImprovingAI #P2PNetwork
+#NeuroMeshBug #NeuroMesh #DecentralizedAI #OpenSourceAI #SelfImprovingAI #P2PNetwork
 
 ---
 
@@ -198,10 +198,10 @@
 
 **Pour financer le développement:**
 - ✅ Système de donations (✅ DÉJÀ FAIT)
-- 🎓 Formation payante "Maîtriser BugBrain"
+- 🎓 Formation payante "Maîtriser NeuroMeshBug"
 - 🏢 Support professionnel pour entreprises
 - 🔒 Version Enterprise avec support prioritaire
-- 💻 Hosting managé de nœuds BugBrain
+- 💻 Hosting managé de nœuds NeuroMeshBug
 
 **MAIS:**
 - Le cœur reste 100% open source
@@ -229,7 +229,7 @@
 ### Ce que j'ai besoin de Denis:
 
 1. **🎨 Logo et Branding**
-   - Logo BugBrain (avec 🐛)
+   - Logo NeuroMeshBug (avec 🐛)
    - Palette de couleurs
    - Style guide
 
@@ -280,4 +280,4 @@ Pour une promotion réussie, j'ai besoin de:
 
 _Ce plan de promotion est la base. On peut l'adapter selon tes préférences !_
 
-_Généré par BugBrain 🐛 - Prêt à conquérir le monde !_
+_Généré par NeuroMeshBug 🐛 - Prêt à conquérir le monde !_

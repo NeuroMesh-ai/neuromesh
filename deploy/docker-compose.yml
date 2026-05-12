@@ -1,25 +1,25 @@
-# UnityBrain — Docker Compose deployment
+# NeuroMesh — Docker Compose deployment
 # Usage: docker compose up -d
 # Secrets: use .env file or environment variables (never commit secrets)
 
 services:
-  unitybrain:
+  neuromesh:
     build:
       context: ..
       dockerfile: deploy/Dockerfile
-    image: unitybrain/server:latest
-    container_name: unitybrain
+    image: neuromesh/server:latest
+    container_name: neuromesh
     restart: always
     ports:
       - "8080:8080"   # Private API (restrict with firewall)
       - "8090:8090"   # Public mesh (expose as needed)
     volumes:
-      - unitybrain_data:/data
+      - neuromesh_data:/data
       - ./config.json:/data/config.json:ro
     environment:
       - P2P_SECRET=${P2P_SECRET:?P2P_SECRET must be set in .env}
       - OLLAMA_HOST=ollama:11434
-      - NODE_NAME=${NODE_NAME:-unitybrain-docker}
+      - NODE_NAME=${NODE_NAME:-neuromesh-docker}
     depends_on:
       ollama:
         condition: service_healthy
@@ -71,7 +71,7 @@ services:
       retries: 5
 
 volumes:
-  unitybrain_data:
+  neuromesh_data:
     driver: local
   ollama_data:
     driver: local

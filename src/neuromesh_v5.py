@@ -1,39 +1,41 @@
 #!/usr/bin/env python3
 """
-🌐 UNITYBRAIN v4.2.0 — RÉSEAU P2P DISTRIBUÉ
+🌐 NEUROMESH v5.1.0 — RÉSEAU P2P DISTRIBUÉ
 ===============================================
-v4.2.0 Enhancement release:
-1. mDNS Zero-Config Discovery — peers auto-discover on local network via UDP broadcast + mDNS
-2. GPU/CPU Model Negotiation — nodes advertise capabilities, router sends big models to GPU
-3. Gamified Score Dashboard — visual levels (Bronze→Diamond) in the web dashboard
-4. Auto-Update — check for new versions on GitHub, prompt or auto-update
-5. Systray Support — run as background daemon with minimal UI (Linux/Windows/macOS)
+v5.1.0 Specialist release:
+1. Model Specialist — 12 specialty schemas with auto-detection and multi-LLM routing
+2. Multi-Model Executor — 6 modes (single, vote, chain, fuse, compare, specialist)
+3. Web UI specialist controls — specialty select, multi-mode select, multi-model rendering
+4. i18n — 18 specialty keys in 8 languages
+5. API: /api/specialties, /api/specialties/{name}/models, /api/multi
+6. Bug fixes and cleanup — removed dead code (v3 archive, nested sub-packages)
 
-v4.1.5 Multi-LLM provider support:
-1. ProviderAdapter base class — OllamaProvider, OpenAIProvider, AnthropicProvider
-2. Config `providers` section — connect any LLM API alongside Ollama
-3. _query_local() routes to correct provider based on model name
-4. ModelRouter considers all provider models
-5. Backward compatible — if no providers, falls back to ollama_host/ollama_port
+v5.0.0 Major release:
+1. Resource Guard — auto-pause/resume mesh sharing based on local user activity
+2. Adaptive Scheduler — strategy selection (routing/partial_sharding/full_sharding/raid_ram)
+3. Conversation Store — persistent conversations with search, export, privacy levels, encryption
+4. Model Share Manager — secure bridge between private models and public mesh (symlinks, SHA-256)
+5. Tracker Client — public mesh discovery with Ed25519 signing, rate limiting, backoff
+6. Desktop Web UI — 4-tab interface (Chat, Share, Network, Config) with i18n (8 languages)
+7. Security hardening — path-based auth tokens, input validation, CORS, rate limiting on all endpoints
+8. P2P secret from env var only (no hardcoded secrets)
+9. 18 new API endpoints for chat, resources, models, network, config
+10. CLI v5 with 15 subcommands
 
-v4.0.1 Bug fixes:
-1. Memory gossip: send correct payload for memory_update messages
-2. Outgoing WS: connect to peers via WS for real-time sync
-3. Memory sync: decoupled from auto_heal into own 30s loop
-4. Auth: fix timestamp race in _auth_headers
-5. Discovery: skip stale/duplicate Tailscale peers
-
-v4.0 Features:
-1. WebSocket temps réel — bidirectional WS with typed messages, reconnect, heartbeat
-2. Auth renforcée — Ed25519 identity, challenge-response, Web of Trust, stealth mode
-3. Mémoire Sync P2P — CRDT-based, gossip protocol, vector clocks, last-write-wins
-4. Clean architecture — lightweight, async, brain_llm non-blocking
-
-HTTP REST API remains available (retrocompatibility). WS is an ADDON.
+v4.2.0 Features preserved:
+- mDNS Zero-Config Discovery
+- GPU/CPU Model Negotiation
+- Gamified Score Dashboard
+- Auto-Update
+- Systray Support
+- Multi-LLM provider support
+- WebSocket temps réel
+- Ed25519 Auth + Web of Trust
+- CRDT Memory Sync
+- Circuit Breaker
 """
 
 import asyncio
-import threading
 import aiohttp
 from aiohttp import web
 import json
@@ -42,15 +44,105 @@ import socket
 import os
 import re
 import uuid
-import psutil
 import logging
 import hashlib
+import threading
+import html
+import secrets as _secrets
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple, Set
 from collections import deque
+
+try:
+    import psutil
+    HAS_PSUTIL = True
+except ImportError:
+    HAS_PSUTIL = False
 from pathlib import Path
 import logging.handlers
-from html import escape as html_escape  # LOW-05: XSS prevention
+
+# ============================================================================
+# v5 MODULE IMPORTS
+# ============================================================================
+
+try:
+    from resource_guard import ResourceGuard, GuardState
+    HAS_RESOURCE_GUARD = True
+except ImportError:
+    HAS_RESOURCE_GUARD = False
+    logger_v5 = logging.getLogger('NeuroMesh.v5')
+    logger_v5.warning("resource_guard not available — mesh sharing will not be auto-protected")
+
+try:
+    from adaptive_scheduler import AdaptiveScheduler, Strategy as SchedulerStrategy
+    HAS_ADAPTIVE_SCHEDULER = True
+except ImportError:
+    HAS_ADAPTIVE_SCHEDULER = False
+    logger_v5 = logging.getLogger('NeuroMesh.v5')
+    logger_v5.warning("adaptive_scheduler not available — using basic routing")
+
+try:
+    from conversation_store import ConversationStore, PrivacyLevel as ConvPrivacyLevel
+    HAS_CONVERSATION_STORE = True
+except ImportError:
+    HAS_CONVERSATION_STORE = False
+    logger_v5 = logging.getLogger('NeuroMesh.v5')
+    logger_v5.warning("conversation_store not available — conversations will not persist")
+
+try:
+    from model_share_manager import ModelShareManager
+    HAS_MODEL_SHARE_MANAGER = True
+except ImportError:
+    HAS_MODEL_SHARE_MANAGER = False
+    logger_v5 = logging.getLogger('NeuroMesh.v5')
+    logger_v5.warning("model_share_manager not available — model sharing disabled")
+
+try:
+    from tracker_client import TrackerClient, TrackerState, KnownNode
+    HAS_TRACKER_CLIENT = True
+except ImportError:
+    HAS_TRACKER_CLIENT = False
+
+try:
+    from model_specialist import (
+        ModelSpecialty, ModelProfile, SpecialistRouter,
+        MultiModelMode, MultiModelResult, MultiModelExecutor,
+    )
+    HAS_MODEL_SPECIALIST = True
+except ImportError:
+    HAS_MODEL_SPECIALIST = False
+
+try:
+    from bandwidth_quota import BandwidthQuota, QuotaPeriod
+    HAS_BANDWIDTH_QUOTA = True
+except ImportError:
+    HAS_BANDWIDTH_QUOTA = False
+
+try:
+    from credit_system import CreditSystem, CreditTier, QUERY_COSTS, MONTHLY_REWARDS, BASE_ALLOCATION
+    HAS_CREDIT_SYSTEM = True
+except ImportError:
+    HAS_CREDIT_SYSTEM = False
+    logger_v5 = logging.getLogger('NeuroMesh.v5')
+    logger_v5.warning("model_specialist not available — specialty routing disabled")
+    logger_v5 = logging.getLogger('NeuroMesh.v5')
+    logger_v5.warning("tracker_client not available — public mesh discovery disabled")
+
+try:
+    from model_registry import ModelRegistry, ModelCard, ModelSource, ModelStatus
+    HAS_MODEL_REGISTRY = True
+except ImportError:
+    HAS_MODEL_REGISTRY = False
+    logger_v5 = logging.getLogger('NeuroMesh.v5')
+    logger_v5.warning("model_registry not available — model catalog disabled")
+
+try:
+    from network_sync import NetworkSync, DynamicDNS, NODE_STALE_THRESHOLD_DAYS, MODEL_STALE_THRESHOLD_DAYS
+    HAS_NETWORK_SYNC = True
+except ImportError:
+    HAS_NETWORK_SYNC = False
+    logger_v5 = logging.getLogger('NeuroMesh.v5')
+    logger_v5.warning("network_sync not available — automatic mesh sync disabled")
 
 # ============================================================================
 # SECURITY CONSTANTS
@@ -62,8 +154,16 @@ ALLOWED_STRATEGIES = {'auto', 'local', 'peer', 'consensus', 'chain'}
 GLOBAL_RATE_LIMIT_RATE = 30.0  # requests per second globally
 GLOBAL_RATE_LIMIT_BURST = 60
 AUTH_TIMEOUT_SECONDS = 10  # WebSocket auth timeout
-HMAC_WINDOW_SECONDS = 30  # MED-05: reduced from 60s to 30s
-MAX_NONCE_CACHE = 10000   # MED-05: max recent nonces to track
+
+# Security constants (v5.2)
+MAX_KEY_LENGTH = 256          # Max CRDT key length
+MAX_VALUE_SIZE = 102400      # Max CRDT value size (100KB)
+MAX_TTL = 86400              # Max TTL (24h)
+MAX_SYNC_ENTRIES = 1000       # Max entries per P2P sync push
+WS_MAX_MSG_SIZE = 1048576     # Max WebSocket message size (1MB)
+HMAC_WINDOW_SECONDS = 30     # HMAC timestamp window (30s)
+MAX_NONCE_CACHE = 10000      # Max nonce cache size
+CSP_HEADER = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws: wss:"
 
 # CORS allowed origins (configurable)
 CORS_ALLOWED_ORIGINS = [
@@ -71,54 +171,21 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1',
 ]
 
-# MED-04: CRDT memory validation limits
-MAX_KEY_LENGTH = 256           # Maximum key length in characters
-MAX_VALUE_SIZE = 100000         # 100KB max value size (serialized)
-MAX_TTL = 86400                 # 24h max TTL
-
-MAX_SYNC_ENTRIES = 1000  # NEW-04: Maximum entries per sync push
-
-# MED-06: Pinned requirement versions for setup.py
-PINNED_REQUIREMENTS = [  # Updated 2026-05
-    "aiohttp>=3.9.0",
-    "psutil>=5.9.0",
-]
-PINNED_OPTIONAL = [
-    "PyNaCl>=1.5.0",
-]
-
-# LOW-07: WebSocket message size limit
-WS_MAX_MSG_SIZE = 1048576  # 1MB
-
-# MED-07: Token blacklist persistence
-TOKEN_BLACKLIST_FILE = os.path.expanduser('~/.unitybrain/token_blacklist.json')
-TOKEN_BLACKLIST_CLEANUP_INTERVAL = 3600  # Clean expired entries every hour
-
-# LOW-03: TLS support
-TLS_CERT_FILE = os.environ.get('UNITYBRAIN_CERT', '')
-TLS_KEY_FILE = os.environ.get('UNITYBRAIN_KEY', '')
-
-# LOW-04: CSP header for dashboard
-CSP_HEADER = (
-    "default-src 'self'; "
-    "script-src 'self' 'unsafe-inline'; "  # unsafe-inline needed for embedded JS
-    "style-src 'self' 'unsafe-inline'; "
-    "img-src 'self' data:; "
-    "connect-src 'self' ws: wss:; "
-    "frame-ancestors 'none'; "
-    "form-action 'self'"
-)
-
 # ============================================================================
 # LOGGING
 # ============================================================================
 
 log_dir = Path(__file__).parent.parent / "logs"
 log_dir.mkdir(exist_ok=True)
+# LOW-01: Restrict log directory permissions
+try:
+    log_dir.chmod(0o700)
+except OSError:
+    pass
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(name)s] %(levelname)s: %(message)s')
-logger = logging.getLogger('UnityBrain')
+logger = logging.getLogger('NeuroMesh')
 file_handler = logging.handlers.RotatingFileHandler(
-    log_dir / "unitybrain.log", maxBytes=5*1024*1024, backupCount=3
+    log_dir / "neuromesh.log", maxBytes=5*1024*1024, backupCount=3
 )
 file_handler.setFormatter(logging.Formatter('%(asctime)s [%(name)s] %(levelname)s: %(message)s'))
 file_handler.setLevel(logging.INFO)
@@ -141,8 +208,7 @@ class ZeroConfigDiscovery:
     MULTICAST_PORT = 5353
     BEACON_INTERVAL = 60  # seconds between broadcasts
     
-    def __init__(self, node_name: str, own_port: int, capabilities: Dict = None,
-                 identity: 'NodeIdentity' = None):
+    def __init__(self, node_name: str, own_port: int, capabilities: Dict = None):
         self.node_name = node_name
         self.own_port = own_port
         self.capabilities = capabilities or {}
@@ -151,8 +217,6 @@ class ZeroConfigDiscovery:
         self._listener_task = None
         self._found_peers: Dict[str, Dict] = {}  # name -> info
         self._local_ip = self._get_local_ip()
-        # MED-01: Store identity for beacon signing
-        self._identity = identity
     
     def _get_local_ip(self) -> str:
         """Get this machine's local network IP."""
@@ -171,86 +235,34 @@ class ZeroConfigDiscovery:
         return f'{parts[0]}.{parts[1]}.{parts[2]}.255'
     
     def _build_beacon(self) -> bytes:
-        """Build discovery beacon message.
-        MED-01: Sign with HMAC of P2P shared secret to prevent spoofing.
-        """
-        payload = {
-            'type': 'unitybrain_discovery',
+        """Build discovery beacon message."""
+        return json.dumps({
+            'type': 'neuromesh_discovery',
             'version': '4.2.0',
             'node': self.node_name,
             'port': self.own_port,
             'ip': self._local_ip,
             'capabilities': self.capabilities,
             'ts': time.time()
-        }
-        payload_json = json.dumps(payload, sort_keys=True)
-        
-        # MED-01: Sign the beacon payload
-        import hmac as hmac_mod
-        if self._identity:
-            sig = self._identity.sign(payload_json)
-        else:
-            sig = hashlib.sha256(payload_json.encode()).hexdigest()
-        
-        return json.dumps({
-            'beacon': payload,
-            'signature': sig,
-            'sig_type': 'ed25519' if self._identity and hasattr(self._identity, '_signing_key') and HAS_NACL else 'hmac'
         }).encode()
     
     def _parse_beacon(self, data: bytes, addr: tuple) -> Optional[Dict]:
-        """Parse an incoming discovery beacon.
-        MED-01: Verify HMAC/Ed25519 signature to reject spoofed beacons.
-        """
+        """Parse an incoming discovery beacon."""
         try:
             msg = json.loads(data.decode())
-            # MED-01: Check for signed beacon format
-            beacon_data = msg.get('beacon', msg)  # support both old and new format
-            if isinstance(beacon_data, dict):
-                # New signed format
-                payload = beacon_data
-                sig = msg.get('signature', '')
-                sig_type = msg.get('sig_type', 'hmac')
-                
-                if payload.get('type') != 'unitybrain_discovery':
-                    return None
-                if payload['node'] == self.node_name:
-                    return None  # ignore self
-                if time.time() - payload.get('ts', 0) > 120:
-                    return None  # stale beacon
-                
-                # MED-01: Verify signature
-                if sig and self._identity:
-                    payload_json = json.dumps(payload, sort_keys=True)
-                    if not self._identity.verify(payload_json, sig, None):
-                        logger.warning(f"📡 MED-01: Rejected spoofed beacon from {payload.get('node', '?')} at {addr[0]}")
-                        return None
-                elif not self._identity:
-                    # No identity available, accept with warning
-                    pass
-                
-                return {
-                    'name': payload['node'],
-                    'host': payload.get('ip', addr[0]),
-                    'port': payload['port'],
-                    'capabilities': payload.get('capabilities', {}),
-                    'ts': payload['ts']
-                }
-            else:
-                # Legacy unsigned format — accept with warning (backward compat)
-                if msg.get('type') != 'unitybrain_discovery':
-                    return None
-                if msg['node'] == self.node_name:
-                    return None
-                if time.time() - msg.get('ts', 0) > 120:
-                    return None
-                return {
-                    'name': msg['node'],
-                    'host': msg.get('ip', addr[0]),
-                    'port': msg['port'],
-                    'capabilities': msg.get('capabilities', {}),
-                    'ts': msg['ts']
-                }
+            if msg.get('type') != 'neuromesh_discovery':
+                return None
+            if msg['node'] == self.node_name:
+                return None  # ignore self
+            if time.time() - msg.get('ts', 0) > 120:
+                return None  # stale beacon
+            return {
+                'name': msg['node'],
+                'host': msg.get('ip', addr[0]),
+                'port': msg['port'],
+                'capabilities': msg.get('capabilities', {}),
+                'ts': msg['ts']
+            }
         except (json.JSONDecodeError, KeyError):
             return None
     
@@ -388,9 +400,14 @@ class NodeCapabilities:
     def _detect(self):
         """Auto-detect hardware capabilities."""
         try:
-            self.cpu_cores = psutil.cpu_count(logical=True) or 4
-            self.ram_total_mb = psutil.virtual_memory().total // (1024 * 1024)
-            freq = psutil.cpu_freq()
+            if HAS_PSUTIL:
+                self.cpu_cores = psutil.cpu_count(logical=True) or 4
+                self.ram_total_mb = psutil.virtual_memory().total // (1024 * 1024)
+                freq = psutil.cpu_freq()
+            else:
+                self.cpu_cores = os.cpu_count() or 4
+                self.ram_total_mb = 2560  # fallback: 2.5GB default
+                freq = None
             self.cpu_freq_mhz = int(freq.current) if freq else 0
         except Exception:
             self.cpu_cores = 4
@@ -602,14 +619,14 @@ class GamifiedScore:
 # ============================================================================
 
 class AutoUpdater:
-    """Check for UnityBrain updates on GitHub.
+    """Check for NeuroMesh updates on GitHub.
     
     Non-blocking check. Can prompt user or auto-update.
     Preserves the lightweight ethos — only checks on startup + periodic.
     """
     
-    GITHUB_API = os.environ.get('UNITYBRAIN_GITHUB_API', 'https://api.github.com/repos/unitybrain/unitybrain/releases/latest')
-    CURRENT_VERSION = '4.2.0'
+    GITHUB_API = os.environ.get('NEUROMESH_GITHUB_API', 'https://api.github.com/repos/neuromesh/neuromesh/releases/latest')
+    CURRENT_VERSION = '5.1.0'
     CHECK_INTERVAL = 86400  # once per day
     
     def __init__(self, auto_install: bool = False):
@@ -617,12 +634,9 @@ class AutoUpdater:
         self.last_check = 0
         self.latest_version = None
         self.download_url = None
-        self.download_sha256 = None  # LOW-06: integrity check
     
     async def check(self) -> Optional[Dict]:
-        """Check for updates. Returns update info if available, None if up-to-date.
-        LOW-06: Includes SHA256 verification info for download integrity.
-        """
+        """Check for updates. Returns update info if available, None if up-to-date."""
         now = time.time()
         if now - self.last_check < self.CHECK_INTERVAL and self.latest_version:
             return self._compare()
@@ -637,8 +651,6 @@ class AutoUpdater:
                         assets = data.get('assets', [])
                         if assets:
                             self.download_url = assets[0].get('browser_download_url')
-                            # LOW-06: Store SHA256 if provided by GitHub release
-                            self.download_sha256 = assets[0].get('digest', '')  # GitHub provides digest for assets
                         return self._compare()
         except (aiohttp.ClientError, asyncio.TimeoutError):
             pass
@@ -656,7 +668,6 @@ class AutoUpdater:
                     'current': self.CURRENT_VERSION,
                     'latest': self.latest_version,
                     'download_url': self.download_url,
-                    'download_sha256': self.download_sha256,  # LOW-06
                     'auto_install': self.auto_install
                 }
         except (ValueError, IndexError):
@@ -669,7 +680,7 @@ class AutoUpdater:
 # ============================================================================
 
 class SystrayDaemon:
-    """Run UnityBrain as a background systray daemon.
+    """Run NeuroMesh as a background systray daemon.
     
     On Linux: uses systemd user service (already exists)
     On future: can integrate with pystray for GUI tray icon
@@ -678,7 +689,7 @@ class SystrayDaemon:
     
     def __init__(self, node_name: str, pid_file: str = None):
         self.node_name = node_name
-        self.pid_file = pid_file or os.path.expanduser('~/.unitybrain/daemon.pid')
+        self.pid_file = pid_file or os.path.expanduser('~/.neuromesh/daemon.pid')
         self._ensure_dir()
     
     def _ensure_dir(self):
@@ -686,10 +697,14 @@ class SystrayDaemon:
     
     def write_pid(self, pid: int):
         """Write PID file for daemon mode."""
+        # LOW-02: Restrict PID file permissions
+        os.makedirs(os.path.dirname(self.pid_file), exist_ok=True)
         with open(self.pid_file, 'w') as f:
             f.write(str(pid))
-        # LOW-02: PID file not world-readable
-        os.chmod(self.pid_file, 0o600)
+        try:
+            os.chmod(self.pid_file, 0o600)
+        except OSError:
+            pass
     
     def read_pid(self) -> Optional[int]:
         """Read daemon PID."""
@@ -733,67 +748,6 @@ try:
 except ImportError:
     HAS_NACL = False
     logger.info("PyNaCl not available — using HMAC fallback for Ed25519 identity")
-
-
-# ============================================================================
-# MED-07: Persistent Token Blacklist
-# ============================================================================
-
-class TokenBlacklist:
-    """Persistent token blacklist. Stores revoked token IDs with expiry.
-    Persists to disk so revocations survive restarts.
-    """
-    def __init__(self, filepath: str = TOKEN_BLACKLIST_FILE):
-        self.filepath = filepath
-        self._entries: Dict[str, float] = {}  # token_id -> expiry_timestamp
-        self._load()
-
-    def _load(self):
-        """Load blacklist from disk."""
-        try:
-            if os.path.isfile(self.filepath):
-                with open(self.filepath, 'r') as f:
-                    data = json.load(f)
-                    now = time.time()
-                    # Filter out expired entries on load
-                    self._entries = {k: v for k, v in data.items() if v > now}
-        except (OSError, json.JSONDecodeError, ValueError):
-            self._entries = {}
-
-    def _save(self):
-        """Save blacklist to disk."""
-        try:
-            os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
-            with open(self.filepath, 'w') as f:
-                json.dump(self._entries, f)
-            # LOW-01/LOW-02: Restrict file permissions
-            os.chmod(self.filepath, 0o600)
-        except OSError:
-            pass
-
-    def revoke(self, token_id: str, expires_at: float):
-        """Revoke a token until its expiry time."""
-        self._entries[token_id] = expires_at
-        self._save()
-
-    def is_revoked(self, token_id: str) -> bool:
-        """Check if a token is revoked."""
-        expiry = self._entries.get(token_id)
-        if expiry is None:
-            return False
-        if time.time() > expiry:
-            del self._entries[token_id]
-            self._save()
-            return False
-        return True
-
-    def cleanup(self):
-        """Remove expired entries."""
-        now = time.time()
-        before = len(self._entries)
-        self._entries = {k: v for k, v in self._entries.items() if v > now}
-        if len(self._entries) < before:
-            self._save()
 
 
 class NodeIdentity:
@@ -1378,7 +1332,7 @@ class PeerDiscovery:
     """Dynamic peer discovery: Tailscale, mDNS, config fallback, peer referral."""
 
     def __init__(self, node_name: str, own_host: str, own_port: int,
-                 config_peers: List[Dict] = None, config: Dict = None):
+                 config_peers: List[Dict] = None):
         self.node_name = node_name
         self.own_host = own_host
         self.own_port = own_port
@@ -1386,8 +1340,26 @@ class PeerDiscovery:
         self.config_peers = config_peers or []
         self.last_discovery = 0
         self.discovery_interval = 300
-        # MED-02: Store config ref for allowed_tailscale_peers whitelist
-        self.config = config or {}
+
+    def _get_broadcast_subnets(self) -> List[str]:
+        """Detect broadcast subnets automatically."""
+        subnets = []
+        try:
+            import socket
+            hostname = socket.gethostname()
+            for info in socket.getaddrinfo(hostname, None):
+                addr = info[4][0]
+                if addr and not addr.startswith('127.'):
+                    # Derive broadcast from IP
+                    parts = addr.split('.')
+                    subnets.append(f"{parts[0]}.{parts[1]}.{parts[2]}.255")
+            # Deduplicate
+            subnets = list(dict.fromkeys(subnets))
+        except Exception:
+            pass
+        if not subnets:
+            subnets = ['255.255.255.255']  # Broadcast to all
+        return subnets
 
     async def discover_all(self) -> List[Dict]:
         found = {}
@@ -1424,19 +1396,16 @@ class PeerDiscovery:
             stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=5)
             if proc.returncode == 0:
                 status = json.loads(stdout)
-                # MED-02: Check if we have a whitelist of allowed peer names
-                allowed_peers = set(self.config.get("allowed_tailscale_peers", []))
-                
                 for peer in status.get('Peer', {}).values():
                     if peer.get('Online', False):
                         ips = peer.get('TailscaleIPs', [])
-                        hostname = peer.get('HostName', '')
-                        if hostname == self.node_name:
+                        if peer.get('HostName') == self.node_name:
                             continue
                         own_ts_ip = status.get('Self', {}).get('TailscaleIPs', [])
                         if own_ts_ip and any(ip in own_ts_ip for ip in ips):
                             continue
                         # Bug #5 fix: skip if same IP as a config peer but different port (duplicate)
+                        # Also skip if IP matches our own Tailscale IP
                         is_dup = False
                         for cp in self.config_peers:
                             if ips and ips[0] == cp.get('host') and 8081 != cp.get('port', 8080):
@@ -1444,23 +1413,9 @@ class PeerDiscovery:
                                 break
                         if is_dup:
                             continue
-                        
-                        # MED-02: Skip if hostname doesn't match expected pattern
-                        # UnityBrain nodes are expected to have recognizable names
-                        # This prevents random Tailscale peers from being auto-discovered
-                        # as UnityBrain nodes (unless explicitly allowed)
-                        is_unitybrain = (
-                            'unity' in hostname.lower() 
-                            or 'brain' in hostname.lower()
-                            or hostname in ('bug', 'pinky', 'brain') 
-                            or hostname in allowed_peers
-                        )
-                        if not allowed_peers and not is_unitybrain:
-                            continue
-                        
                         if ips:
                             peers.append({
-                                'name': hostname,
+                                'name': peer.get('HostName', 'unknown'),
                                 'host': ips[0],
                                 'port': 8081,
                                 'source': 'tailscale'
@@ -1477,11 +1432,11 @@ class PeerDiscovery:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
             sock.settimeout(2)
             msg = json.dumps({
-                'type': 'unitybrain_discovery',
+                'type': 'neuromesh_discovery',
                 'node': self.node_name,
                 'port': self.own_port
             }).encode()
-            for subnet in [self._get_broadcast_addr()]:
+            for subnet in self._get_broadcast_subnets():
                 try:
                     sock.sendto(msg, (subnet, 8090))
                 except OSError:
@@ -1885,6 +1840,12 @@ def load_config(config_path: str = None) -> Dict:
         "discovery_interval": 300,
         "stealth_mode": False,
         "share_ai": False,
+        "model_networks": {
+            "private_networks": [
+                {"id": 1, "name": "Réseau Principal", "secret": ""}
+            ],
+            "model_permissions": {}
+        },
         "rate_limit": 10.0,
         "rate_burst": 20,
         "peers": [],
@@ -1925,26 +1886,35 @@ def load_config(config_path: str = None) -> Dict:
 
 
 # ============================================================================
-# UNITYBRAIN v4.0 MAIN
+# NEUROMESH v4.0 MAIN
 # ============================================================================
 
-class UnityBrain:
-    """UnityBrain v4.0 — P2P Distributed AI Network"""
+class NeuroMesh:
+    """NeuroMesh v4.0 — P2P Distributed AI Network"""
 
     def __init__(self, config: Dict):
         self.config = config
         self.node_name = config["node_name"]
-        self.version = "4.1.5"
+        self.version = "5.1.0"
         self.host = config["host"]
         self.port = config["port"]
         self.ollama_host = config["ollama_host"]
         self.ollama_port = config["ollama_port"]
         self.local_models = config["local_models"]
-        self.p2p_secret = config.get("p2p_secret", os.environ.get("P2P_SECRET", "changeme-configure-in-config"))
-        if self.p2p_secret == "changeme-configure-in-config" or self.p2p_secret == "changeme":
-            logger.warning("⚠️  Using default p2p_secret — configure a strong secret in config or P2P_SECRET env var!")
+        self.p2p_secret = os.environ.get("P2P_SECRET") or config.get("p2p_secret")
+        if not self.p2p_secret:
+            logger.error("⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.")
+            logger.error("⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'")
+            self.p2p_secret = os.environ.get("P2P_SECRET", "changeme-configure-in-config")
+        elif self.p2p_secret in ("changeme", "changeme-configure-in-config"):
+            logger.warning("⚠️  P2P_SECRET is a known default — please change it!")
         self.stealth_mode = config.get("stealth_mode", False)
         self.share_ai = config.get("share_ai", False)
+        # v5.2: Model networks — fine-grained model sharing permissions
+        self.model_networks = config.get("model_networks", {
+            "private_networks": [{"id": 1, "name": "Réseau Principal", "secret": ""}],
+            "model_permissions": {}
+        })
         # v4.1.5: Multi-LLM providers
         self.providers: Dict[str, ProviderAdapter] = {}
         self._model_provider_map: Dict[str, str] = {}  # model_name -> provider_name
@@ -1966,6 +1936,15 @@ class UnityBrain:
             rate=GLOBAL_RATE_LIMIT_RATE,
             burst=GLOBAL_RATE_LIMIT_BURST
         )
+        # MED-05 + NEW-01: Nonce anti-replay tracking (set + threading.Lock)
+        self._used_nonces: Set[str] = set()
+        self._nonce_timestamps: Dict[str, float] = {}
+        self._nonce_lock = threading.Lock()
+        # MED-07: Persistent token blacklist
+        self._token_blacklist_file = Path.home() / ".neuromesh" / "token_blacklist.json"
+        self._token_blacklist: Set[str] = set()
+        self._token_blacklist_lock = threading.Lock()
+        self._load_token_blacklist()
         self.sharing_quota = SharingQuota()  # v4.1.5: query quotas per peer
 
         # v4.2.0: New capabilities
@@ -1977,17 +1956,140 @@ class UnityBrain:
         self.zero_config = ZeroConfigDiscovery(
             node_name=self.node_name,
             own_port=self.port,
-            capabilities=self.own_capabilities.to_dict(),
-            identity=self.identity  # MED-01: pass identity for beacon signing
+            capabilities=self.own_capabilities.to_dict()
         )
         self.gamified_score = GamifiedScore()
         self.auto_updater = AutoUpdater(auto_install=config.get('auto_update', False))
         self.systray = SystrayDaemon(node_name=self.node_name)
 
+        # ====================================================================
+        # v5.0.0 MODULES
+        # ====================================================================
+
+        # Resource Guard — protects local user from mesh overload
+        if HAS_RESOURCE_GUARD:
+            mesh_config = config.get("public_mesh", {})
+            rg_config = {
+                "max_cpu_percent": mesh_config.get("max_cpu_percent", 30),
+                "max_ram_share_mb": mesh_config.get("max_ram_share_mb", 2048),
+                "gpu_share": mesh_config.get("gpu_share", False),
+                "priority": mesh_config.get("priority", "local_first"),
+                "bandwidth_limit_kbps": mesh_config.get("bandwidth_limit_kbps", 5000),
+                "enabled": mesh_config.get("enabled", False),
+            }
+            self.resource_guard = ResourceGuard(config=rg_config)
+            logger.info(f"🛡️ Resource Guard: {self.resource_guard._state.value}")
+        else:
+            self.resource_guard = None
+
+        # Bandwidth Quota — monthly data and bandwidth limits like a mobile plan
+        if HAS_BANDWIDTH_QUOTA:
+            bw_config = config.get("bandwidth_quota", {})
+            # Merge mesh bandwidth_limit_kbps into quota config
+            if "bandwidth_limit_kbps" not in bw_config:
+                bw_config["bandwidth_limit_kbps"] = mesh_config.get("bandwidth_limit_kbps", 5000)
+            self.bandwidth_quota = BandwidthQuota(config=bw_config)
+            logger.info(f"📡 Bandwidth Quota: {self.bandwidth_quota.monthly_data_gb} GB/{self.bandwidth_quota.period.value}, "
+                        f"{self.bandwidth_quota.bandwidth_limit_kbps} kbps max")
+        else:
+            self.bandwidth_quota = None
+
+        # Credit System — mesh economics (earn by sharing, spend by querying)
+        if HAS_CREDIT_SYSTEM:
+            credit_config = config.get("credit_system", {})
+            self.credit_system = CreditSystem(config=credit_config)
+            self.credit_system.set_sharing_quota(self.sharing_quota)
+            self.credit_system.set_bandwidth_quota(self.bandwidth_quota)
+            logger.info(
+                f"💰 Credit System: base={self.credit_system.base_allocation}/mois, "
+                f"max={self.credit_system.max_balance}, "
+                f"carry={self.credit_system.carry_over_pct*100}%"
+            )
+        else:
+            self.credit_system = None
+
+        # Adaptive Scheduler — chooses strategy based on peer count
+        if HAS_ADAPTIVE_SCHEDULER:
+            self.adaptive_scheduler = AdaptiveScheduler(
+                identity=self.identity,
+                resource_guard=self.resource_guard,
+                tracker_client=None,  # tracker_client set later,
+                config={"prefer_local": True}
+            )
+            logger.info(f"🧠 Adaptive Scheduler: strategy={self.adaptive_scheduler._strategy.value}")
+        else:
+            self.adaptive_scheduler = None
+
+        # Conversation Store — persistent conversations with privacy levels
+        conv_config = config.get("conversation_store", {})
+        if HAS_CONVERSATION_STORE and conv_config.get("enabled", True):
+            self.conversation_store = ConversationStore(
+                conversations_dir=os.path.expanduser(conv_config.get("storage_dir", "~/.neuromesh/conversations")),
+                encryption_password=None  # Encryption configured separately
+            )
+            logger.info(f"💾 Conversation Store: enabled ({conv_config.get('storage_dir', '~/.neuromesh/conversations')})")
+        else:
+            self.conversation_store = None
+
+        # Model Share Manager — secure bridge for sharing models
+        if HAS_MODEL_SHARE_MANAGER:
+            base_dir = os.path.expanduser(config.get("base_dir", "~/.neuromesh"))
+            self.model_share_manager = ModelShareManager(base_dir=base_dir)
+            logger.info(f"📂 Model Share Manager: ready ({base_dir}/shared_models/)")
+        else:
+            self.model_share_manager = None
+
+        # Tracker Client — public mesh discovery
+        tracker_config = config.get("public_mesh", {})
+        if HAS_TRACKER_CLIENT and tracker_config.get("enabled", False):
+            self.tracker_client = TrackerClient(
+                identity=self.identity,
+                config=tracker_config
+            )
+            logger.info(f"🌐 Tracker Client: {len(tracker_config.get('tracker_url', [])) if isinstance(tracker_config.get('tracker_url'), list) else 1} tracker(s)")
+        else:
+            self.tracker_client = None
+
         # Components
         self.router = ModelRouter(negotiator=self.model_negotiator)
         self.ensemble = EnsembleConsensus()
         self.history = QueryHistory()
+
+        # v5.0.0: Specialist Router — multi-LLM specialty-based routing
+        if HAS_MODEL_SPECIALIST:
+            specialist_config = config.get("specialist", {})
+            self.specialist_router = SpecialistRouter(config=specialist_config)
+            self.specialist_router.set_available_models(self.local_models)
+            # Multi-model executor (query_fn set at runtime when session available)
+            self.multi_model_executor = MultiModelExecutor(config=specialist_config)
+            logger.info(f"🎯 Specialist Router: {len(self.specialist_router._profiles)} profiles, "
+                        f"{len(self.local_models)} available models")
+        else:
+            self.specialist_router = None
+            self.multi_model_executor = None
+
+        # v5.2.0: Model Registry — catalogue de modèles avec métadonnées riches
+        if HAS_MODEL_REGISTRY:
+            self.model_registry = ModelRegistry(base_dir=base_dir)
+            try:
+                self.model_registry.initialize()
+                logger.info(f"📚 Model Registry: {len(self.model_registry._cards)} models in catalog")
+            except Exception as e:
+                logger.warning(f"Model Registry init failed: {e}")
+                self.model_registry = None
+        else:
+            self.model_registry = None
+
+        # v5.2.0: Network Sync — DNS dynamique + sync catalogue mesh
+        if HAS_NETWORK_SYNC:
+            self.network_sync = NetworkSync(
+                model_registry=self.model_registry,
+                tracker_client=None,  # Sera branché plus tard avec self.tracker_client
+                persist_dir=str(Path.home() / ".neuromesh"),
+            )
+            logger.info("🔄 NetworkSync initialized")
+        else:
+            self.network_sync = None
 
     def _init_providers(self, config: Dict):
         """Initialize LLM providers from config. Falls back to Ollama-only if no providers."""
@@ -2041,8 +2143,7 @@ class UnityBrain:
             node_name=self.node_name,
             own_host=self.host,
             own_port=self.port,
-            config_peers=config.get("peers", []),
-            config=config  # MED-02: pass for allowed_tailscale_peers whitelist
+            config_peers=config.get("peers", [])
         )
 
         # Load Balancer
@@ -2082,14 +2183,6 @@ class UnityBrain:
         # Event log
         self.event_log: deque = deque(maxlen=50)
 
-        # MED-05: Nonce tracking for anti-replay
-        # NEW-01: Set + threading.Lock for safe nonce tracking (was deque)
-        self._used_nonces: Set[str] = set()
-        self._nonce_timestamps: Dict[str, float] = {}  # for cleanup
-        self._nonce_lock = threading.Lock()
-        # MED-07: Persistent token blacklist
-        self.token_blacklist = TokenBlacklist()
-
     def _check_and_add_nonce(self, nonce: str) -> bool:
         """NEW-01: Thread-safe nonce check and add. Returns True if nonce is new."""
         with self._nonce_lock:
@@ -2106,6 +2199,41 @@ class UnityBrain:
             self._nonce_timestamps[nonce] = now
             return True
 
+    def _load_token_blacklist(self):
+        """MED-07: Load token blacklist from disk."""
+        try:
+            if self._token_blacklist_file.exists():
+                with open(self._token_blacklist_file, 'r') as f:
+                    data = json.load(f)
+                    if isinstance(data, dict):
+                        self._token_blacklist = set(data.get("blacklist", []))
+                    elif isinstance(data, list):
+                        self._token_blacklist = set(data)
+        except (OSError, json.JSONDecodeError):
+            self._token_blacklist = set()
+
+    def _save_token_blacklist(self):
+        """MED-07: Save token blacklist to disk."""
+        try:
+            self._token_blacklist_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(self._token_blacklist_file, 'w') as f:
+                json.dump({"blacklist": list(self._token_blacklist)}, f)
+            # LOW-02: Restrict permissions
+            self._token_blacklist_file.chmod(0o600)
+        except OSError:
+            pass
+
+    def _is_token_blacklisted(self, token_id: str) -> bool:
+        """Check if a token is blacklisted."""
+        with self._token_blacklist_lock:
+            return token_id in self._token_blacklist
+
+    def _blacklist_token(self, token_id: str):
+        """Add a token to the blacklist."""
+        with self._token_blacklist_lock:
+            self._token_blacklist.add(token_id)
+            self._save_token_blacklist()
+
     def log_event(self, event_type: str, message: str, level: str = "info"):
         entry = {
             "time": datetime.now().isoformat(),
@@ -2117,12 +2245,11 @@ class UnityBrain:
         try:
             log_file = Path(__file__).parent.parent / "logs" / "events.jsonl"
             log_file.parent.mkdir(exist_ok=True)
-            # LOW-01: Restrict log directory permissions
-            os.chmod(str(log_file.parent), 0o700)
+            # LOW-01: Restrict log file permissions
+            if not log_file.exists():
+                log_file.touch(mode=0o600)
             with open(log_file, 'a') as f:
                 f.write(json.dumps(entry) + '\n')
-            # LOW-01: Restrict log file permissions
-            os.chmod(str(log_file), 0o600)
         except OSError:
             pass
 
@@ -2177,7 +2304,28 @@ class UnityBrain:
             except Exception as e:
                 logger.warning(f"brain_llm start failed: {e}")
 
-        self.log_event("init", f"UnityBrain v{self.version} initialized as '{self.node_name}'")
+        self.log_event("init", f"NeuroMesh v{self.version} initialized as '{self.node_name}'")
+
+        # v5.0.0: Start Resource Guard background monitor
+        if self.resource_guard:
+            await self.resource_guard.start()
+            logger.info(f"🛡️ Resource Guard started: {self.resource_guard._state.value}")
+
+        # v5.0.0: Start Tracker Client if enabled
+        if self.tracker_client:
+            try:
+                await self.tracker_client.start()
+                logger.info(f"🌐 Tracker Client started")
+            except Exception as e:
+                logger.warning(f"Tracker Client start failed: {e}")
+                self.tracker_client = None
+
+        # Brancher NetworkSync avec le tracker_client
+        if self.network_sync:
+            self.network_sync.tracker_client = self.tracker_client
+            # Lancer la sync périodique en arrière-plan
+            asyncio.create_task(self.network_sync.start())
+            logger.info("🔄 NetworkSync background sync started")
 
     async def check_peers(self):
         if not self.session:
@@ -2198,8 +2346,8 @@ class UnityBrain:
         result = {"response": "", "model": model or "auto", "latency_ms": 0, "source": "local"}
 
         # Check if should handle locally
-        local_cpu = psutil.cpu_percent(interval=0.1)
-        local_mem = psutil.virtual_memory()
+        local_cpu = psutil.cpu_percent(interval=0.1) if HAS_PSUTIL else 0
+        local_mem = psutil.virtual_memory() if HAS_PSUTIL else None
 
         if strategy == "consensus":
             consensus = await self.ensemble.query_ensemble(
@@ -2306,12 +2454,30 @@ class UnityBrain:
             "web_of_trust": len(self.web_of_trust.trust_edges),
             "rate_limiter": self.rate_limiter.to_dict(),
             "sharing_quota": self.sharing_quota.to_dict(),
+            "bandwidth_quota": self.bandwidth_quota.to_dict() if self.bandwidth_quota else {"available": False},
+            "credit_system": self.credit_system.to_dict() if self.credit_system else {"available": False},
             "capabilities": self.own_capabilities.to_dict(),
             "gamified_score": GamifiedScore.get_tier(
                 self.sharing_quota.calculate_score(self.node_name)
             ),
             "zero_config_peers": len(self.zero_config.get_discovered_peers()),
-            "daemon": self.systray.status()
+            "daemon": self.systray.status(),
+            # v5.0.0 modules
+            "resource_guard": {
+                "available": HAS_RESOURCE_GUARD,
+                "state": self.resource_guard._state.value if self.resource_guard else "unavailable",
+            } if self.resource_guard else {"available": False, "state": "unavailable"},
+            "adaptive_scheduler": {
+                "available": HAS_ADAPTIVE_SCHEDULER,
+                "strategy": self.adaptive_scheduler.strategy.value if self.adaptive_scheduler else "unavailable",
+            } if self.adaptive_scheduler else {"available": False, "strategy": "unavailable"},
+            "conversation_store": {"available": HAS_CONVERSATION_STORE} if self.conversation_store else {"available": False},
+            "model_share_manager": {"available": HAS_MODEL_SHARE_MANAGER} if self.model_share_manager else {"available": False},
+            "model_registry": {"available": HAS_MODEL_REGISTRY, "models": len(self.model_registry._cards)} if self.model_registry and HAS_MODEL_REGISTRY else {"available": False},
+            "tracker_client": {
+                "available": HAS_TRACKER_CLIENT and self.tracker_client is not None,
+                "state": self.tracker_client.state if self.tracker_client else "unavailable",
+            } if self.tracker_client else {"available": False, "state": "unavailable"},
         }
 
     # ========================================================================
@@ -2335,11 +2501,11 @@ class UnityBrain:
             self.p2p_secret.encode(), f"{path}:{ts}".encode(), hashlib.sha256).hexdigest()
         return {
             'Authorization': f'Bearer {token}',
-            'X-UnityBrain-Node': self.node_name,
-            'X-UnityBrain-Key': self.identity.public_key_hex,
-            'X-UnityBrain-TS': ts,
-            'X-UnityBrain-Auth': hmac_sig,
-            'X-UnityBrain-Version': '4.2.1'
+            'X-NeuroMesh-Node': self.node_name,
+            'X-NeuroMesh-Key': self.identity.public_key_hex,
+            'X-NeuroMesh-TS': ts,
+            'X-NeuroMesh-Auth': hmac_sig,
+            'X-NeuroMesh-Version': '4.2.1'
         }
 
     def _verify_auth(self, request: web.Request) -> Optional[Dict]:
@@ -2353,45 +2519,44 @@ class UnityBrain:
         # Check Bearer token (Ed25519/HMAC signature)
         auth = request.headers.get('Authorization', '')
         if auth.startswith('Bearer '):
-            ts = request.headers.get('X-UnityBrain-TS', '')
-            node_name = request.headers.get('X-UnityBrain-Node', '')
-            node_key = request.headers.get('X-UnityBrain-Key', '')
+            ts = request.headers.get('X-NeuroMesh-TS', '')
+            node_name = request.headers.get('X-NeuroMesh-Node', '')
+            node_key = request.headers.get('X-NeuroMesh-Key', '')
 
-            # MED-05: Anti-replay — Ed25519 window 30s
+            # MED-05: Anti-replay timestamp window (30s)
             if ts:
                 try:
                     if abs(time.time() - int(ts)) > HMAC_WINDOW_SECONDS:
-                        logger.debug(f"Auth rejected: timestamp too old")
+                        logger.debug(f"Auth rejected: timestamp too old ({abs(time.time() - int(ts)):.0f}s)")
                         return None
                 except ValueError:
-                    logger.debug(f"Auth rejected: invalid timestamp")
+                    logger.debug(f"Auth rejected: invalid timestamp '{ts}'")
                     return None
 
             # CRIT-02 fix: include request path in the challenge to prevent cross-endpoint replay
             if node_key and node_name:
                 sig = auth[7:]
-                # MED-07: Check token blacklist (use full hash to avoid collisions)
-                token_id = hashlib.sha256(f"{node_name}:{sig}:{ts}".encode()).hexdigest()[:32]
-                if self.token_blacklist.is_revoked(token_id):
-                    logger.debug(f"Auth rejected: revoked token")
-                    return None
                 challenge = f"{node_name}:{request.path}:{ts}"
                 verified = self.identity.verify(challenge, sig, node_key)
                 # NEW-01: Nonce check via thread-safe helper
                 nonce = f"{node_name}:{request.path}:{ts}"
                 if not self._check_and_add_nonce(nonce):
-                    logger.debug(f"Auth rejected: replayed nonce")
+                    logger.debug("Auth rejected: replayed nonce")
                     return None
-
                 if verified:
+                    # MED-07: Check token blacklist
+                    token_id = hashlib.sha256(f"{node_name}:{sig}:{ts}".encode()).hexdigest()[:32]
+                    if self._is_token_blacklisted(token_id):
+                        logger.debug(f"Auth rejected: token blacklisted for {node_name}")
+                        return None
                     return {"node": node_name, "public_key": node_key, "method": "ed25519"}
                 else:
                     # MED-03: no sig/key fragments in logs
                     logger.info(f"Auth rejected: verify failed for node={node_name}")
 
         # Fallback: shared secret HMAC (v3 compat)
-        hmac_auth = request.headers.get('X-UnityBrain-Auth', '')
-        hmac_ts = request.headers.get('X-UnityBrain-TS', '')
+        hmac_auth = request.headers.get('X-NeuroMesh-Auth', '')
+        hmac_ts = request.headers.get('X-NeuroMesh-TS', '')
         if hmac_auth and hmac_ts:
             try:
                 ts = float(hmac_ts)
@@ -2422,7 +2587,7 @@ class UnityBrain:
         Returns True if request should be allowed."""
         if not self.stealth_mode:
             return True
-        node_key = request.headers.get('X-UnityBrain-Key', '')
+        node_key = request.headers.get('X-NeuroMesh-Key', '')
         if node_key and self.web_of_trust.is_trusted(node_key, min_score=0.5):
             return True
         # Check if it's a known peer
@@ -2489,7 +2654,7 @@ class UnityBrain:
             if origin in origins:
                 resp.headers['Access-Control-Allow-Origin'] = origin
                 resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, DELETE, OPTIONS'
-                resp.headers['Access-Control-Allow-Headers'] = 'Authorization, X-UnityBrain-Node, X-UnityBrain-Key, X-UnityBrain-TS, X-UnityBrain-Auth, X-UnityBrain-Version, Content-Type'
+                resp.headers['Access-Control-Allow-Headers'] = 'Authorization, X-NeuroMesh-Node, X-NeuroMesh-Key, X-NeuroMesh-TS, X-NeuroMesh-Auth, X-NeuroMesh-Version, Content-Type'
                 resp.headers['Access-Control-Max-Age'] = '86400'
             return resp
 
@@ -2540,7 +2705,7 @@ class UnityBrain:
         # WebSocket endpoint
         app.router.add_get('/ws', self.handle_websocket)
 
-        # v5: UnityBrain Desktop — Static file serving (localhost only)
+        # v5: NeuroMesh Desktop — Static file serving (localhost only)
         web_dir = os.path.join(os.path.dirname(__file__), 'web')
         if os.path.isdir(web_dir):
             app.router.add_static('/ui', web_dir, name='ui_static',
@@ -2551,7 +2716,7 @@ class UnityBrain:
             app.router.add_get('/api.js', self._serve_web_file('api.js'))
 
         # ========================================================================
-        # v5: UNITYBRAIN DESKTOP UI API ENDPOINTS
+        # v5: NEUROMESH DESKTOP UI API ENDPOINTS
         # ========================================================================
 
         # Chat & Conversations
@@ -2565,10 +2730,43 @@ class UnityBrain:
         app.router.add_get('/api/resources/status', self._auth_required(self.handle_resources_status))
         app.router.add_post('/api/resources/config', self._auth_required(self.handle_resources_config))
 
+        # Bandwidth Quota
+        app.router.add_get('/api/bandwidth', self.handle_bandwidth_status)
+        app.router.add_post('/api/bandwidth', self._auth_required(self.handle_bandwidth_config))
+
+        # Credits
+        app.router.add_get('/api/credits', self.handle_credits_status)
+        app.router.add_get('/api/credits/{peer}', self.handle_credits_account)
+        app.router.add_post('/api/credits/reward', self._auth_required(self.handle_credits_reward))
+
         # Models
         app.router.add_get('/api/models', self._auth_required(self.handle_models_list))
         app.router.add_post('/api/models/{name}/share', self._auth_required(self.handle_model_share))
         app.router.add_post('/api/models/{name}/unshare', self._auth_required(self.handle_model_unshare))
+
+        # v5.2: Model Registry — catalogue, recherche, recommandations
+        app.router.add_get('/api/registry', self.handle_registry_list)
+        app.router.add_get('/api/registry/stats', self.handle_registry_stats)
+        app.router.add_get('/api/registry/{name}', self.handle_registry_info)
+        app.router.add_post('/api/registry', self._auth_required(self.handle_registry_add))
+        app.router.add_delete('/api/registry/{name}', self._auth_required(self.handle_registry_remove))
+        app.router.add_put('/api/registry/{name}', self._auth_required(self.handle_registry_update))
+        app.router.add_get('/api/registry/search/{query}', self.handle_registry_search)
+        app.router.add_get('/api/registry/recommend', self.handle_registry_recommend)
+        app.router.add_get('/api/registry/mesh', self.handle_registry_mesh)
+        app.router.add_get('/api/registry/wishlist', self.handle_registry_wishlist)
+        app.router.add_post('/api/registry/wishlist/{name}', self._auth_required(self.handle_registry_wishlist_add))
+        app.router.add_post('/api/registry/{name}/share', self._auth_required(self.handle_registry_share))
+        app.router.add_post('/api/registry/{name}/unshare', self._auth_required(self.handle_registry_unshare))
+        app.router.add_post('/api/registry/purge', self._auth_required(self.handle_registry_purge))
+        app.router.add_get('/api/registry/stale', self.handle_registry_stale)
+
+        # v5.2: Network Sync — DNS dynamique + sync mesh
+        app.router.add_get('/api/network/sync', self.handle_network_sync_status)
+        app.router.add_post('/api/network/sync', self._auth_required(self.handle_network_sync_run))
+        app.router.add_get('/api/network/dns', self.handle_dns_list)
+        app.router.add_get('/api/network/dns/stats', self.handle_dns_stats)
+        app.router.add_get('/api/network/missing', self.handle_missing_models)
 
         # Network
         app.router.add_get('/api/network/private/peers', self._auth_required(self.handle_network_private_peers))
@@ -2576,9 +2774,19 @@ class UnityBrain:
         app.router.add_post('/api/network/mesh/join', self._auth_required(self.handle_network_mesh_join))
         app.router.add_post('/api/network/mesh/leave', self._auth_required(self.handle_network_mesh_leave))
 
+        # Model Networks (v5.2)
+        app.router.add_get('/api/model-networks', self._auth_required(self.handle_model_networks_get))
+        app.router.add_post('/api/model-networks', self._auth_required(self.handle_model_networks_save))
+        app.router.add_post('/api/model-networks/{network_id}/generate-secret', self._auth_required(self.handle_model_networks_generate_secret))
+
         # Config
         app.router.add_get('/api/config', self._auth_required(self.handle_config_get))
         app.router.add_post('/api/config', self._auth_required(self.handle_config_set))
+
+        # v5.0.0: Specialist & Multi-Model endpoints
+        app.router.add_get('/api/specialties', self.handle_specialties_list)
+        app.router.add_get('/api/specialties/{name}/models', self.handle_specialty_models)
+        app.router.add_post('/api/multi', self._auth_required(self.handle_multi_model_query))
 
         return app
 
@@ -2626,7 +2834,7 @@ class UnityBrain:
         return handler
 
     async def handle_dashboard(self, request: web.Request) -> web.Response:
-        """Serve the UnityBrain Desktop web UI. Falls back to legacy dashboard if files not found."""
+        """Serve the NeuroMesh Desktop web UI. Falls back to legacy dashboard if files not found."""
         web_dir = os.path.join(os.path.dirname(__file__), 'web')
         index_path = os.path.join(web_dir, 'index.html')
         if os.path.isfile(index_path):
@@ -2638,7 +2846,9 @@ class UnityBrain:
             try:
                 with open(index_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                return web.Response(text=content, content_type='text/html')
+                # LOW-04: CSP header
+                return web.Response(text=content, content_type='text/html',
+                                     headers={'Content-Security-Policy': CSP_HEADER})
             except OSError:
                 pass
 
@@ -2649,7 +2859,7 @@ class UnityBrain:
         mins, secs = divmod(remainder, 60)
 
         html = f"""<!DOCTYPE html>
-<html><head><title>UnityBrain v{self.version}</title>
+<html><head><title>NeuroMesh v{self.version}</title>
 <style>
 body {{ font-family: system-ui; background: #0a0a0a; color: #e0e0e0; margin: 2rem; }}
 .card {{ background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }}
@@ -2663,7 +2873,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
 .stealth {{ background: #2d1b00; border-color: #e67e22; padding: 0.5rem; border-radius: 4px; color: #e67e22; margin: 1rem 0; }}
 </style></head><body>
 <div class="header">
-<h1>🌐 UnityBrain v{self.version}</h1>
+<h1>🌐 NeuroMesh v{self.version}</h1>
 <div class="subtitle">Node: <strong>{self.node_name}</strong> | Uptime: {hours}h {mins}m {secs}s</div>
 {'<div class="stealth">🔒 STEALTH MODE ACTIVE</div>' if self.stealth_mode else ''}
 {'<div class="stealth" style="border-color:#4ecdc4;color:#4ecdc4;">📤 AI SHARING ENABLED</div>' if self.share_ai else ''}
@@ -2687,12 +2897,9 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         for p in self.peers:
             icon = "✅" if p.available else "❌"
             cb_state = p.circuit_breaker.state
-            # LOW-05: XSS fix — escape peer name and host
-            safe_name = html_escape(p.name)
-            safe_host = html_escape(p.host)
             html += f"""<div class="peer">
-<span class="{'ok' if p.available else 'ko'}">{icon} {safe_name}</span>
-{safe_host}:{p.port} — {round(p.latency, 1)}ms — CB:{cb_state}
+<span class="{'ok' if p.available else 'ko'}">{icon} {html.escape(p.name)}</span>
+{html.escape(p.host)}:{p.port} — {round(p.latency, 1)}ms — CB:{cb_state}
 </div>"""
 
         if not self.peers:
@@ -2739,7 +2946,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             for p in self.peers:
                 peer_score = self.sharing_quota.calculate_score(p.name)
                 peer_tier = GamifiedScore.get_tier(peer_score)
-                html += f'<div class="stat"><span>{html_escape(p.name)}</span><span style="color:{peer_tier["color"]}">{peer_tier["tier"]} ({peer_score:.1f})</span></div>'
+                html += f'<div class="stat"><span>{html.escape(p.name)}</span><span style="color:{peer_tier["color"]}">{peer_tier["tier"]} ({peer_score:.1f})</span></div>'
         html += '</div>'
 
         # v4.2.0: Capabilities section
@@ -2766,10 +2973,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             html += '</div>'
 
         html += """"</body></html>"""
-        resp = web.Response(text=html, content_type='text/html')
-        # LOW-04: CSP header
-        resp.headers['Content-Security-Policy'] = CSP_HEADER
-        return resp
+        return web.Response(text=html, content_type='text/html')
 
     async def handle_status(self, request: web.Request) -> web.Response:
         # HIGH-03 fix: Return minimal info for unauthenticated requests
@@ -2792,6 +2996,9 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         prompt = data.get("prompt", "")
         model = data.get("model")
         strategy = data.get("strategy", "auto")
+        specialty = data.get("specialty")  # v5: specialty-based routing
+        models = data.get("models")  # v5: force specific models
+        specialties = data.get("specialties")  # v5: force multiple specialties
         
         # HIGH-01 fix: Input validation
         if not prompt or len(prompt) > MAX_PROMPT_LENGTH:
@@ -2806,6 +3013,18 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                 {"error": f"invalid strategy, allowed: {', '.join(sorted(ALLOWED_STRATEGIES))}"},
                 status=400)
         
+        # Check bandwidth quota for mesh requests
+        if self.bandwidth_quota:
+            is_peer = request.get('auth', {}).get('node', '') != self.node_name
+            if is_peer and not self.bandwidth_quota.can_transfer():
+                remaining = self.bandwidth_quota.get_remaining_data_mb()
+                return web.json_response({
+                    "error": "bandwidth quota exceeded",
+                    "remaining_mb": round(remaining, 1),
+                    "reset_at": self.bandwidth_quota._current_period.period_end,
+                    "hint": "Monthly data quota exceeded. Increase bandwidth_quota.monthly_data_gb or wait for reset."
+                }, status=429)
+
         # Check if this is a peer request
         auth_info = request.get('auth', {})
         is_peer_request = auth_info.get('node', self.node_name) != self.node_name
@@ -2817,20 +3036,81 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                 "share_ai": False
             }, status=403)
         
-        # v4.1.5: Quota check for peer requests
+        # v5.2: Credit check for peer requests (replaces old quota system)
         if is_peer_request:
             peer_name = auth_info.get('node', 'unknown')
             self.sharing_quota.record_query_made(peer_name)
+
+            # Determine query cost
+            query_type = "simple"
+            model_count = 1
+            if models and len(models) > 1:
+                query_type = "multi"
+                model_count = len(models)
+            elif specialty:
+                query_type = "specialty"
+
+            # v4.1.5: Rate limit check (still enforced)
             if not self.sharing_quota.allow_query(peer_name):
                 score = self.sharing_quota.calculate_score(peer_name)
                 quota = self.sharing_quota.get_quota(peer_name)
                 return web.json_response({
-                    "error": "Quota exceeded",
+                    "error": "Rate limit exceeded",
                     "peer": peer_name,
                     "score": score,
                     "quota_queries_per_minute": quota,
-                    "hint": "Share more models or increase uptime to raise your quota"
+                    "hint": "Share more models or increase uptime to raise your rate limit"
                 }, status=429)
+
+            # v5.2: Credit system check
+            if self.credit_system:
+                can_afford = self.credit_system.can_afford(peer_name, QUERY_COSTS.get(query_type, 1))
+                if not can_afford:
+                    acc = self.credit_system.get_or_create(peer_name)
+                    return web.json_response({
+                        "error": "Insufficient credits",
+                        "peer": peer_name,
+                        "balance": round(acc.balance, 1),
+                        "cost": QUERY_COSTS.get(query_type, 1),
+                        "tier": self.credit_system.get_tier(peer_name).value,
+                        "hint": "Share more resources (models, GPU, memory) to earn credits, or wait for monthly reset"
+                    }, status=402)
+                # Spend credits
+                success, cost = self.credit_system.spend(peer_name, query_type, model_count)
+                if not success:
+                    acc = self.credit_system.get_or_create(peer_name)
+                    return web.json_response({
+                        "error": "Insufficient credits",
+                        "peer": peer_name,
+                        "balance": round(acc.balance, 1),
+                        "cost": cost,
+                        "hint": "Share more resources to earn credits"
+                    }, status=402)
+        
+        # v5.0.0: Specialty-based routing — if specialty/models specified, use SpecialistRouter
+        if self.specialist_router and (specialty or models or specialties):
+            routing = self.specialist_router.route(
+                prompt,
+                available=self.local_models,
+                specialty=specialty,
+                models=models,
+                specialties=specialties,
+            )
+            selected_models = routing["models"]
+            if len(selected_models) == 1:
+                # Single model — use normal query with the selected model
+                result = await self.query(prompt, selected_models[0], strategy)
+                result["specialist_routing"] = routing
+            else:
+                # Multiple models — use multi-model executor
+                async def _query_one(m, p):
+                    return await self.query(p, m, strategy)
+                multi_result = await self.multi_model_executor.execute(
+                    prompt, selected_models, MultiModelMode.SPECIALIST, query_fn=_query_one
+                )
+                result = multi_result.to_dict()
+                result["specialist_routing"] = routing
+            return web.json_response(result)
         
         result = await self.query(prompt, model, strategy)
         return web.json_response(result)
@@ -2841,15 +3121,8 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         value = data.get("value")
         ttl = data.get("ttl")
         author = request.get('auth', {}).get('node', self.node_name)
-        # MED-04: Validate key
-        if not key or len(key) > MAX_KEY_LENGTH:
-            return web.json_response({"error": f"Invalid key (max {MAX_KEY_LENGTH} chars)"}, status=400)
-        # MED-04: Validate value size
-        if value is not None and len(json.dumps(value)) > MAX_VALUE_SIZE:
-            return web.json_response({"error": f"Value too large (max {MAX_VALUE_SIZE} bytes)"}, status=400)
-        # MED-04: Cap TTL
-        if ttl and ttl > MAX_TTL:
-            ttl = MAX_TTL
+        if not key:
+            return web.json_response({"error": "key required"}, status=400)
         self.memory.set(key, value, ttl, author=author)
         # Gossip the update
         await self._gossip_broadcast({
@@ -2915,6 +3188,8 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         auth = self._verify_auth(request)
         if auth is None:
             return web.Response(status=401, text='Unauthorized')
+        if not HAS_PSUTIL:
+            return web.json_response({"error": "psutil not available"}, status=503)
         cpu = psutil.cpu_percent(interval=0.5)
         mem = psutil.virtual_memory()
         return web.json_response({
@@ -2991,14 +3266,14 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
     # ========================================================================
     # v4.2.0: CAPABILITIES, SCORE, DISCOVERY, UPDATE, DAEMON ENDPOINTS
     # ========================================================================
-    # v5: UNITYBRAIN DESKTOP UI API HANDLERS
+    # v5: NEUROMESH DESKTOP UI API HANDLERS
     # ========================================================================
 
     # --- Conversation storage ---
 
     def _conv_dir(self) -> Path:
         """Return the conversations directory, creating it if needed."""
-        conv_dir = Path.home() / ".unitybrain" / "conversations"
+        conv_dir = Path.home() / ".neuromesh" / "conversations"
         conv_dir.mkdir(parents=True, exist_ok=True)
         return conv_dir
 
@@ -3210,6 +3485,8 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
 
     async def handle_resources_status(self, request: web.Request) -> web.Response:
         """GET /api/resources/status — Current system resource state."""
+        if not HAS_PSUTIL:
+            return web.json_response({"error": "psutil not available"}, status=503)
         cpu_percent = psutil.cpu_percent(interval=0.5)
         mem = psutil.virtual_memory()
         disk = psutil.disk_usage('/')
@@ -3222,10 +3499,17 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         if self.own_capabilities.gpu_available:
             gpu_info = {"name": self.own_capabilities.gpu_name, "available": True}
 
-        sharing_active = not (cpu_percent > 70 or mem.percent > 85)
+        # v5.0.0: Use Resource Guard for sharing state if available
+        if self.resource_guard:
+            guard = self.resource_guard
+            sharing_active = guard.can_accept_request()
+            guard_info = guard.get_status()
+        else:
+            sharing_active = not (cpu_percent > 70 or mem.percent > 85)
+            guard_info = None
 
-        return web.json_response({
-            "cpu": {"percent": cpu_percent, "cores": psutil.cpu_count(), "max_share_percent": max_cpu},
+        response = {
+            "cpu": {"percent": cpu_percent, "cores": psutil.cpu_count() if HAS_PSUTIL else os.cpu_count(), "max_share_percent": max_cpu},
             "ram": {
                 "total_mb": round(mem.total / 1024 / 1024),
                 "available_mb": round(mem.available / 1024 / 1024),
@@ -3241,7 +3525,10 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                 "gpu_share": gpu_share
             },
             "contribution_score": self.sharing_quota.calculate_score(self.node_name)
-        })
+        }
+        if guard_info:
+            response["resource_guard"] = guard_info
+        return web.json_response(response)
 
     async def handle_resources_config(self, request: web.Request) -> web.Response:
         """POST /api/resources/config — Modify resource sharing limits.
@@ -3276,6 +3563,107 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         self._persist_config()
         self.log_event("resources", f"Resource config updated: {data}")
         return web.json_response({"status": "updated", "public_mesh": mesh_config})
+
+    # --- Bandwidth Quota endpoints ---
+
+    async def handle_bandwidth_status(self, request: web.Request) -> web.Response:
+        """GET /api/bandwidth — Statut du quota de bande passante."""
+        if not self.bandwidth_quota:
+            return web.json_response({"available": False, "error": "bandwidth_quota module not loaded"})
+        return web.json_response(self.bandwidth_quota.get_status())
+
+    async def handle_bandwidth_config(self, request: web.Request) -> web.Response:
+        """POST /api/bandwidth — Mettre à jour le quota de bande passante.
+
+        Body: {"monthly_data_gb": 10, "bandwidth_limit_kbps": 10000, "quota_period": "monthly"}
+        """
+        if not self.bandwidth_quota:
+            return web.json_response({"error": "bandwidth_quota module not loaded"}, status=503)
+
+        data = await request.json()
+
+        # Valider et mettre à jour
+        monthly_gb = data.get("monthly_data_gb")
+        bw_kbps = data.get("bandwidth_limit_kbps")
+        period = data.get("quota_period")
+
+        # Validation
+        if monthly_gb is not None and (monthly_gb < 0 or monthly_gb > 100):
+            return web.json_response({"error": "monthly_data_gb must be between 0 and 100"}, status=400)
+        if bw_kbps is not None and (bw_kbps < 0 or bw_kbps > 100000):
+            return web.json_response({"error": "bandwidth_limit_kbps must be between 0 and 100000"}, status=400)
+        if period is not None and period not in ("monthly", "weekly", "daily"):
+            return web.json_response({"error": "quota_period must be monthly, weekly, or daily"}, status=400)
+
+        self.bandwidth_quota.update_config(
+            monthly_data_gb=monthly_gb,
+            bandwidth_limit_kbps=bw_kbps,
+            period=period,
+        )
+
+        # Persister dans la config
+        bw_config = self.config.get("bandwidth_quota", {})
+        if monthly_gb is not None:
+            bw_config["monthly_data_gb"] = monthly_gb
+        if bw_kbps is not None:
+            bw_config["bandwidth_limit_kbps"] = bw_kbps
+        if period is not None:
+            bw_config["quota_period"] = period
+        self.config["bandwidth_quota"] = bw_config
+        self._persist_config()
+
+        self.log_event("bandwidth", f"Bandwidth quota updated: {data}")
+        return web.json_response({"status": "updated", "bandwidth_quota": self.bandwidth_quota.get_status()})
+
+    # --- Credit System endpoints ---
+
+    async def handle_credits_status(self, request: web.Request) -> web.Response:
+        """GET /api/credits — Status complet du système de crédits."""
+        if not self.credit_system:
+            return web.json_response({"available": False, "error": "credit_system module not loaded"})
+        self.credit_system.check_monthly_reset()
+        return web.json_response(self.credit_system.to_dict())
+
+    async def handle_credits_account(self, request: web.Request) -> web.Response:
+        """GET /api/credits/{peer} — Compte de crédits d'un nœud."""
+        if not self.credit_system:
+            return web.json_response({"available": False})
+        peer_name = request.match_info.get('peer', self.node_name)
+        self.credit_system.check_monthly_reset()
+        return web.json_response(self.credit_system.get_account_info(peer_name))
+
+    async def handle_credits_reward(self, request: web.Request) -> web.Response:
+        """POST /api/credits/reward — Accorder manuellement des crédits (admin).
+
+        Body: {"node": "peer_name", "type": "models|gpu|uptime|memory|reputation", "amount": 50}
+        """
+        if not self.credit_system:
+            return web.json_response({"error": "credit_system module not loaded"}, status=503)
+        data = await request.json()
+        node = data.get("node", "")
+        reward_type = data.get("type", "")
+        amount = data.get("amount", 0)
+
+        if not node:
+            return web.json_response({"error": "node is required"}, status=400)
+
+        if reward_type == "models":
+            self.credit_system.reward_models(node, int(amount / 50) or 1)
+        elif reward_type == "gpu":
+            self.credit_system.reward_gpu(node)
+        elif reward_type == "uptime":
+            self.credit_system.reward_uptime(node, amount)
+        elif reward_type == "memory":
+            self.credit_system.reward_memory_chunks(node, int(amount / 2) or 1)
+        elif reward_type == "reputation":
+            self.credit_system.reward_reputation(node, amount)
+        elif amount > 0:
+            self.credit_system._add_reward(node, reward_type or "manual", amount)
+        else:
+            return web.json_response({"error": "type must be models|gpu|uptime|memory|reputation, or specify amount"}, status=400)
+
+        self.log_event("credits", f"Reward: {reward_type} for {node}")
+        return web.json_response({"status": "rewarded", "account": self.credit_system.get_account_info(node)})
 
     # --- Model endpoints ---
 
@@ -3324,16 +3712,24 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             shared_list.append(model_name)
             self._persist_config()
 
-        # Create symlink in shared_models directory
-        shared_dir = Path.home() / ".unitybrain" / "shared_models"
-        shared_dir.mkdir(parents=True, exist_ok=True)
-        link_path = shared_dir / model_name.replace(':', '_').replace('/', '_')
-        ollama_model_path = Path.home() / ".ollama" / "models" / model_name.replace(':', '/')
-        if ollama_model_path.exists() and not link_path.exists():
+        # v5.0.0: Use ModelShareManager if available
+        if self.model_share_manager:
             try:
-                link_path.symlink_to(ollama_model_path)
-            except OSError:
-                pass
+                self.model_share_manager.share_model(model_name)
+                self.log_event("model_share", f"Model '{model_name}' shared via ModelShareManager")
+            except Exception as e:
+                self.log_event("model_share", f"ModelShareManager error: {e}", "warn")
+        else:
+            # Fallback: direct symlink
+            shared_dir = Path.home() / ".neuromesh" / "shared_models"
+            shared_dir.mkdir(parents=True, exist_ok=True)
+            link_path = shared_dir / model_name.replace(':', '_').replace('/', '_')
+            ollama_model_path = Path.home() / ".ollama" / "models" / model_name.replace(':', '/')
+            if ollama_model_path.exists() and not link_path.exists():
+                try:
+                    link_path.symlink_to(ollama_model_path)
+                except OSError:
+                    pass
 
         self.log_event("model_share", f"Model '{model_name}' now shared with mesh")
         return web.json_response({"shared": model_name, "models_share": shared_list})
@@ -3350,18 +3746,408 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             shared_list.remove(model_name)
             self._persist_config()
 
-        link_name = model_name.replace(':', '_').replace('/', '_')
-        link_path = Path.home() / ".unitybrain" / "shared_models" / link_name
-        if link_path.is_symlink():
+        # v5.0.0: Use ModelShareManager if available
+        if self.model_share_manager:
             try:
-                link_path.unlink()
-            except OSError:
-                pass
+                self.model_share_manager.unshare_model(model_name)
+                self.log_event("model_unshare", f"Model '{model_name}' unshared via ModelShareManager")
+            except Exception as e:
+                self.log_event("model_unshare", f"ModelShareManager error: {e}", "warn")
+        else:
+            # Fallback: remove symlink
+            link_name = model_name.replace(':', '_').replace('/', '_')
+            link_path = Path.home() / ".neuromesh" / "shared_models" / link_name
+            if link_path.is_symlink():
+                try:
+                    link_path.unlink()
+                except OSError:
+                    pass
 
         self.log_event("model_unshare", f"Model '{model_name}' unshared from mesh")
         return web.json_response({"unshared": model_name, "models_share": shared_list})
 
+    # --- v5.2: Model Registry endpoints ---
+
+    async def handle_registry_list(self, request: web.Request) -> web.Response:
+        """GET /api/registry — Lister les modèles du catalogue avec filtres."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        source = request.query.get("source")
+        category = request.query.get("category")
+        tag = request.query.get("tag")
+        language = request.query.get("language")
+        try:
+            min_quality = int(request.query.get("min_quality", "0"))
+        except (ValueError, TypeError):
+            min_quality = None
+        shared_only = request.query.get("shared", "").lower() == "true"
+        available_only = request.query.get("available", "").lower() == "true"
+        downloadable = request.query.get("downloadable", "").lower() == "true"
+        sort_by = request.query.get("sort", "quality")
+        models = self.model_registry.list_models(
+            source=source, category=category, tag=tag,
+            language=language, min_quality=min_quality or None,
+            shared_only=shared_only, available_only=available_only,
+            downloadable_only=downloadable, sort_by=sort_by,
+        )
+        return web.json_response({
+            "models": [m.to_dict() for m in models],
+            "total": len(models),
+            "filters": {
+                "source": source, "category": category, "tag": tag,
+                "language": language, "min_quality": min_quality,
+                "shared_only": shared_only, "available_only": available_only,
+                "downloadable_only": downloadable, "sort_by": sort_by,
+            }
+        })
+
+    async def handle_registry_stats(self, request: web.Request) -> web.Response:
+        """GET /api/registry/stats — Statistiques du registre."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        stats = self.model_registry.get_stats()
+        return web.json_response(stats)
+
+    async def handle_registry_info(self, request: web.Request) -> web.Response:
+        """GET /api/registry/{name} — Fiche détaillée d'un modèle."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        card = self.model_registry.get_model(name)
+        if not card:
+            # Try URL-decoded name
+            from urllib.parse import unquote
+            name = unquote(name)
+            card = self.model_registry.get_model(name)
+        if not card:
+            # Fuzzy search
+            results = self.model_registry.search(name)
+            if results:
+                card = results[0]
+            else:
+                return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+        return web.json_response(card.to_dict())
+
+    async def handle_registry_add(self, request: web.Request) -> web.Response:
+        """POST /api/registry — Ajouter un modèle au registre.
+
+        Body: {
+            "name": "model-name",
+            "display_name": "Model Name",
+            "description": "...",
+            "source": "local|cloud|wishlist|mesh",
+            "categories": ["code", "reasoning"],
+            "quality_rating": 7,
+            "speed_rating": 8,
+            "context_window": 32768,
+            "size_category": "small",
+            "params_count": "8B",
+            "ram_required_gb": 8,
+            "vram_required_gb": 0,
+            "strengths": ["..."],
+            "limitations": ["..."],
+            "best_for": ["..."],
+            "not_for": ["..."],
+            "languages": ["en", "fr"],
+            "provider": "ollama",
+            "license": "...",
+            "notes": "..."
+        }
+        """
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        data = await request.json()
+        name = data.get("name", "").strip()
+        if not name:
+            return web.json_response({"error": "name is required"}, status=400)
+        try:
+            source = ModelSource(data.get("source", "local"))
+        except ValueError:
+            source = ModelSource.LOCAL
+        try:
+            status = ModelStatus(data.get("status", "ready"))
+        except ValueError:
+            status = ModelStatus.READY
+        card = ModelCard(
+            name=name,
+            display_name=data.get("display_name", ""),
+            description=data.get("description", ""),
+            long_description=data.get("long_description", ""),
+            source=source,
+            status=status,
+            categories=data.get("categories", []),
+            tags=data.get("tags", []),
+            quality_rating=int(data.get("quality_rating", 5)),
+            speed_rating=int(data.get("speed_rating", 5)),
+            context_window=int(data.get("context_window", 8192)),
+            size_category=data.get("size_category", "small"),
+            params_count=data.get("params_count", ""),
+            ram_required_gb=float(data.get("ram_required_gb", 4)),
+            vram_required_gb=float(data.get("vram_required_gb", 0)),
+            disk_size_gb=float(data.get("disk_size_gb", 0)),
+            strengths=data.get("strengths", []),
+            limitations=data.get("limitations", []),
+            best_for=data.get("best_for", []),
+            not_for=data.get("not_for", []),
+            languages=data.get("languages", ["en"]),
+            primary_language=data.get("primary_language", "en"),
+            provider=data.get("provider", "ollama"),
+            architecture=data.get("architecture", ""),
+            license=data.get("license", ""),
+            quantization=data.get("quantization", ""),
+            price_per_million_input=float(data.get("price_per_million_input", 0)),
+            price_per_million_output=float(data.get("price_per_million_output", 0)),
+            notes=data.get("notes", ""),
+        )
+        self.model_registry.add_model(card)
+        self.log_event("registry_add", f"Model '{name}' added to registry ({source.value})")
+        return web.json_response({"added": card.to_dict()}, status=201)
+
+    async def handle_registry_remove(self, request: web.Request) -> web.Response:
+        """DELETE /api/registry/{name} — Supprimer un modèle du registre."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        if self.model_registry.remove_model(name):
+            self.log_event("registry_remove", f"Model '{name}' removed from registry")
+            return web.json_response({"removed": name})
+        return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+
+    async def handle_registry_update(self, request: web.Request) -> web.Response:
+        """PUT /api/registry/{name} — Mettre à jour un modèle."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        data = await request.json()
+        if self.model_registry.update_model(name, data):
+            card = self.model_registry.get_model(name)
+            self.log_event("registry_update", f"Model '{name}' updated")
+            return web.json_response(card.to_dict())
+        return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+
+    async def handle_registry_search(self, request: web.Request) -> web.Response:
+        """GET /api/registry/search/{query} — Rechercher des modèles."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        query = request.match_info.get('query', '')
+        from urllib.parse import unquote
+        query = unquote(query)
+        results = self.model_registry.search(query)
+        return web.json_response({
+            "query": query,
+            "results": [m.to_dict() for m in results],
+            "total": len(results),
+        })
+
+    async def handle_registry_recommend(self, request: web.Request) -> web.Response:
+        """GET /api/registry/recommend — Recommandations personnalisées.
+
+        Query params: task, language, max_ram_gb, min_quality
+        """
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        task = request.query.get("task")
+        language = request.query.get("language", "fr")
+        try:
+            max_ram = float(request.query.get("max_ram_gb", "0"))
+        except (ValueError, TypeError):
+            max_ram = None
+        try:
+            min_q = int(request.query.get("min_quality", "0"))
+        except (ValueError, TypeError):
+            min_q = None
+        recs = self.model_registry.get_recommendations(
+            task=task, language=language,
+            max_ram_gb=max_ram if max_ram and max_ram > 0 else None,
+            min_quality=min_q if min_q and min_q > 0 else None,
+        )
+        return web.json_response({
+            "recommendations": [m.to_dict() for m in recs[:10]],
+            "total": len(recs),
+            "params": {"task": task, "language": language, "max_ram_gb": max_ram, "min_quality": min_q},
+        })
+
+    async def handle_registry_mesh(self, request: web.Request) -> web.Response:
+        """GET /api/registry/mesh — Catalogue des modèles disponibles sur le mesh public."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        mesh_models = self.model_registry.get_mesh_catalog()
+        return web.json_response({
+            "mesh_catalog": [m.to_dict() for m in mesh_models],
+            "total": len(mesh_models),
+        })
+
+    async def handle_registry_wishlist(self, request: web.Request) -> web.Response:
+        """GET /api/registry/wishlist — Liste des modèles souhaités."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        wishlist = self.model_registry.get_wishlist()
+        return web.json_response({
+            "wishlist": [m.to_dict() for m in wishlist],
+            "total": len(wishlist),
+        })
+
+    async def handle_registry_wishlist_add(self, request: web.Request) -> web.Response:
+        """POST /api/registry/wishlist/{name} — Ajouter un modèle à la wishlist."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        data = await request.json() if request.content_type == 'application/json' else {}
+        notes = data.get("notes", "") if isinstance(data, dict) else ""
+        card = self.model_registry.add_to_wishlist(name, notes=notes)
+        self.log_event("registry_wishlist", f"Model '{name}' added to wishlist")
+        return web.json_response({"wishlist": card.to_dict()}, status=201)
+
+    async def handle_registry_share(self, request: web.Request) -> web.Response:
+        """POST /api/registry/{name}/share — Marquer un modèle comme partagé dans le registre.
+        
+        Par défaut, les modèles cloud et wishlist ne sont PAS partageables.
+        Utiliser ?force=true pour forcer le partage d'un modèle cloud (à vos risques).
+        
+        ⚠️ ATTENTION : partager un modèle cloud sur le mesh public signifie que
+        d'autres nœuds peuvent rediriger des requêtes vers VOTRE clé API. Vous êtes
+        responsable de l'usage et des coûts générés. Le programme de raid/share prend
+        tout son sens quand plusieurs utilisateurs partagent leurs ressources cloud,
+        mais chacun le fait à ses propres risques.
+        """
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        force = request.query.get("force", "false").lower() == "true"
+        
+        # Vérifier le type de modèle avant de partager
+        card = self.model_registry.get_model(name)
+        if not card:
+            return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+        
+        # Avertissement si c'est un modèle cloud
+        is_cloud = card.source.value == "cloud" or name.endswith(":cloud") or ":cloud:" in name
+        if is_cloud and not force:
+            return web.json_response({
+                "error": f"Cloud model '{name}' cannot be shared on the public mesh by default",
+                "reason": "cloud_private_by_default",
+                "model": name,
+                "source": card.source.value,
+                "warning": "Sharing a cloud model means other nodes will route requests through YOUR API key. You are responsible for usage and costs.",
+                "hint": "Add ?force=true to override this policy at your own risk"
+            }, status=403)
+        
+        if self.model_registry.share_model(name, force=force):
+            log_msg = f"Model '{name}' shared on mesh"
+            if is_cloud and force:
+                log_msg += " (CLOUD MODEL — user acknowledged risk)"
+            self.log_event("registry_share", log_msg)
+            response = {"shared": name, "source": card.source.value}
+            if is_cloud:
+                response["warning"] = "You are sharing a cloud model on the public mesh. Other nodes will use YOUR API key. You are responsible for all costs incurred."
+                response["risk_acknowledged"] = True
+            return web.json_response(response)
+        return web.json_response({"error": f"Model '{name}' cannot be shared"}, status=400)
+
+    async def handle_registry_unshare(self, request: web.Request) -> web.Response:
+        """POST /api/registry/{name}/unshare — Arrêter le partage d'un modèle dans le registre."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        if self.model_registry.unshare_model(name):
+            self.log_event("registry_unshare", f"Model '{name}' unshared in registry")
+            return web.json_response({"unshared": name})
+        return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+
+    async def handle_registry_purge(self, request: web.Request) -> web.Response:
+        """POST /api/registry/purge — Purger les modèles mesh sans nœud actif depuis > 12 mois."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        try:
+            max_age_days = int(request.query.get("max_age_days", "365"))
+        except (ValueError, TypeError):
+            max_age_days = 365
+        purged = self.model_registry.purge_stale_models(max_age_days=max_age_days)
+        purged_names = [p.name for p in purged]
+        if purged_names:
+            self.log_event("registry_purge", f"Purged {len(purged_names)} stale mesh models: {purged_names}")
+        return web.json_response({
+            "purged": purged_names,
+            "count": len(purged_names),
+            "max_age_days": max_age_days,
+            "message": f"Purged {len(purged_names)} mesh models not seen in {max_age_days}+ days"
+        })
+
+    async def handle_registry_stale(self, request: web.Request) -> web.Response:
+        """GET /api/registry/stale — Vérifier les modèles proches de l'obsolescence."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        try:
+            max_age_days = int(request.query.get("max_age_days", "365"))
+        except (ValueError, TypeError):
+            max_age_days = 365
+        stale = self.model_registry.check_stale_models(max_age_days=max_age_days)
+        return web.json_response({
+            "stale": stale,
+            "count": len(stale),
+            "threshold_days": max_age_days,
+        })
+
     # --- Network endpoints ---
+
+    async def handle_network_sync_status(self, request: web.Request) -> web.Response:
+        """GET /api/network/sync — Statut de la synchronisation réseau."""
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        status = self.network_sync.get_sync_status()
+        # Ajouter le rapport des modèles manquants
+        status["missing_models"] = self.network_sync._find_missing_models() if self.model_registry else []
+        return web.json_response(status)
+
+    async def handle_network_sync_run(self, request: web.Request) -> web.Response:
+        """POST /api/network/sync — Lancer une synchronisation manuelle."""
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        results = await self.network_sync.full_sync()
+        self.log_event("network_sync", f"Manual sync: {results}")
+        return web.json_response(results)
+
+    async def handle_dns_list(self, request: web.Request) -> web.Response:
+        """GET /api/network/dns — Liste des nœuds du DNS dynamique.
+        
+        Query params:
+            active_only: bool — ne retourner que les nœuds actifs (défaut: true)
+            max_age_days: float — âge max en jours (défaut: 30)
+        """
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        active_only = request.query.get("active_only", "true").lower() == "true"
+        try:
+            max_age_days = float(request.query.get("max_age_days", str(NODE_STALE_THRESHOLD_DAYS)))
+        except (ValueError, TypeError):
+            max_age_days = NODE_STALE_THRESHOLD_DAYS
+        if active_only:
+            nodes = self.network_sync.dns.get_active_nodes(max_age_days=max_age_days)
+        else:
+            nodes = list(self.network_sync.dns._nodes.values())
+        return web.json_response({
+            "nodes": nodes,
+            "total": len(nodes),
+            "active_only": active_only,
+            "max_age_days": max_age_days,
+        })
+
+    async def handle_dns_stats(self, request: web.Request) -> web.Response:
+        """GET /api/network/dns/stats — Statistiques du DNS dynamique."""
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        return web.json_response(self.network_sync.dns.get_stats())
+
+    async def handle_missing_models(self, request: web.Request) -> web.Response:
+        """GET /api/network/missing — Modèles disponibles sur le mesh mais pas locaux."""
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        missing = self.network_sync._find_missing_models()
+        return web.json_response({
+            "missing_models": missing,
+            "count": len(missing),
+            "message": f"{len(missing)} model(s) available on mesh but not in local catalog",
+        })
 
     async def handle_network_private_peers(self, request: web.Request) -> web.Response:
         """GET /api/network/private/peers — List private network peers."""
@@ -3430,6 +4216,130 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         self.log_event("mesh", "Left public mesh")
         return web.json_response({"status": "left", "mesh_enabled": False})
 
+    # --- Model Networks endpoints (v5.2) ---
+
+    async def handle_model_networks_get(self, request: web.Request) -> web.Response:
+        """GET /api/model-networks — Get current model network configuration.
+        Returns private networks list and model permissions matrix.
+        Secrets are masked for security.
+        """
+        networks = self.model_networks.get("private_networks", [])
+        permissions = self.model_networks.get("model_permissions", {})
+
+        # Mask secrets in response
+        masked_networks = []
+        for net in networks:
+            masked_net = {"id": net["id"], "name": net["name"], "secret": "***" if net.get("secret") else ""}
+            masked_networks.append(masked_net)
+
+        return web.json_response({
+            "private_networks": masked_networks,
+            "model_permissions": permissions,
+            "local_models": self.local_models
+        })
+
+    async def handle_model_networks_save(self, request: web.Request) -> web.Response:
+        """POST /api/model-networks — Save model network configuration.
+        Accepts: private_networks (list of {id, name, secret}),
+             model_permissions (dict of model_name -> {share_private: [ids], use_private: [ids], share_public: bool, use_public: bool})
+        """
+        data = await request.json()
+
+        # Validate private_networks
+        private_networks = data.get("private_networks")
+        if private_networks is not None:
+            if not isinstance(private_networks, list):
+                return web.json_response({"error": "private_networks must be a list"}, status=400)
+            for net in private_networks:
+                if not isinstance(net, dict) or "id" not in net or "name" not in net:
+                    return web.json_response({"error": "Each network must have id and name"}, status=400)
+                net["id"] = int(net["id"])
+                net["name"] = str(net["name"])[:64]  # max 64 chars
+                # Generate secret if empty
+                if not net.get("secret") or net["secret"] == "***":
+                    # Keep existing secret if we're just updating name
+                    existing = [n for n in self.model_networks.get("private_networks", []) if n["id"] == net["id"]]
+                    if existing and existing[0].get("secret"):
+                        net["secret"] = existing[0]["secret"]
+                    else:
+                        import secrets as _secrets
+                        net["secret"] = _secrets.token_hex(32)
+                net["secret"] = str(net["secret"])[:128]  # max 128 chars
+            self.model_networks["private_networks"] = private_networks
+
+        # Validate model_permissions
+        model_permissions = data.get("model_permissions")
+        if model_permissions is not None:
+            if not isinstance(model_permissions, dict):
+                return web.json_response({"error": "model_permissions must be a dict"}, status=400)
+            # Validate each model's permissions
+            valid_network_ids = {n["id"] for n in self.model_networks.get("private_networks", [])}
+            cleaned = {}
+            for model_name, perms in model_permissions.items():
+                if not ALLOWED_MODEL_PATTERN.match(model_name):
+                    continue  # skip invalid model names
+                if not isinstance(perms, dict):
+                    continue
+                cleaned_perms = {}
+                for key in ("share_private", "use_private", "share_public", "use_public"):
+                    if key in perms:
+                        if key.endswith("_public"):
+                            cleaned_perms[key] = bool(perms[key])
+                        else:
+                            # List of network IDs
+                            val = perms[key]
+                            if isinstance(val, list):
+                                cleaned_perms[key] = [int(v) for v in val if int(v) in valid_network_ids]
+                            else:
+                                cleaned_perms[key] = []
+                cleaned[model_name] = cleaned_perms
+            self.model_networks["model_permissions"] = cleaned
+
+        self.config["model_networks"] = self.model_networks
+        self._persist_config()
+        self.log_event("model_networks", "Model network configuration saved")
+
+        # Return masked version
+        masked_networks = []
+        for net in self.model_networks.get("private_networks", []):
+            masked_networks.append({"id": net["id"], "name": net["name"], "secret": "***" if net.get("secret") else ""})
+
+        return web.json_response({
+            "status": "saved",
+            "private_networks": masked_networks,
+            "model_permissions": self.model_networks.get("model_permissions", {})
+        })
+
+    async def handle_model_networks_generate_secret(self, request: web.Request) -> web.Response:
+        """POST /api/model-networks/{network_id}/generate-secret — Generate a new secret for a private network.
+        Returns the new secret (shown once). The stored version is masked.
+        """
+        network_id = int(request.match_info['network_id'])
+        networks = self.model_networks.get("private_networks", [])
+        target = None
+        for net in networks:
+            if net["id"] == network_id:
+                target = net
+                break
+        if not target:
+            return web.json_response({"error": f"Network {network_id} not found"}, status=404)
+
+        import secrets as _secrets
+        new_secret = _secrets.token_hex(32)
+        target["secret"] = new_secret
+        self.model_networks["private_networks"] = networks
+        self.config["model_networks"] = self.model_networks
+        self._persist_config()
+        self.log_event("model_networks", f"Generated new secret for network '{target['name']}' (id={network_id})")
+
+        # Return the secret ONCE — it will be masked in subsequent GETs
+        return web.json_response({
+            "network_id": network_id,
+            "network_name": target["name"],
+            "secret": new_secret,
+            "warning": "Store this secret securely — it will not be shown again via API"
+        })
+
     # --- Config endpoints ---
 
     SECRET_KEYS = {"p2p_secret", "secret", "password", "token", "api_key", "private_key", "auth_key"}
@@ -3489,7 +4399,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
     def _persist_config(self):
         """Save current config to disk."""
         try:
-            config_dir = Path.home() / ".unitybrain" / "config"
+            config_dir = Path.home() / ".neuromesh" / "config"
             config_dir.mkdir(parents=True, exist_ok=True)
             config_path = config_dir / f"{self.node_name}.json"
             with open(config_path, 'w', encoding='utf-8') as f:
@@ -3498,6 +4408,108 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         except OSError as e:
             logger.error(f"Failed to persist config: {e}")
 
+
+    # ========================================================================
+
+    # v5.0.0: SPECIALIST ENDPOINTS
+    # ========================================================================
+
+    async def handle_specialties_list(self, request: web.Request) -> web.Response:
+        """GET /api/specialties — List all available specialties and their models."""
+        if not self.specialist_router:
+            return web.json_response({"error": "Specialist routing not available"}, status=501)
+        specialties = self.specialist_router.get_all_specialties()
+        return web.json_response({
+            "specialties": specialties,
+            "available_models": self.local_models,
+            "registered_profiles": list(self.specialist_router._profiles.keys()),
+        })
+
+    async def handle_specialty_models(self, request: web.Request) -> web.Response:
+        """GET /api/specialties/{name}/models — List models for a specific specialty."""
+        if not self.specialist_router:
+            return web.json_response({"error": "Specialist routing not available"}, status=501)
+        name = request.match_info.get('name', '')
+        try:
+            specialty = ModelSpecialty(name)
+        except ValueError:
+            valid = [s.value for s in ModelSpecialty]
+            return web.json_response({
+                "error": f"Unknown specialty '{name}'",
+                "valid_specialties": valid
+            }, status=400)
+        models = self.specialist_router.get_specialty_models(specialty)
+        return web.json_response({
+            "specialty": name,
+            "models": models,
+        })
+
+    async def handle_multi_model_query(self, request: web.Request) -> web.Response:
+        """POST /api/multi — Multi-model query with fusion strategies.
+        
+        Body: {
+            "prompt": "...",
+            "models": ["model1", "model2"],  // optional: force specific models
+            "specialties": ["code", "reasoning"],  // optional: select by specialties
+            "mode": "vote",  // single, vote, chain, fuse, compare, specialist
+            "strategy": "auto"  // underlying query strategy
+        }
+        """
+        if not self.specialist_router or not self.multi_model_executor:
+            return web.json_response({"error": "Specialist routing not available"}, status=501)
+
+        data = await request.json()
+        prompt = data.get("prompt", "")
+        mode_name = data.get("mode", "specialist")
+        models_param = data.get("models")
+        specialties_param = data.get("specialties")
+        strategy = data.get("strategy", "auto")
+
+        if not prompt or len(prompt) > MAX_PROMPT_LENGTH:
+            return web.json_response(
+                {"error": f"prompt must be 1-{MAX_PROMPT_LENGTH} characters"}, status=400)
+
+        # Parse mode
+        try:
+            mode = MultiModelMode(mode_name)
+        except ValueError:
+            valid = [m.value for m in MultiModelMode]
+            return web.json_response({
+                "error": f"Unknown mode '{mode_name}'",
+                "valid_modes": valid
+            }, status=400)
+
+        # Determine which models to use
+        if models_param:
+            selected = self.specialist_router.select_models_by_names(models_param)
+        elif specialties_param:
+            specs = []
+            for s in specialties_param:
+                try:
+                    specs.append(ModelSpecialty(s))
+                except ValueError:
+                    pass
+            selected = self.specialist_router.select_models_for_specialties(specs, self.local_models)
+        else:
+            # Auto-detect from prompt
+            routing = self.specialist_router.route(prompt, available=self.local_models)
+            selected = routing["models"]
+
+        if not selected:
+            selected = self.local_models[:1] if self.local_models else []
+
+        if not selected:
+            return web.json_response({"error": "No models available"}, status=503)
+
+        # Execute multi-model query
+        async def _query_one(model: str, p: str) -> dict:
+            return await self.query(p, model, strategy)
+
+        result = await self.multi_model_executor.execute(
+            prompt, selected, mode, query_fn=_query_one
+        )
+
+        return web.json_response(result.to_dict())
 
     # ========================================================================
 
@@ -3525,7 +4537,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         })
 
     async def handle_update_check(self, request: web.Request) -> web.Response:
-        """Check for UnityBrain updates."""
+        """Check for NeuroMesh updates."""
         update = await self.auto_updater.check()
         if update:
             return web.json_response({"update_available": True, **update})
@@ -3633,7 +4645,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
     # ========================================================================
 
     async def handle_websocket(self, request: web.Request) -> web.WebSocketResponse:
-        ws = web.WebSocketResponse(heartbeat=self.heartbeat_interval, max_msg_size=WS_MAX_MSG_SIZE)  # LOW-07
+        ws = web.WebSocketResponse(heartbeat=self.heartbeat_interval, max_msg_size=WS_MAX_MSG_SIZE)  # LOW-07: Limit WS message size
         await ws.prepare(request)
 
         client_id = str(uuid.uuid4())[:8]
@@ -4146,21 +5158,21 @@ async def main():
     import signal
 
     node_name = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    # Search for config: ~/.unitybrain first, then relative to script
-    home_config = Path.home() / ".unitybrain" / "config" / f"{node_name}.json"
+    # Search for config: ~/.neuromesh first, then relative to script
+    home_config = Path.home() / ".neuromesh" / "config" / f"{node_name}.json"
     script_config = Path(__file__).parent.parent / "config" / f"{node_name}.json"
     config_path = home_config if home_config.exists() else script_config
     config = load_config(str(config_path))
     if len(sys.argv) > 1:
         config["node_name"] = node_name
 
-    brain = UnityBrain(config)
+    brain = NeuroMesh(config)
     await brain.initialize()
 
     shutdown_event = asyncio.Event()
 
     def _signal_handler():
-        logger.info("🛑 UnityBrain shutting down...")
+        logger.info("🛑 NeuroMesh shutting down...")
         shutdown_event.set()
 
     loop = asyncio.get_running_loop()
@@ -4170,19 +5182,24 @@ async def main():
     app = await brain.create_app()
     runner = web.AppRunner(app)
     await runner.setup()
-    # LOW-03: TLS support — use SSLContext if cert/key are provided
+    # LOW-03: TLS support via environment variables
     ssl_context = None
-    if TLS_CERT_FILE and TLS_KEY_FILE and os.path.isfile(TLS_CERT_FILE) and os.path.isfile(TLS_KEY_FILE):
+    cert_path = os.environ.get('NEUROMESH_CERT')
+    key_path = os.environ.get('NEUROMESH_KEY')
+    if cert_path and key_path:
         import ssl
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        ssl_context.load_cert_chain(TLS_CERT_FILE, TLS_KEY_FILE)
-        logger.info(f"🔒 TLS enabled — cert: {TLS_CERT_FILE}")
-    else:
-        if brain.host != '127.0.0.1' and brain.host != 'localhost':
-            logger.warning("⚠️  LOW-03: Running without TLS on public interface — set UNITYBRAIN_CERT and UNITYBRAIN_KEY")
-    site = web.TCPSite(runner, brain.host, brain.port, reuse_address=True, reuse_port=True, ssl_context=ssl_context)
+        ssl_context.load_cert_chain(cert_path, key_path)
+        logger.info(f"🔒 TLS enabled: {cert_path}")
+    elif cert_path or key_path:
+        logger.warning("⚠️  NEUROMESH_CERT or NEUROMESH_KEY missing — TLS not enabled")
+    elif brain.host not in ('127.0.0.1', 'localhost', '::1'):
+        logger.warning("⚠️  Running on public interface without TLS! Set NEUROMESH_CERT and NEUROMESH_KEY env vars.")
+
+    site = web.TCPSite(runner, brain.host, brain.port, reuse_address=True, reuse_port=True,
+                        ssl_context=ssl_context)
     await site.start()
-    logger.info(f"🌐 UnityBrain v{brain.version} on http://{brain.host}:{brain.port}")
+    logger.info(f"🌐 NeuroMesh v{brain.version} on http://{brain.host}:{brain.port}")
     brain.log_event("server", f"Listening on {brain.host}:{brain.port}")
 
     if brain.stealth_mode:
@@ -4219,10 +5236,26 @@ async def main():
     brain.systray.write_pid(os.getpid())
     logger.info(f"🖥️ Daemon PID: {os.getpid()}")
 
+    # v5.0.0: Start resource guard monitor
+    if brain.resource_guard:
+        logger.info(f"🛡️ Resource Guard: {brain.resource_guard._state.value}")
+
+    # v5.0.0: Start tracker client announce loop
+    if brain.tracker_client:
+        asyncio.create_task(brain.tracker_client.announce_loop())
+        asyncio.create_task(brain.tracker_client.discover_loop())
+        logger.info(f"🌐 Tracker Client: announcing to mesh")
+
     await shutdown_event.wait()
 
     logger.info("Cleaning up...")
     brain.heartbeat_running = False
+    # v5.0.0: Stop resource guard
+    if brain.resource_guard:
+        await brain.resource_guard.stop()
+    # v5.0.0: Stop tracker client
+    if brain.tracker_client:
+        await brain.tracker_client.stop()
     for task in tasks:
         task.cancel()
     await asyncio.gather(*tasks, return_exceptions=True)
@@ -4234,11 +5267,11 @@ async def main():
         except Exception:
             pass
     await runner.cleanup()
-    logger.info("UnityBrain stopped.")
+    logger.info("NeuroMesh stopped.")
 
 
 if __name__ == '__main__':
     import sys
     node = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    logger.info(f"Starting UnityBrain v4.1.5 as '{node}'")
+    logger.info(f"Starting NeuroMesh v5.0.0 as '{node}'")
     asyncio.run(main())

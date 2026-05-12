@@ -1,6 +1,6 @@
-# UnityBrain v5 — Configuration Reference
+# NeuroMesh v5 — Configuration Reference
 
-> Complete reference for all configuration options in UnityBrain v5.  
+> Complete reference for all configuration options in NeuroMesh v5.  
 > Config files: `bug-v5.json`, `pinky-v5.json`
 
 ---
@@ -11,7 +11,7 @@
 2. Edit `node_name`, `host`, `port`, and `peers` for your node
 3. Set `P2P_SECRET` environment variable (replaces the old `p2p_secret` field)
 4. Optionally enable `public_mesh` (disabled by default)
-5. Run: `P2P_SECRET=your-secret python3 src/unitybrain_v5.py --config config/my-node-v5.json`
+5. Run: `P2P_SECRET=your-secret python3 src/neuromesh_v5.py --config config/my-node-v5.json`
 
 ---
 
@@ -130,7 +130,7 @@ How often to check peer health and attempt reconnection.
 ```
 
 ### `tailscale_auto_discovery` (boolean, default: `true`)
-Automatically discover other UnityBrain nodes on the same Tailscale network.
+Automatically discover other NeuroMesh nodes on the same Tailscale network.
 ```json
 "tailscale_auto_discovery": true
 ```
@@ -208,7 +208,7 @@ Static peer definitions for the private P2P network.
 ### `seed_nodes` (array of strings, default: `[]`)
 Additional seed nodes for bootstrapping discovery beyond static peers and Tailscale.
 ```json
-"seed_nodes": ["https://seed1.unitybrain.ai", "https://seed2.unitybrain.ai"]
+"seed_nodes": ["https://seed1.neuromesh.ai", "https://seed2.neuromesh.ai"]
 ```
 
 ---
@@ -255,20 +255,20 @@ Default time-to-live for memory entries before they expire.
 
 ## 🆕 Public Mesh (v5)
 
-The public mesh allows your node to join the global UnityBrain network and share compute resources with other nodes worldwide. **Disabled by default — opt-in.**
+The public mesh allows your node to join the global NeuroMesh network and share compute resources with other nodes worldwide. **Disabled by default — opt-in.**
 
 ### `public_mesh.enabled` (boolean, default: `false`)
-Enable connection to the public UnityBrain mesh. When false, the node only operates on the private P2P network.
+Enable connection to the public NeuroMesh mesh. When false, the node only operates on the private P2P network.
 ```json
 "public_mesh": {
   "enabled": false
 }
 ```
 
-### `public_mesh.tracker_url` (string, default: `"https://tracker.unitybrain.ai"`)
+### `public_mesh.tracker_url` (string, default: `"https://tracker.neuromesh.ai"`)
 URL of the public tracker server. The tracker helps nodes discover each other and coordinates capabilities announcements.
 ```json
-"tracker_url": "https://tracker.unitybrain.ai"
+"tracker_url": "https://tracker.neuromesh.ai"
 ```
 
 ### `public_mesh.max_ram_share_mb` (integer, default: `2048`)
@@ -348,10 +348,10 @@ Enable local conversation persistence. When enabled, all conversations are auto-
 }
 ```
 
-### `conversation_store.storage_dir` (string, default: `"~/.unitybrain/conversations"`)
+### `conversation_store.storage_dir` (string, default: `"~/.neuromesh/conversations"`)
 Directory where conversations are stored on disk. Expanded at runtime (`~` resolves to the user's home directory).
 ```json
-"storage_dir": "~/.unitybrain/conversations"
+"storage_dir": "~/.neuromesh/conversations"
 ```
 
 ### `conversation_store.encryption` (boolean, default: `false`)
@@ -398,8 +398,8 @@ Enable full-text search across conversations. Allows finding past conversations 
 | `P2P_SECRET` | **Yes** (v5) | Secret for private P2P network authentication. Replaces `p2p_secret` in config. **Must be set via env var, not config file.** |
 | `OPENAI_API_KEY` | No | API key for OpenAI provider (if used) |
 | `ANTHROPIC_API_KEY` | No | API key for Anthropic provider (if used) |
-| `UNITYBRAIN_LOG_LEVEL` | No | Override log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
-| `UNITYBRAIN_CONFIG` | No | Path to config file (default: `config/bug-v5.json`) |
+| `NEUROMESH_LOG_LEVEL` | No | Override log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+| `NEUROMESH_CONFIG` | No | Path to config file (default: `config/bug-v5.json`) |
 
 ---
 
@@ -444,7 +444,7 @@ Enable full-text search across conversations. Allows finding past conversations 
   "discovery_interval": 300,
   "public_mesh": {
     "enabled": false,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,
@@ -456,7 +456,7 @@ Enable full-text search across conversations. Allows finding past conversations 
   },
   "conversation_store": {
     "enabled": true,
-    "storage_dir": "~/.unitybrain/conversations",
+    "storage_dir": "~/.neuromesh/conversations",
     "encryption": false,
     "max_conversation_size_mb": 100,
     "default_privacy": "private",
@@ -478,4 +478,4 @@ Enable full-text search across conversations. Allows finding past conversations 
 
 ---
 
-*Generated for UnityBrain v5 — Public Mesh Architecture*
+*Generated for NeuroMesh v5 — Public Mesh Architecture*

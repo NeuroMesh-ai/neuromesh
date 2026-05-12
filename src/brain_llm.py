@@ -2,7 +2,7 @@
 """
 brain.llm — Core Engine v5.2
 ========================
-Main orchestrator for distributed LLM reasoning across the UnityBrain P2P network.
+Main orchestrator for distributed LLM reasoning across the NeuroMesh P2P network.
 
 Coordinates:
 - Model routing (local → cloud → P2P fallback)
@@ -12,7 +12,7 @@ Coordinates:
 - Context from PersistentMemory
 - Credit/bandwidth awareness (checks before P2P queries)
 
-No external dependencies beyond Python stdlib + aiohttp (already in UnityBrain).
+No external dependencies beyond Python stdlib + aiohttp (already in NeuroMesh).
 """
 
 import asyncio
@@ -84,12 +84,12 @@ class BrainLLM:
         self.available_models: Dict[str, ModelInfo] = {}
         self.query_history: List[Dict] = []
         self._running = False
-        # P2P secret for auth — same as UnityBrain
+        # P2P secret for auth — same as NeuroMesh
         self.p2p_secret = os.environ.get("P2P_SECRET", "")
         if not self.p2p_secret:
-            # Try loading from UnityBrain config
+            # Try loading from NeuroMesh config
             try:
-                config_path = Path.home() / ".unitybrain" / "config" / f"{node_name}.json"
+                config_path = Path.home() / ".neuromesh" / "config" / f"{node_name}.json"
                 if config_path.exists():
                     with open(config_path) as f:
                         cfg = json.load(f)
@@ -102,7 +102,7 @@ class BrainLLM:
 
     def _auth_headers(self, path: str = "/api/query") -> Dict[str, str]:
         """Generate signed auth headers for P2P requests (v5.2).
-        Uses HMAC with P2P secret, matching UnityBrain's _auth_headers().
+        Uses HMAC with P2P secret, matching NeuroMesh's _auth_headers().
         """
         if not self.p2p_secret:
             # No secret configured — try without auth (will be rejected by secure nodes)
@@ -114,9 +114,9 @@ class BrainLLM:
             self.p2p_secret.encode(), msg.encode(), hashlib.sha256
         ).hexdigest()
         return {
-            "X-UnityBrain-Auth": sig,
-            "X-UnityBrain-TS": ts,
-            "X-UnityBrain-Node": self.node_name,
+            "X-NeuroMesh-Auth": sig,
+            "X-NeuroMesh-TS": ts,
+            "X-NeuroMesh-Node": self.node_name,
             "Content-Type": "application/json",
         }
 

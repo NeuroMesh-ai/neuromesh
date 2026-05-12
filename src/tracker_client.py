@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🌐 UNITYBRAIN v5 — Tracker Client
+🌐 NEUROMESH v5 — Tracker Client
 ===================================
 Public mesh tracker client: announce, discover, and maintain a list of
 public mesh nodes with contribution scores.
@@ -26,7 +26,7 @@ from typing import List, Dict, Any, Optional, Set
 from collections import deque
 from pathlib import Path
 
-logger = logging.getLogger('UnityBrain.TrackerClient')
+logger = logging.getLogger('NeuroMesh.TrackerClient')
 
 # ============================================================================
 # CONSTANTS
@@ -284,7 +284,7 @@ class TrackerClient:
     def __init__(self, identity, config: Dict = None):
         """
         Args:
-            identity: NodeIdentity instance (from unitybrain_v5) — provides Ed25519 signing
+            identity: NodeIdentity instance (from neuromesh_v5) — provides Ed25519 signing
             config: dict with public_mesh configuration
         """
         self.identity = identity
@@ -635,10 +635,10 @@ class TrackerClient:
 
             headers = {
                 'Content-Type': 'application/json',
-                'X-UnityBrain-Node': self.identity.name,
-                'X-UnityBrain-Key': self.identity.public_key_hex,
-                'X-UnityBrain-TS': ts,
-                'X-UnityBrain-Sig': sig,
+                'X-NeuroMesh-Node': self.identity.name,
+                'X-NeuroMesh-Key': self.identity.public_key_hex,
+                'X-NeuroMesh-TS': ts,
+                'X-NeuroMesh-Sig': sig,
             }
 
             async with self._session.post(
@@ -702,10 +702,10 @@ class TrackerClient:
             sig = self.identity.sign(challenge)
 
             headers = {
-                'X-UnityBrain-Node': self.identity.name,
-                'X-UnityBrain-Key': self.identity.public_key_hex,
-                'X-UnityBrain-TS': ts,
-                'X-UnityBrain-Sig': sig,
+                'X-NeuroMesh-Node': self.identity.name,
+                'X-NeuroMesh-Key': self.identity.public_key_hex,
+                'X-NeuroMesh-TS': ts,
+                'X-NeuroMesh-Sig': sig,
             }
 
             async with self._session.get(
@@ -810,7 +810,7 @@ class TrackerClient:
     def update_own_config(self, address: str = None, cpu_cores: int = 0,
                           ram_total_mb: int = 0, max_model_category: str = ''):
         """Update the node's own capabilities for the next announcement.
-        Called by the main UnityBrain class after detecting hardware."""
+        Called by the main NeuroMesh class after detecting hardware."""
         # Store extra info that gets included in next announcement
         self._own_address = address or getattr(self, '_own_address', '')
         self._own_cpu_cores = cpu_cores

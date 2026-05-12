@@ -1,4 +1,4 @@
-# 🔒 UnityBrain v4 — Ré-Audit de Sécurité
+# 🔒 NeuroMesh v4 — Ré-Audit de Sécurité
 
 **Date:** 2026-05-12  
 **Auditeur:** Pinky 🩷 (avec DeepSeek-V4-Flash pour le premier passage)  
@@ -73,7 +73,7 @@ L'audit original (3 CRITICAL, 6 HIGH, 7 MEDIUM, 8 LOW = 24 failles) a été corr
 
 **Type:** Race condition / Auth bypass  
 **Sévérité:** HAUTE  
-**Fichier:** `unitybrain_v4.py` — `_verify_auth()`, `_used_nonces`
+**Fichier:** `neuromesh_v4.py` — `_verify_auth()`, `_used_nonces`
 
 Le `_used_nonces` est un `deque(maxlen=10000)` utilisé dans `_verify_auth()` qui est appelé depuis des handlers asyncio concurrents. Bien que Python asyncio soit single-threaded pour les coroutines, si deux requêtes arrivent simultanément et que l'une est préemptée (I/O, await), la deque peut être modifiée pendant l'itération.
 
@@ -129,7 +129,7 @@ if not await self._check_and_add_nonce(nonce): return None
 
 **Type:** Feature incomplète  
 **Sévérité:** MOYENNE  
-**Fichier:** `unitybrain_v4.py` — `TokenBlacklist`, `_verify_auth()`
+**Fichier:** `neuromesh_v4.py` — `TokenBlacklist`, `_verify_auth()`
 
 La classe `TokenBlacklist` est créée et intégrée dans `_verify_auth()`, mais **aucun endpoint ni mécanisme ne permet de révoquer un token**. La méthode `revoke()` existe mais n'est jamais appelée dans le code.
 
@@ -148,7 +148,7 @@ Le `cleanup()` n'est jamais appelé périodiquement.
 
 **Type:** Auth bypass  
 **Sévérité:** MOYENNE  
-**Fichier:** `unitybrain_v4.py` — `_ws_authenticate()`
+**Fichier:** `neuromesh_v4.py` — `_ws_authenticate()`
 
 L'authentification WebSocket HMAC vérifie le signature mais n'a **aucune vérification de timestamp** ni de nonce :
 
@@ -184,7 +184,7 @@ if hmac_sig and hmac_ts:
 
 **Type:** DoS / Resource exhaustion  
 **Sévérité:** MOYENNE  
-**Fichier:** `unitybrain_v4.py` — `merge_from_sync()`
+**Fichier:** `neuromesh_v4.py` — `merge_from_sync()`
 
 La validation MED-04 ajoute `MAX_KEY_LENGTH`, `MAX_VALUE_SIZE`, `MAX_TTL`, mais **ne limite pas le nombre d'entrées** qu'un pair peut pousser en une seule requête. Un pair malicieux peut envoyer un dictionnaire avec des dizaines de milliers d'entrées valides (chacune < 100KB), consommant toute la mémoire.
 
@@ -214,7 +214,7 @@ Et ajouter un `MAX_MEMORY_ENTRIES` global pour limiter la taille totale du store
 
 **Type:** XSS mitigation incomplète  
 **Sévérité:** Basse  
-**Fichier:** `unitybrain_v4.py` — `CSP_HEADER`
+**Fichier:** `neuromesh_v4.py` — `CSP_HEADER`
 
 Le CSP header inclut `'unsafe-inline'` pour les scripts et styles :
 ```
@@ -239,7 +239,7 @@ Ou, si le dashboard est seulement localhost, documenter que le CSP est un best-e
 
 **Type:** Information leak / Auth weakness  
 **Sévérité:** Basse  
-**Fichier:** `unitybrain_v4.py` — `NodeIdentity.__init__()`, ligne 671
+**Fichier:** `neuromesh_v4.py` — `NodeIdentity.__init__()`, ligne 671
 
 ```python
 else:
@@ -307,5 +307,5 @@ Les 24 fixes originales ont éliminé toutes les failles critiques et élevées.
 
 ---
 
-*Ré-audit effectué par Pinky 🩷 — UnityBrain Security*  
+*Ré-audit effectué par Pinky 🩷 — NeuroMesh Security*  
 *Après correction complète des 24 failles originales par Bug 🐛, DeepSeek-V4-Flash, et Pinky 🩷*

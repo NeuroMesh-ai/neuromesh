@@ -8,7 +8,7 @@
 Simuler un **utilisateur réel** qui:
 - N'a PAS le code source
 - N'a PAS l'environnement de développement
-- Doit installer et utiliser BugBrain "from scratch"
+- Doit installer et utiliser NeuroMeshBug "from scratch"
 - Donne un feedback utilisateur authentique
 
 ---
@@ -17,11 +17,11 @@ Simuler un **utilisateur réel** qui:
 
 ### SCÉNARIO 1: Installation Fraîche
 
-**But:** Installer BugBrain sur une machine vierge
+**But:** Installer NeuroMeshBug sur une machine vierge
 
 **Étapes:**
-1. Cloner le repo depuis GitHub: `git clone https://github.com/unitybrain-ai/unitybrain.git`
-2. Entrer dans le répertoire: `cd Unitybrain`
+1. Cloner le repo depuis GitHub: `git clone https://github.com/NeuroMesh-ai/neuromesh.git`
+2. Entrer dans le répertoire: `cd NeuroMesh`
 3. Installer les dépendances: `pip install -r requirements.txt --break-system-packages`
 4. Installer les dépendances d'autonomie: `pip install -r requirements_autonomy.txt --break-system-packages`
 5. Installer Ollama: `curl -fsSL https://ollama.ai/install.sh | sh`
@@ -35,7 +35,7 @@ Simuler un **utilisateur réel** qui:
 
 ### SCÉNARIO 2: Setup Interactif
 
-**But:** Configurer BugBrain via le setup guidé
+**But:** Configurer NeuroMeshBug via le setup guidé
 
 **Étapes:**
 1. Lancer le setup: `python3 scripts/setup_interactive.py`
@@ -58,7 +58,7 @@ Simuler un **utilisateur réel** qui:
 
 ### SCÉNARIO 3: Auto-Support
 
-**But:** Tester que BugBrain répond aux questions
+**But:** Tester que NeuroMeshBug répond aux questions
 
 **Étapes:**
 1. Lancer l'auto-support: `python3 -m src.auto_support`
@@ -150,7 +150,7 @@ Simuler un **utilisateur réel** qui:
 **But:** Tester l'orchestration complète
 
 **Étapes:**
-1. Lancer en mode autonome: `python3 -m src.bugbrain_autonomy`
+1. Lancer en mode autonome: `python3 -m src.neuromesh_bug_autonomy`
 2. Choisir "start"
 3. Observer pendant 5 minutes:
    - Monitoring actif
@@ -190,10 +190,10 @@ Simuler un **utilisateur réel** qui:
 
 **Étapes:**
 1. Lire le guide: `cat docs/GUIDE_USB_BOOTABLE.md`
-2. Créer une clé USB (si possible): `sudo ./scripts/create_bugbrain_usb.sh /dev/sdX`
+2. Créer une clé USB (si possible): `sudo ./scripts/create_neuromesh_bug_usb.sh /dev/sdX`
 3. Boot sur la clé USB
 4. Observer le menu GRUB
-5. Lancer BugBrain automatiquement
+5. Lancer NeuroMeshBug automatiquement
 
 **Questions à Pinky:**
 - ❓ Le guide est-il clair ?
@@ -225,7 +225,7 @@ Pour chaque scénario, Pinky doit noter:
 - Quoi ajouter ?
 
 ### 4. **Impression Générale**
-- BugBrain est-il facile à utiliser ?
+- NeuroMeshBug est-il facile à utiliser ?
 - Est-il prêt pour la publication ?
 - L'utiliserais-tu au quotidien ?
 
@@ -233,7 +233,7 @@ Pour chaque scénario, Pinky doit noter:
 
 ## 🎯 CRITÈRES DE VALIDATION
 
-BugBrain v3.5 est **PRÊT POUR PUBLICATION** si:
+NeuroMeshBug v3.5 est **PRÊT POUR PUBLICATION** si:
 
 - ✅ Pinky peut installer sans aide
 - ✅ Le setup interactif fonctionne
@@ -241,7 +241,7 @@ BugBrain v3.5 est **PRÊT POUR PUBLICATION** si:
 - ✅ Tous les modules d'autonomie fonctionnent
 - ✅ Aucun bug bloquant
 - ✅ Expérience utilisateur ≥ 4/5 étoiles
-- ✅ Pinky recommanderait BugBrain
+- ✅ Pinky recommanderait NeuroMeshBug
 
 ---
 
@@ -268,7 +268,7 @@ BugBrain v3.5 est **PRÊT POUR PUBLICATION** si:
 ## 🎯 Expérience Globale
 - Note: X/5 ⭐
 - Prêt pour publication: OUI/NON
-- Recommanderais-tu BugBrain: OUI/NON
+- Recommanderais-tu NeuroMeshBug: OUI/NON
 
 ## 💡 Améliorations Suggérées
 ...
@@ -299,10 +299,10 @@ BugBrain v3.5 est **PRÊT POUR PUBLICATION** si:
 
 ## 🎯 OBJECTIF FINAL
 
-Consolider BugBrain v3.5 avec un **feedback utilisateur authentique** et **s'assurer qu'il est vraiment prêt pour la publication** !
+Consolider NeuroMeshBug v3.5 avec un **feedback utilisateur authentique** et **s'assurer qu'il est vraiment prêt pour la publication** !
 
 ---
 
 _Ce plan est prêt quand Pinky revient dans 20-30 minutes !_
 
-_Généré par BugBrain 🐛 avec l'idée géniale de Denis !_
+_Généré par NeuroMeshBug 🐛 avec l'idée géniale de Denis !_

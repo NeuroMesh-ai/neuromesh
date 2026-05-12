@@ -1,6 +1,6 @@
-# 💰 Soutenir UnityBrain
+# 💰 Soutenir NeuroMesh
 
-UnityBrain est un projet **100% open source** et **100% décentralisé**. Pas de premium, pas de features verrouillées, pas de mining caché. Libre, pour tout le monde.
+NeuroMesh est un projet **100% open source** et **100% décentralisé**. Pas de premium, pas de features verrouillées, pas de mining caché. Libre, pour tout le monde.
 
 Si ce projet vous est utile et que vous voulez soutenir son développement, les donations sont les bienvenues.
 
@@ -16,7 +16,7 @@ bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x
 
 ## 🤝 Sponsoring
 
-Les entreprises ou contributeurs qui souhaitent sponsoriser UnityBrain reçoivent en échange :
+Les entreprises ou contributeurs qui souhaitent sponsoriser NeuroMesh reçoivent en échange :
 - Mention dans le README
 - Logo dans les releases
 - Visibilité sur le repo GitHub

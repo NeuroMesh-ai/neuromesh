@@ -1,5 +1,5 @@
 /**
- * UnityBrain Desktop — Main Application (Vanilla JS)
+ * NeuroMesh Desktop — Main Application (Vanilla JS)
  * No frameworks. Just clean, functional JavaScript.
  * Full i18n support via i18n module.
  */
@@ -311,15 +311,15 @@
             container.innerHTML = `
                 <div class="chat-welcome">
                     <div class="welcome-icon">🧠</div>
-                    <h2>${UnityBrainAPI.sanitize(t('chat.welcomeTitle'))}</h2>
-                    <p>${UnityBrainAPI.sanitize(t('chat.welcomeText'))}</p>
+                    <h2>${NeuroMeshAPI.sanitize(t('chat.welcomeTitle'))}</h2>
+                    <p>${NeuroMeshAPI.sanitize(t('chat.welcomeText'))}</p>
                 </div>`;
             return;
         }
 
         container.innerHTML = conv.messages.map(msg => {
             if (msg.role === 'user') {
-                return `<div class="msg user">${UnityBrainAPI.sanitize(msg.content)}</div>`;
+                return `<div class="msg user">${NeuroMeshAPI.sanitize(msg.content)}</div>`;
             } else {
                 const meta = [];
                 if (msg.model) meta.push(msg.model);
@@ -331,14 +331,14 @@
                 if (msg.tokens) meta.push(t('chat.tokens', { n: msg.tokens }));
                 
                 // Format multi-model responses
-                let content = UnityBrainAPI.renderMarkdown(msg.content);
+                let content = NeuroMeshAPI.renderMarkdown(msg.content);
                 if (msg.responses && Object.keys(msg.responses).length > 1) {
                     // Show individual model responses in compare/fuse mode
                     const responsesHtml = Object.entries(msg.responses).map(([model, resp]) => {
                         const shortName = model.split(':')[0].split('/').pop();
                         return `<div class="multi-response">
-                            <div class="multi-response-header">🤖 ${UnityBrainAPI.sanitize(shortName)}</div>
-                            <div class="multi-response-body">${UnityBrainAPI.renderMarkdown(resp)}</div>
+                            <div class="multi-response-header">🤖 ${NeuroMeshAPI.sanitize(shortName)}</div>
+                            <div class="multi-response-body">${NeuroMeshAPI.renderMarkdown(resp)}</div>
                         </div>`;
                     }).join('\n');
                     content = responsesHtml;
@@ -346,7 +346,7 @@
                 
                 return `<div class="msg assistant">
                     ${content}
-                    ${meta.length ? `<div class="msg-meta">${UnityBrainAPI.sanitize(meta.join(' | '))}</div>` : ''}
+                    ${meta.length ? `<div class="msg-meta">${NeuroMeshAPI.sanitize(meta.join(' | '))}</div>` : ''}
                 </div>`;
             }
         }).join('');
@@ -386,11 +386,11 @@
         list.innerHTML = state.conversations.map(conv => {
             const isActive = conv.id === state.activeConversation;
             const timeStr = formatTime(conv.created);
-            return `<div class="conv-item ${isActive ? 'active' : ''}" data-id="${UnityBrainAPI.sanitize(conv.id)}">
+            return `<div class="conv-item ${isActive ? 'active' : ''}" data-id="${NeuroMeshAPI.sanitize(conv.id)}">
                 <span class="conv-icon">📝</span>
-                <span class="conv-title">${UnityBrainAPI.sanitize(conv.title)}</span>
-                <span class="conv-time">${UnityBrainAPI.sanitize(timeStr)}</span>
-                <span class="conv-delete" data-delete="${UnityBrainAPI.sanitize(conv.id)}" title="${t('chat.deleteConversation')}">✕</span>
+                <span class="conv-title">${NeuroMeshAPI.sanitize(conv.title)}</span>
+                <span class="conv-time">${NeuroMeshAPI.sanitize(timeStr)}</span>
+                <span class="conv-delete" data-delete="${NeuroMeshAPI.sanitize(conv.id)}" title="${t('chat.deleteConversation')}">✕</span>
             </div>`;
         }).join('');
 
@@ -421,8 +421,8 @@
             const latency = m.latency ? `${m.latency}ms` : '';
             return `<div class="model-item">
                 <span class="model-dot ${dotClass}"></span>
-                <span class="model-name">${UnityBrainAPI.sanitize(m.name || m)}</span>
-                ${latency ? `<span class="model-latency">${UnityBrainAPI.sanitize(latency)}</span>` : ''}
+                <span class="model-name">${NeuroMeshAPI.sanitize(m.name || m)}</span>
+                ${latency ? `<span class="model-latency">${NeuroMeshAPI.sanitize(latency)}</span>` : ''}
             </div>`;
         }).join('');
     }
@@ -454,11 +454,11 @@
             const size = m.size_mb ? `${m.size_mb} MB` : '';
             return `<div class="model-share-item">
                 <span class="model-dot ${shared ? 'local' : 'offline'}"></span>
-                <span class="model-share-name">${UnityBrainAPI.sanitize(name)}</span>
-                ${size ? `<span class="model-share-size">${UnityBrainAPI.sanitize(size)}</span>` : ''}
+                <span class="model-share-name">${NeuroMeshAPI.sanitize(name)}</span>
+                ${size ? `<span class="model-share-size">${NeuroMeshAPI.sanitize(size)}</span>` : ''}
                 <span class="model-share-status ${shared ? 'shared' : 'not-shared'}">${shared ? t('share.shared') : t('share.notShared')}</span>
                 <button class="btn btn-sm ${shared ? 'btn-danger' : 'btn-primary'}"
-                        data-model="${UnityBrainAPI.sanitize(name)}"
+                        data-model="${NeuroMeshAPI.sanitize(name)}"
                         data-action="${shared ? 'unshare' : 'share'}">
                     ${shared ? t('share.stop') : t('share.share')}
                 </button>
@@ -659,11 +659,11 @@
                 <div class="peer-card">
                     <div class="peer-name">
                         <span class="status-indicator online" style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;"></span>
-                        ${UnityBrainAPI.sanitize(p.name || p.host)}
+                        ${NeuroMeshAPI.sanitize(p.name || p.host)}
                     </div>
                     <div class="peer-status">
-                        ${UnityBrainAPI.sanitize(p.host)}:${UnityBrainAPI.sanitize(String(p.port || 8081))}
-                        ${p.latency ? ` · ${UnityBrainAPI.sanitize(String(Math.round(p.latency)))}ms` : ''}
+                        ${NeuroMeshAPI.sanitize(p.host)}:${NeuroMeshAPI.sanitize(String(p.port || 8081))}
+                        ${p.latency ? ` · ${NeuroMeshAPI.sanitize(String(Math.round(p.latency)))}ms` : ''}
                     </div>
                 </div>`).join('');
         }
@@ -680,12 +680,12 @@
 
             meshList.innerHTML = meshNodes.map(n => `
                 <div class="mesh-node-card">
-                    <div class="node-name">${UnityBrainAPI.sanitize(n.name || t('network.unknownNode'))}</div>
+                    <div class="node-name">${NeuroMeshAPI.sanitize(n.name || t('network.unknownNode'))}</div>
                     <div class="node-info">
-                        <span>${t('share.cpu')}: ${UnityBrainAPI.sanitize(String(n.capabilities?.cpu_cores || '?'))} ${t('network.cores')}</span>
-                        <span>RAM: ${UnityBrainAPI.sanitize(String(n.capabilities?.ram_share_mb || '?'))} MB</span>
-                        ${n.score ? `<span>${t('network.score')}: ${UnityBrainAPI.sanitize(String(n.score))}</span>` : ''}
-                        ${n.latency ? `<span>${t('network.latency')}: ${UnityBrainAPI.sanitize(String(Math.round(n.latency)))}ms</span>` : ''}
+                        <span>${t('share.cpu')}: ${NeuroMeshAPI.sanitize(String(n.capabilities?.cpu_cores || '?'))} ${t('network.cores')}</span>
+                        <span>RAM: ${NeuroMeshAPI.sanitize(String(n.capabilities?.ram_share_mb || '?'))} MB</span>
+                        ${n.score ? `<span>${t('network.score')}: ${NeuroMeshAPI.sanitize(String(n.score))}</span>` : ''}
+                        ${n.latency ? `<span>${t('network.latency')}: ${NeuroMeshAPI.sanitize(String(Math.round(n.latency)))}ms</span>` : ''}
                     </div>
                 </div>`).join('');
         } else {
@@ -740,7 +740,7 @@
                 ${t('network.inviteText')}
             </p>
             <div style="background:var(--bg-input);padding:12px;border-radius:6px;font-family:var(--font-mono);word-break:break-all;font-size:0.85rem;">
-                ${UnityBrainAPI.sanitize(inviteCode)}
+                ${NeuroMeshAPI.sanitize(inviteCode)}
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="modalCopyBtn">${t('network.copy')}</button>
@@ -766,7 +766,7 @@
                 $('#cfgNodeName').value = cfg.node_name || status.node_name || '';
                 $('#cfgP2PSecret').value = '••••••••••••';
                 $('#cfgMeshEnabled').checked = cfg.public_mesh?.enabled || false;
-                $('#cfgTracker').value = cfg.public_mesh?.tracker_url || 'https://tracker.unitybrain.ai';
+                $('#cfgTracker').value = cfg.public_mesh?.tracker_url || 'https://tracker.neuromesh.ai';
                 $('#cfgPriority').value = cfg.public_mesh?.priority || 'local_first';
                 $('#cfgStealth').checked = cfg.stealth_mode || false;
                 $('#cfgAutoPause').checked = cfg.auto_pause !== false;
@@ -1155,7 +1155,7 @@
 
         // Build table
         const netHeaders = networks.map(n =>
-            `<th class="col-share-private">📤<br><span class="network-header">${UnityBrainAPI.sanitize(n.name)}</span></th>\n<th class="col-use-private">📥<br><span class="network-header">${UnityBrainAPI.sanitize(n.name)}</span></th>`
+            `<th class="col-share-private">📤<br><span class="network-header">${NeuroMeshAPI.sanitize(n.name)}</span></th>\n<th class="col-use-private">📥<br><span class="network-header">${NeuroMeshAPI.sanitize(n.name)}</span></th>`
         ).join('\n');
 
         let rows = '';
@@ -1174,7 +1174,7 @@
             }
 
             rows += `<tr>
-                <td title="${UnityBrainAPI.sanitize(model)}">${UnityBrainAPI.sanitize(model)}</td>
+                <td title="${NeuroMeshAPI.sanitize(model)}">${NeuroMeshAPI.sanitize(model)}</td>
                 ${netCols}
                 <td class="col-share-public"><input type="checkbox" id="perm-${model}-share-public" ${sharePub ? 'checked' : ''}></td>
                 <td class="col-use-public"><input type="checkbox" id="perm-${model}-use-public" ${usePub ? 'checked' : ''}></td>
@@ -1213,7 +1213,7 @@
             const secretDisplay = net.secret ? '<code>••••••••</code>' : '<code style="color:var(--text-muted)">Non défini</code>';
             rows += `<tr data-network-id="${net.id}">
                 <td style="text-align:center;font-weight:600;">#${net.id}</td>
-                <td><input type="text" class="network-name-input" data-network-id="${net.id}" value="${UnityBrainAPI.sanitize(net.name)}" placeholder="Nom du réseau"></td>
+                <td><input type="text" class="network-name-input" data-network-id="${net.id}" value="${NeuroMeshAPI.sanitize(net.name)}" placeholder="Nom du réseau"></td>
                 <td>
                     <div class="secret-field">
                         ${secretDisplay}

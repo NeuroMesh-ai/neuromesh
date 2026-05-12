@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-💰 CREDIT SYSTEM — UnityBrain v5.2
+💰 CREDIT SYSTEM — NeuroMesh v5.2
 ====================================
 
 Système de crédits pour les requêtes sur le mesh.
@@ -47,7 +47,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Optional, List, Tuple
 from enum import Enum
 
-logger = logging.getLogger('UnityBrain.Credits')
+logger = logging.getLogger('NeuroMesh.Credits')
 
 
 class CreditTier(Enum):
@@ -129,7 +129,7 @@ class CreditAccount:
 
 
 class CreditSystem:
-    """Système de crédits pour le mesh UnityBrain.
+    """Système de crédits pour le mesh NeuroMesh.
 
     Principe: comme un forfait mobile.
     - Chaque nœud a un compte de crédits

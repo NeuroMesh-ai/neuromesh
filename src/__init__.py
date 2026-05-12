@@ -1,11 +1,11 @@
 """
-UnityBrain v5.1.0
+NeuroMesh v5.1.0
 """
 
 __version__ = "5.1.0"
 __author__ = "Bug & Pinky 🐛🩷"
 __license__ = "MIT"
 
-from .unitybrain_v5 import UnityBrain
+from .neuromesh_v5 import NeuroMesh
 
-__all__ = ["UnityBrain", "__version__"]
+__all__ = ["NeuroMesh", "__version__"]

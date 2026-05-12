@@ -1,8 +1,8 @@
 ## Hacker News (Show HN)
 
-**Title:** Show HN: UnityBrain – P2P distributed AI network, no central server
+**Title:** Show HN: NeuroMesh – P2P distributed AI network, no central server
 
-I built UnityBrain to connect my local AI machines into a P2P network without any central server. Each node runs a lightweight Python server (aiohttp) and discovers peers via Tailscale or static config.
+I built NeuroMesh to connect my local AI machines into a P2P network without any central server. Each node runs a lightweight Python server (aiohttp) and discovers peers via Tailscale or static config.
 
 - CRDT memory sync with gossip propagation (no merge conflicts)
 - WebSocket real-time P2P communication
@@ -17,4 +17,4 @@ The interesting technical bits: CRDT with vector clocks for conflict-free memory
 
 Currently running on two machines at home (one WSL2, one ThinkPad over Tailscale). Would be curious to hear from anyone who's tried similar P2P approaches for AI workloads.
 
-https://github.com/unitybrain-ai/unitybrain
+https://github.com/NeuroMesh-ai/neuromesh

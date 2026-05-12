@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "UnityBrain سطح المكتب",
+        "title": "NeuroMesh سطح المكتب",
         "version": "v{version}"
     },
     "header": {
@@ -27,7 +27,7 @@
         "ram": "الذاكرة"
     },
     "chat": {
-        "welcomeTitle": "UnityBrain",
+        "welcomeTitle": "NeuroMesh",
         "welcomeText": "شبكة ذكاء اصطناعي P2P موزعة. اطرح سؤالاً أو ابدأ محادثة.",
         "placeholder": "اكتب رسالتك…",
         "send": "▶",
@@ -137,7 +137,7 @@
         "ipRequired": "عنوان IP مطلوب",
         "peerAdded": "تمت إضافة النظير {name} (قريباً)",
         "inviteTitle": "🔑 دعوة",
-        "inviteText": "شارك هذا الرمز مع عقدة UnityBrain أخرى للاتصال:",
+        "inviteText": "شارك هذا الرمز مع عقدة NeuroMesh أخرى للاتصال:",
         "copy": "📋 نسخ",
         "close": "إغلاق"
     },
@@ -156,7 +156,7 @@
         "publicMesh": "🌐 شبكة عامة",
         "enableMesh": "تفعيل الشبكة العامة",
         "tracker": "المتتبع",
-        "trackerPlaceholder": "https://tracker.unitybrain.ai",
+        "trackerPlaceholder": "https://tracker.neuromesh.ai",
         "priority": "الأولوية",
         "priorityLocalFirst": "المحلي أولاً",
         "priorityMeshFirst": "الشبكة أولاً",

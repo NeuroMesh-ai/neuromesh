@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "UnityBrain デスクトップ",
+        "title": "NeuroMesh デスクトップ",
         "version": "v{version}"
     },
     "header": {
@@ -27,7 +27,7 @@
         "ram": "RAM"
     },
     "chat": {
-        "welcomeTitle": "UnityBrain",
+        "welcomeTitle": "NeuroMesh",
         "welcomeText": "分散型P2P AIネットワーク。質問するか会話を始めましょう。",
         "placeholder": "メッセージを入力…",
         "send": "▶",
@@ -137,7 +137,7 @@
         "ipRequired": "IPアドレスが必要です",
         "peerAdded": "ピア {name} を追加しました（近日対応）",
         "inviteTitle": "🔑 招待",
-        "inviteText": "このコードを他のUnityBrainノードと共有して接続：",
+        "inviteText": "このコードを他のNeuroMeshノードと共有して接続：",
         "copy": "📋 コピー",
         "close": "閉じる"
     },
@@ -156,7 +156,7 @@
         "publicMesh": "🌐 パブリックメッシュ",
         "enableMesh": "パブリックメッシュを有効化",
         "tracker": "トラッカー",
-        "trackerPlaceholder": "https://tracker.unitybrain.ai",
+        "trackerPlaceholder": "https://tracker.neuromesh.ai",
         "priority": "優先度",
         "priorityLocalFirst": "ローカル優先",
         "priorityMeshFirst": "メッシュ優先",

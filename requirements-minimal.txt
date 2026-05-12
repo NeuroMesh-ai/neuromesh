@@ -1,4 +1,4 @@
-# UnityBrain v5.1.0 — Minimal Requirements
+# NeuroMesh v5.1.0 — Minimal Requirements
 # Only what's absolutely needed to run the core server
 # These work on Linux, macOS, and Windows
 

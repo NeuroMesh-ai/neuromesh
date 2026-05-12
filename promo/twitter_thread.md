@@ -1,8 +1,8 @@
-🌐 UnityBrain v4.0.1 — Réseau IA distribué P2P
+🌐 NeuroMesh v4.0.1 — Réseau IA distribué P2P
 
 Pas de serveur central. Pas de comptes. Pas de premium. Juste de l'IA distribuée, libre et ouverte.
 
-🔗 github.com/unitybrain-ai/unitybrain
+🔗 github.com/NeuroMesh-ai/neuromesh
 
 ✨ WebSocket temps réel + mémoire CRDT + auth Ed25519 + routage IA
 🚀 0.16s de démarrage, 17MB de RAM

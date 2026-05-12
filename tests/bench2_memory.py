@@ -11,7 +11,7 @@ def hmac_headers(path, secret):
     ts = str(time.time())
     msg = f"{path}:{ts}"
     sig = hmac.new(secret.encode(), msg.encode(), hashlib.sha256).hexdigest()
-    return {'X-UnityBrain-Auth': sig, 'X-UnityBrain-TS': ts, 'Content-Type': 'application/json'}
+    return {'X-NeuroMesh-Auth': sig, 'X-NeuroMesh-TS': ts, 'Content-Type': 'application/json'}
 
 def post(url, data, headers=None, timeout=30):
     body = json.dumps(data).encode()

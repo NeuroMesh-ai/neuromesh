@@ -15,12 +15,12 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.unitybrain_v3_final import UnityBrain
-from src.bugbrain_v3_final import BugBrain
+from src.neuromesh_v3_final import NeuroMesh
+from src.neuromesh_bug_v3_final import NeuroMeshBug
 
 # 10 requêtes de test (version réduite)
 TEST_QUERIES_SHORT = [
-    "Qu'est-ce que UnityBrain v3.0 ?",
+    "Qu'est-ce que NeuroMesh v3.0 ?",
     "Comment fonctionne le P2P Network ?",
     "Écris une fonction Python pour calculer une factorielle",
     "Qu'est-ce qu'un LLM ?",
@@ -191,44 +191,44 @@ async def main():
 
     os.makedirs("output", exist_ok=True)
 
-    # UnityBrain
-    print("\n🌐 UnityBrain v3.0")
-    unitybrain = UnityBrain()
-    await unitybrain.initialize()
+    # NeuroMesh
+    print("\n🌐 NeuroMesh v3.0")
+    neuromesh = NeuroMesh()
+    await neuromesh.initialize()
 
-    runner = BenchmarkRunner("UnityBrain")
+    runner = BenchmarkRunner("NeuroMesh")
     async def query_func(prompt, model):
-        return await unitybrain.query(prompt, model=model)
+        return await neuromesh.query(prompt, model=model)
 
     stats = await runner.run_benchmark(query_func, TEST_QUERIES_SHORT, LLMS_TO_TEST)
     runner.print_stats(stats)
-    runner.save_results("output/unitybrain_quick.json")
+    runner.save_results("output/neuromesh_quick.json")
 
     await asyncio.sleep(1)
 
-    # BugBrain
-    print("\n🧠 BugBrain v3.0")
-    bugbrain = BugBrain()
-    await bugbrain.initialize()
+    # NeuroMeshBug
+    print("\n🧠 NeuroMeshBug v3.0")
+    neuromesh_bug = NeuroMeshBug()
+    await neuromesh_bug.initialize()
 
-    runner2 = BenchmarkRunner("BugBrain")
+    runner2 = BenchmarkRunner("NeuroMeshBug")
     async def query_func2(prompt, model):
-        return await bugbrain.query(prompt)
+        return await neuromesh_bug.query(prompt)
 
     stats2 = await runner2.run_benchmark(query_func2, TEST_QUERIES_SHORT, LLMS_TO_TEST)
     runner2.print_stats(stats2)
-    runner2.save_results("output/bugbrain_quick.json")
+    runner2.save_results("output/neuromesh_bug_quick.json")
 
     # Comparaison
     print("\n" + "=" * 70)
     print("📊 COMPARAISON")
     print("=" * 70)
     print(f"\nSuccess Rate:")
-    print(f"   UnityBrain: {stats.success_rate:.2%}")
-    print(f"   BugBrain: {stats2.success_rate:.2%}")
+    print(f"   NeuroMesh: {stats.success_rate:.2%}")
+    print(f"   NeuroMeshBug: {stats2.success_rate:.2%}")
     print(f"\nLatence moyenne:")
-    print(f"   UnityBrain: {stats.avg_latency:.1f}ms")
-    print(f"   BugBrain: {stats2.avg_latency:.1f}ms")
+    print(f"   NeuroMesh: {stats.avg_latency:.1f}ms")
+    print(f"   NeuroMeshBug: {stats2.avg_latency:.1f}ms")
 
     print("\n✅ TERMINÉ !")
 

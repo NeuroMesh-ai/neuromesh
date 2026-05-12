@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Exemple 1: UnityBrain Simple Query
+Exemple 1: NeuroMesh Simple Query
 """
 
 import asyncio
@@ -10,18 +10,18 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.unitybrain_v3_final import UnityBrain, Peer
+from src.neuromesh_v3_final import NeuroMesh, Peer
 
 
 async def main():
     """Exemple simple"""
 
     print("=" * 70)
-    print("EXEMPLE 1: UnityBrain - Requête Simple")
+    print("EXEMPLE 1: NeuroMesh - Requête Simple")
     print("=" * 70)
 
-    # Créer UnityBrain
-    unitybrain = UnityBrain()
+    # Créer NeuroMesh
+    neuromesh = NeuroMesh()
 
     # Ajouter un peer local
     peer = Peer(
@@ -31,15 +31,15 @@ async def main():
         models=["SmolLM2:1.7b", "phi3:mini"]
     )
 
-    await unitybrain.add_peer(peer)
+    await neuromesh.add_peer(peer)
 
     # Initialiser
     print("\n⚙️ Initialisation...")
-    await unitybrain.initialize()
+    await neuromesh.initialize()
 
     # Faire une requête
-    print("\n📝 Requête: 'Qu'est-ce que UnityBrain ?'")
-    result = await unitybrain.query("Qu'est-ce que UnityBrain ?")
+    print("\n📝 Requête: 'Qu'est-ce que NeuroMesh ?'")
+    result = await neuromesh.query("Qu'est-ce que NeuroMesh ?")
 
     if result["status"] == "success":
         print(f"\n✅ Succès !")
@@ -52,8 +52,8 @@ async def main():
 
     # Statistiques
     print(f"\n📊 Statistiques:")
-    print(f"   Queries: {len(unitybrain.query_history.queries)}")
-    print(f"   Peers: {len(unitybrain.peers)}")
+    print(f"   Queries: {len(neuromesh.query_history.queries)}")
+    print(f"   Peers: {len(neuromesh.peers)}")
 
 
 if __name__ == '__main__':

@@ -1,10 +1,10 @@
-# UnityBrain — Vision : Intelligence Distribuée et Alignement
+# NeuroMesh — Vision : Intelligence Distribuée et Alignement
 
 ## La Thèse
 
 Un nœud seul est spécialisé. Un réseau de nœuds est **généraliste**.
 
-UnityBrain ne fait pas que partager des modèles IA — il les **compose**. Quand un nœud avec Deepseek-Coder réfléchit à du code, un nœud avec GPT-4o analyse le contexte global, et un nœud avec Claude vérifie la cohérence éthique, le résultat est supérieur à n'importe lequel individuellement.
+NeuroMesh ne fait pas que partager des modèles IA — il les **compose**. Quand un nœud avec Deepseek-Coder réfléchit à du code, un nœud avec GPT-4o analyse le contexte global, et un nœud avec Claude vérifie la cohérence éthique, le résultat est supérieur à n'importe lequel individuellement.
 
 **C'est l'émergence** : la somme des intelligences spécialisées produit une intelligence générale.
 
@@ -74,20 +74,20 @@ L'alignement est le point le plus sensible car :
 └─────────────────────────────────────────────────────┘
 ```
 
-### Principes d'Alignement pour UnityBrain
+### Principes d'Alignement pour NeuroMesh
 
 1. **Aucun nœud n'a le monopole de la vérité** — chaque réponse est le fruit d'un consensus
 2. **La mémoire CRDT stocke les corrections** — si un modèle dit quelque chose d'incorrect, le réseau s'en souvient
 3. **Les biais sont détectables** — quand les modèles divergent, c'est un signal qu'il faut investiguer
 4. **L'utilisateur garde le contrôle** — `share_ai: true/false`, `stealth_mode`, choix des providers
 
-### Ce que l'alignement N'EST PAS dans UnityBrain
+### Ce que l'alignement N'EST PAS dans NeuroMesh
 
 - ❌ Un modèle unique qui "sait" ce qui est bien
 - ❌ Une autorité centrale qui décide
 - ❌ Un filtre qui censure
 
-### Ce que l'alignement EST dans UnityBrain
+### Ce que l'alignement EST dans NeuroMesh
 
 - ✅ La diversité des perspectives (modèles de créateurs différents)
 - ✅ La convergence comme signal de fiabilité

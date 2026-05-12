@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tests for UnityBrain v5 Tracker Client
+Tests for NeuroMesh v5 Tracker Client
 =========================================
 Tests cover:
   - Announcement building & sanitization

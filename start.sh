@@ -1,5 +1,5 @@
 #!/bin/bash
-# UnityBrain Start — loads .env and starts the node
+# NeuroMesh Start — loads .env and starts the node
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
@@ -15,7 +15,7 @@ NODE=${1:-pinky}
 cd "$SCRIPT_DIR/src"
 
 if [ "$2" = "cli" ]; then
-    exec python3 unitybrain_cli.py "$NODE"
+    exec python3 neuromesh_cli.py "$NODE"
 fi
 
-exec python3 unitybrain_v4.py "$NODE"
+exec python3 neuromesh_v4.py "$NODE"

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧠 ADAPTIVE SCHEDULER — UnityBrain v5
+🧠 ADAPTIVE SCHEDULER — NeuroMesh v5
 ========================================
 
 Decides resource management strategy automatically based on the number of
@@ -34,7 +34,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Any, Tuple, Set
 from dataclasses import dataclass, field
 
-logger = logging.getLogger('UnityBrain.AdaptiveScheduler')
+logger = logging.getLogger('NeuroMesh.AdaptiveScheduler')
 
 # ============================================================================
 # CONSTANTS

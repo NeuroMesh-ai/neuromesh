@@ -15,7 +15,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.bugbrain_v3_final import BugBrain
+from src.neuromesh_bug_v3_final import NeuroMeshBug
 
 # Questions de niveau intermédiaire (réalisables par nos modèles)
 INTERMEDIATE_QUERIES = [
@@ -83,10 +83,10 @@ class IntermediateBenchmark:
         for model in MODELS:
             print(f"\n🤖 Testing model: {model}")
 
-            # Créer BugBrain avec le modèle
-            bugbrain = BugBrain()
-            bugbrain.model = model
-            await bugbrain.initialize()
+            # Créer NeuroMeshBug avec le modèle
+            neuromesh_bug = NeuroMeshBug()
+            neuromesh_bug.model = model
+            await neuromesh_bug.initialize()
 
             for i, query in enumerate(INTERMEDIATE_QUERIES):
                 print(f"\n   [{i+1}/{len(INTERMEDIATE_QUERIES)}] {query[:50]}...")
@@ -94,7 +94,7 @@ class IntermediateBenchmark:
                 start = time.time()
 
                 try:
-                    result = await bugbrain.query(query)
+                    result = await neuromesh_bug.query(query)
                     latency = (time.time() - start) * 1000
 
                     response = result.get("response", "")

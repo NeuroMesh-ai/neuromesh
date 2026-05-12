@@ -1,11 +1,11 @@
-# 🧵 Twitter/X Thread — UnityBrain v4.0.1 (English)
+# 🧵 Twitter/X Thread — NeuroMesh v4.0.1 (English)
 
 1/7
-🌐 UnityBrain v4.0.1 is out!
+🌐 NeuroMesh v4.0.1 is out!
 
 A lightweight P2P distributed AI network. No central server. No accounts. No premium. Just machines talking to each other, sharing AI models and memory.
 
-github.com/unitybrain-ai/unitybrain
+github.com/NeuroMesh-ai/neuromesh
 
 2/7
 How it works:
@@ -52,7 +52,7 @@ Docs in 3 languages:
 Because decentralized AI shouldn't have language barriers.
 
 7/7
-⭐ Star the repo: github.com/unitybrain-ai/unitybrain
+⭐ Star the repo: github.com/NeuroMesh-ai/neuromesh
 🐛 Bug reports & contributions welcome
 ₿ BTC: bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x
 

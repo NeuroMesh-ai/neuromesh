@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-📚 MODEL REGISTRY — UnityBrain v5.2
+📚 MODEL REGISTRY — NeuroMesh v5.2
 =====================================
 Catalogue de modèles avec métadonnées riches.
 
@@ -30,13 +30,13 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 
-logger = logging.getLogger('UnityBrain.ModelRegistry')
+logger = logging.getLogger('NeuroMesh.ModelRegistry')
 
 # ============================================================================
 # CONSTANTES
 # ============================================================================
 
-DEFAULT_BASE_DIR = os.path.expanduser("~/.unitybrain")
+DEFAULT_BASE_DIR = os.path.expanduser("~/.neuromesh")
 REGISTRY_FILE = "model_registry.json"
 CATALOG_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "model_catalog.json")
 CATALOG_HASH_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "model_catalog.sha256")
@@ -577,11 +577,11 @@ def _load_catalog_from_file() -> List[Dict[str, Any]]:
     
     L'ordre de priorité:
     - config/model_catalog.json (catalogue de référence, hash vérifié)
-    - ~/.unitybrain/model_catalog.json (override utilisateur, hash vérifié si présent)
+    - ~/.neuromesh/model_catalog.json (override utilisateur, hash vérifié si présent)
     """
     catalog_paths = [
         CATALOG_FILE,  # config/model_catalog.json à côté du code
-        os.path.join(os.path.expanduser("~/.unitybrain"), "model_catalog.json"),  # override utilisateur
+        os.path.join(os.path.expanduser("~/.neuromesh"), "model_catalog.json"),  # override utilisateur
     ]
     
     for path in catalog_paths:
@@ -986,7 +986,7 @@ class ModelRegistry:
         models = sorted(self._cards.values(), key=lambda m: (-m.quality_rating, m.name))
         if format_type == "markdown":
             lines = [
-                "# 📚 Catalogue des Modèles UnityBrain\n",
+                "# 📚 Catalogue des Modèles NeuroMesh\n",
                 f"**{len(models)} modèles** | ",
                 f"🏠 Local: {sum(1 for m in models if m.source == ModelSource.LOCAL)} | ",
                 f"🌐 Mesh: {sum(1 for m in models if m.source == ModelSource.MESH)} | ",
@@ -1017,7 +1017,7 @@ class ModelRegistry:
             return "\n".join(lines)
         # Format texte
         lines = [
-            "📚 Catalogue des Modèles UnityBrain",
+            "📚 Catalogue des Modèles NeuroMesh",
             "=" * 50,
             f"Total: {len(models)} modèles",
             f"🏠 Local: {sum(1 for m in models if m.source == ModelSource.LOCAL)}",
@@ -1171,7 +1171,7 @@ def main():
     """CLI interface for the Model Registry."""
     import argparse
     parser = argparse.ArgumentParser(
-        description='📚 UnityBrain Model Registry',
+        description='📚 NeuroMesh Model Registry',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Commands:

@@ -1,8 +1,8 @@
-# 🔧 BUGBRAIN USB BOOTABLE - Guide de Création
+# 🔧 NEUROMESH_BUG USB BOOTABLE - Guide de Création
 
 ## 🎯 Objectif
 
-Créer une clé USB bootable avec BugBrain/UnityBrain préinstallé - **plug & play** sur n'importe quelle machine !
+Créer une clé USB bootable avec NeuroMeshBug/NeuroMesh préinstallé - **plug & play** sur n'importe quelle machine !
 
 ---
 
@@ -42,11 +42,11 @@ lsblk
 ### Étape 2: Exécuter le script
 
 ```bash
-cd /home/user/.openclaw/workspace/Unitybrain/scripts
+cd /home/user/.openclaw/workspace/NeuroMesh/scripts
 
-sudo chmod +x create_bugbrain_usb.sh
+sudo chmod +x create_neuromesh_bug_usb.sh
 
-sudo ./create_bugbrain_usb.sh /dev/sdX
+sudo ./create_neuromesh_bug_usb.sh /dev/sdX
 ```
 
 Remplacez `/dev/sdX` par votre périphérique (ex: `/dev/sdb`).
@@ -55,7 +55,7 @@ Remplacez `/dev/sdX` par votre périphérique (ex: `/dev/sdb`).
 
 Le script va:
 1. ✅ Créer l'image ISO
-2. ✅ Copier BugBrain
+2. ✅ Copier NeuroMeshBug
 3. ✅ Configurer GRUB
 4. ✅ Écrire sur la clé USB
 5. ✅ Nettoyer les fichiers temporaires
@@ -70,7 +70,7 @@ Le script va:
 
 Depuis GitHub:
 ```bash
-wget https://github.com/unitybrain-ai/unitybrain/releases/download/v3.0.0/bugbrain-3.0.0.iso
+wget https://github.com/NeuroMesh-ai/neuromesh/releases/download/v3.0.0/neuromesh_bug-3.0.0.iso
 ```
 
 ### Étape 2: Graver sur la clé USB
@@ -81,7 +81,7 @@ wget https://github.com/unitybrain-ai/unitybrain/releases/download/v3.0.0/bugbra
 lsblk
 
 # Graver
-sudo dd if=bugbrain-3.0.0.iso of=/dev/sdX bs=4M status=progress conv=fdatasync
+sudo dd if=neuromesh_bug-3.0.0.iso of=/dev/sdX bs=4M status=progress conv=fdatasync
 ```
 
 #### Mac:
@@ -90,7 +90,7 @@ sudo dd if=bugbrain-3.0.0.iso of=/dev/sdX bs=4M status=progress conv=fdatasync
 diskutil list
 
 # Graver
-sudo dd if=bugbrain-3.0.0.iso of=/dev/rdiskX bs=4m
+sudo dd if=neuromesh_bug-3.0.0.iso of=/dev/rdiskX bs=4m
 ```
 
 #### Windows:
@@ -105,10 +105,10 @@ Utiliser **Rufus** ou **Etcher**:
 ## 💾 Contenu de la Clé USB
 
 ```
-📁 bugbrain-usb/
+📁 neuromesh_bug-usb/
 ├─ 📄 README.txt                   (Instructions)
-├─ 🚀 start_bugbrain.sh            (Démarrage auto)
-├─ 📁 Unitybrain/                  (Code source)
+├─ 🚀 start_neuromesh_bug.sh            (Démarrage auto)
+├─ 📁 NeuroMesh/                  (Code source)
 │  ├─ 📄 README.md
 │  ├─ 📁 src/
 │  ├─ 📁 docs/
@@ -141,11 +141,11 @@ Utiliser **Rufus** ou **Etcher**:
 Au démarrage, vous verrez le menu GRUB:
 
 ```
-🐛 BugBrain v3.0 - Boot Menu
+🐛 NeuroMeshBug v3.0 - Boot Menu
 ================================
 
-1. 🐛 BugBrain v3.0 - Démarrage automatique
-2. 🐛 BugBrain v3.0 - Démarrage (verbose)
+1. 🐛 NeuroMeshBug v3.0 - Démarrage automatique
+2. 🐛 NeuroMeshBug v3.0 - Démarrage (verbose)
 3. 🔧 Setup interactif
 4. 💻 Shell (dépannage)
 ```
@@ -154,10 +154,10 @@ Choisissez l'option souhaitée.
 
 ### 3. Démarrage Automatique
 
-BugBrain va:
+NeuroMeshBug va:
 1. 🧠 Démarrer Ollama (si non installé)
 2. 📥 Télécharger les modèles (SmolLM2:1.7b, phi3:mini)
-3. 🚀 Lancer BugBrain
+3. 🚀 Lancer NeuroMeshBug
 4. 🌐 Se connecter au réseau P2P
 
 **Premier démarrage:** ~10-15 minutes (téléchargement des modèles)
@@ -165,10 +165,10 @@ BugBrain va:
 
 ### 4. Setup Interactif
 
-Pour configurer BugBrain:
+Pour configurer NeuroMeshBug:
 
 ```bash
-cd /rootfs/Unitybrain
+cd /rootfs/NeuroMesh
 
 python3 scripts/setup_interactive.py
 ```
@@ -183,12 +183,12 @@ Le setup va vous guider pour:
 
 ### 5. Utilisation
 
-Pour utiliser BugBrain:
+Pour utiliser NeuroMeshBug:
 
 ```bash
-cd /rootfs/Unitybrain
+cd /rootfs/NeuroMesh
 
-python3 -m src.bugbrain_v3_final
+python3 -m src.neuromesh_bug_v3_final
 ```
 
 Ou utilisez les exemples:
@@ -200,8 +200,8 @@ python3 examples/example1_simple_query.py
 # Ensemble query
 python3 examples/example2_ensemble_query.py
 
-# BugBrain emancipation
-python3 examples/example3_bugbrain_emancipation.py
+# NeuroMeshBug emancipation
+python3 examples/example3_neuromesh_bug_emancipation.py
 ```
 
 ### 6. Auto-Support
@@ -209,12 +209,12 @@ python3 examples/example3_bugbrain_emancipation.py
 Pour poser des questions de support:
 
 ```bash
-cd /rootfs/Unitybrain
+cd /rootfs/NeuroMesh
 
 python3 -m src.auto_support
 ```
 
-BugBrain répondra lui-même à vos questions !
+NeuroMeshBug répondra lui-même à vos questions !
 
 ---
 
@@ -281,28 +281,28 @@ ping -c 4 google.com
 ### 1. Démonstration rapide
 - Insérer la clé USB
 - Boot
-- BugBrain démarre automatiquement
+- NeuroMeshBug démarre automatiquement
 - Prêt en 30 secondes
 
 ### 2. Atelier/Formation
 - Distribuer des clés USB aux participants
 - Chacun boot sur sa clé
-- BugBrain prêt à l'usage immédiat
+- NeuroMeshBug prêt à l'usage immédiat
 
 ### 3. Test sans installation
-- Tester BugBrain sans l'installer
+- Tester NeuroMeshBug sans l'installer
 - Aucun risque pour la machine hôte
 - Retrait de la clé = suppression complète
 
 ### 4. Dépannage
 - Démarrer sur une machine problématique
-- Utiliser BugBrain pour diagnostiquer
+- Utiliser NeuroMeshBug pour diagnostiquer
 - Auto-support intégré
 
 ### 5. Production (si persistant)
-- Installer BugBrain sur le disque dur
+- Installer NeuroMeshBug sur le disque dur
 - Configurer pour démarrage automatique
-- BugBrain devient un service
+- NeuroMeshBug devient un service
 
 ---
 
@@ -310,7 +310,7 @@ ping -c 4 google.com
 
 1. **Sauvegarder la configuration:**
    ```bash
-   cp /rootfs/Unitybrain/config.json /rootfs/config_backup.json
+   cp /rootfs/NeuroMesh/config.json /rootfs/config_backup.json
    ```
 
 2. **Personnaliser le menu GRUB:**
@@ -325,16 +325,16 @@ ping -c 4 google.com
 
 4. **Logs:**
    ```bash
-   # Voir les logs de BugBrain
-   tail -f /rootfs/Unitybrain/logs/bugbrain.log
+   # Voir les logs de NeuroMeshBug
+   tail -f /rootfs/NeuroMesh/logs/neuromesh_bug.log
 
    # Voir les logs d'auto-support
-   tail -f /rootfs/Unitybrain/logs/auto_support.log
+   tail -f /rootfs/NeuroMesh/logs/auto_support.log
    ```
 
 5. **Mettre à jour:**
    ```bash
-   cd /rootfs/Unitybrain
+   cd /rootfs/NeuroMesh
    git pull
    ```
 
@@ -342,7 +342,7 @@ ping -c 4 google.com
 
 ## 🔒 Sécurité
 
-- ✅ BugBrain tourne en mode "live" - aucun changement persistant
+- ✅ NeuroMeshBug tourne en mode "live" - aucun changement persistant
 - ✅ Modèles téléchargés depuis Ollama officiel
 - ✅ Pas de données sensibles sur la clé USB
 - ✅ Réseau P2P sécurisé (signatures Ed25519)
@@ -351,15 +351,15 @@ ping -c 4 google.com
 
 ## 📞 Support
 
-Questions ? **BugBrain répond lui-même !**
+Questions ? **NeuroMeshBug répond lui-même !**
 
 ```bash
 python3 -m src.auto_support
 ```
 
 Ou consulter la documentation:
-- `/rootfs/Unitybrain/README.md`
-- `/rootfs/Unitybrain/docs/`
+- `/rootfs/NeuroMesh/README.md`
+- `/rootfs/NeuroMesh/docs/`
 
 ---
 
@@ -375,5 +375,5 @@ Après avoir testé la clé USB:
 
 ---
 
-_Créé par BugBrain 🐛 avec l'idée géniale de Denis Houet_
+_Créé par NeuroMeshBug 🐛 avec l'idée géniale de Denis Houet_
 _Plug & Play sur n'importe quelle machine !_

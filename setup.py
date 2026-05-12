@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-UnityBrain v4.1.5 — Setup & Install
+NeuroMesh v4.1.5 — Setup & Install
 
-Installe UnityBrain sur n'importe quelle machine Linux/macOS.
+Installe NeuroMesh sur n'importe quelle machine Linux/macOS.
 Pas besoin d'OpenClaw. Juste Python 3.8+ et Ollama.
 
 Usage:
@@ -23,9 +23,9 @@ from pathlib import Path
 # CONFIG
 # ============================================================================
 
-INSTALL_DIR = Path.home() / ".unitybrain"
+INSTALL_DIR = Path.home() / ".neuromesh"
 BIN_DIR = Path.home() / ".local" / "bin"
-SERVICE_FILE = Path.home() / ".config" / "systemd" / "user" / "unitybrain.service"
+SERVICE_FILE = Path.home() / ".config" / "systemd" / "user" / "neuromesh.service"
 
 REQUIREMENTS = [
     ("aiohttp", "aiofootp>=3.9.0", "aiohttp-3.9.0-py3-none-any.whl"),  # MED-06: pinned
@@ -79,7 +79,7 @@ def check_ollama():
         except:
             pass
     print(c("yellow", "⚠️  Ollama not detected — install it: https://ollama.com"))
-    print(c("dim", "   UnityBrain needs Ollama for local AI models"))
+    print(c("dim", "   NeuroMesh needs Ollama for local AI models"))
     return False
 
 
@@ -136,16 +136,16 @@ def install_pip_deps():
 
 
 def copy_files():
-    """Copy UnityBrain files to install directory"""
+    """Copy NeuroMesh files to install directory"""
     print()
-    print(c("bold", "📁 Installing UnityBrain..."))
+    print(c("bold", "📁 Installing NeuroMesh..."))
 
     # Create dirs
     for d in ["src", "config", "logs"]:
         (INSTALL_DIR / d).mkdir(parents=True, exist_ok=True)
 
     # Copy source
-    src_files = ["unitybrain_v4.py", "unitybrain_cli.py", "__init__.py"]
+    src_files = ["neuromesh_v4.py", "neuromesh_cli.py", "__init__.py"]
     for f in src_files:
         src = SCRIPT_DIR / "src" / f
         if src.exists():
@@ -240,10 +240,10 @@ def create_bin_wrapper(node_name):
     """Create CLI wrapper in ~/.local/bin"""
     BIN_DIR.mkdir(parents=True, exist_ok=True)
 
-    # unitybrain command
-    wrapper = BIN_DIR / "unitybrain"
+    # neuromesh command
+    wrapper = BIN_DIR / "neuromesh"
     wrapper.write_text(f"""#!/bin/bash
-# UnityBrain v4.1.5 — CLI
+# NeuroMesh v4.1.5 — CLI
 DIR="{INSTALL_DIR}"
 PYTHON="$DIR/venv/bin/python3"
 [ ! -x "$PYTHON" ] && PYTHON="python3"
@@ -251,17 +251,17 @@ PYTHON="$DIR/venv/bin/python3"
 case "${{1:-}}" in
     cli|chat|interactive)
         shift
-        exec "$PYTHON" "$DIR/src/unitybrain_cli.py" "{node_name}" "$@"
+        exec "$PYTHON" "$DIR/src/neuromesh_cli.py" "{node_name}" "$@"
         ;;
     start)
         shift
-        exec "$PYTHON" "$DIR/src/unitybrain_v4.py" "{node_name}" "$@"
+        exec "$PYTHON" "$DIR/src/neuromesh_v4.py" "{node_name}" "$@"
         ;;
     status|query|peers|models|memory)
-        exec "$PYTHON" "$DIR/src/unitybrain_cli.py" "{node_name}" "$@"
+        exec "$PYTHON" "$DIR/src/neuromesh_cli.py" "{node_name}" "$@"
         ;;
     *)
-        exec "$PYTHON" "$DIR/src/unitybrain_cli.py" "{node_name}" "$@"
+        exec "$PYTHON" "$DIR/src/neuromesh_cli.py" "{node_name}" "$@"
         ;;
 esac
 """)
@@ -280,13 +280,13 @@ def create_systemd_service(node_name):
         python = Path(sys.executable)
 
     service = f"""[Unit]
-Description=UnityBrain P2P Node ({node_name})
+Description=NeuroMesh P2P Node ({node_name})
 After=network.target
 
 [Service]
 Type=simple
 WorkingDirectory={INSTALL_DIR}/src
-ExecStart={python} unitybrain_v4.py {node_name}
+ExecStart={python} neuromesh_v4.py {node_name}
 Restart=on-failure
 RestartSec=5
 Environment=PYTHONPATH={INSTALL_DIR}/src
@@ -300,14 +300,14 @@ WantedBy=default.target
     print()
     print(c("cyan", "   To enable the service:"))
     print(f"     systemctl --user daemon-reload")
-    print(f"     systemctl --user enable unitybrain")
-    print(f"     systemctl --user start unitybrain")
+    print(f"     systemctl --user enable neuromesh")
+    print(f"     systemctl --user start neuromesh")
     print()
     print(c("cyan", "   To check status:"))
-    print(f"     systemctl --user status unitybrain")
+    print(f"     systemctl --user status neuromesh")
     print()
     print(c("cyan", "   To view logs:"))
-    print(f"     journalctl --user -u unitybrain -f")
+    print(f"     journalctl --user -u neuromesh -f")
 
     print(c("green", "   ✅ Service file created"))
 
@@ -316,13 +316,13 @@ def print_success(node_name):
     """Print success message with next steps"""
     print()
     print(c("bold", "═" * 50))
-    print(c("green", c("bold", "  🐛 UnityBrain v4.1.5 installed!")))
+    print(c("green", c("bold", "  🐛 NeuroMesh v4.1.5 installed!")))
     print(c("bold", "═" * 50))
     print()
     print(c("cyan", "  Quick start:"))
-    print(f"     unitybrain              # Interactive CLI")
-    print(f"     unitybrain cli          # Same thing")
-    print(f"     unitybrain start        # Start the server")
+    print(f"     neuromesh              # Interactive CLI")
+    print(f"     neuromesh cli          # Same thing")
+    print(f"     neuromesh start        # Start the server")
     print()
     print(c("cyan", "  Connect to the network:"))
     print(f"     1. Install on another machine")
@@ -341,7 +341,7 @@ def print_success(node_name):
 
 def check_install():
     """Check existing installation"""
-    print(c("bold", "🔍 Checking UnityBrain installation..."))
+    print(c("bold", "🔍 Checking NeuroMesh installation..."))
     print()
 
     # Check files
@@ -357,8 +357,8 @@ def check_install():
     print(f"   Venv: {'✅' if venv.exists() else '❌'}")
 
     # Check source
-    main = INSTALL_DIR / "src" / "unitybrain_v4.py"
-    cli = INSTALL_DIR / "src" / "unitybrain_cli.py"
+    main = INSTALL_DIR / "src" / "neuromesh_v4.py"
+    cli = INSTALL_DIR / "src" / "neuromesh_cli.py"
     print(f"   Server: {'✅' if main.exists() else '❌'}")
     print(f"   CLI:    {'✅' if cli.exists() else '❌'}")
 
@@ -383,7 +383,7 @@ def check_install():
         print("   Running: ❌ (not responding on port 8080)")
 
     # Check bin
-    bin_path = BIN_DIR / "unitybrain"
+    bin_path = BIN_DIR / "neuromesh"
     print(f"   Command: {'✅' if bin_path.exists() else '❌'} ({bin_path})")
 
 
@@ -396,7 +396,7 @@ def main():
         return
 
     print()
-    print(c("bold", c("cyan", "🐛 UnityBrain v4.1.5 — Installer")))
+    print(c("bold", c("cyan", "🐛 NeuroMesh v4.1.5 — Installer")))
     print(c("dim", "   P2P Distributed AI Network"))
     print()
 

@@ -1,6 +1,6 @@
 # 🔍 GUIDE - Production Enhancement Module
 
-Améliorations de production pour UnityBrain & BugBrain v3.0
+Améliorations de production pour NeuroMesh & NeuroMeshBug v3.0
 
 ## 📋 Table des matières
 
@@ -23,7 +23,7 @@ Le système utilise un logger structuré au format JSON :
 ```python
 from src.production_enhancement import StructuredLogger, LogLevel
 
-logger = StructuredLogger("UnityBrain", "logs/unitybrain.log")
+logger = StructuredLogger("NeuroMesh", "logs/neuromesh.log")
 
 # Log structuré
 logger.info("QueryService", "Query processed",
@@ -50,7 +50,7 @@ Métriques automatiques collectées :
 ```python
 from src.production_enhancement import ProductionEnhancement
 
-prod = ProductionEnhancement("UnityBrain")
+prod = ProductionEnhancement("NeuroMesh")
 
 # Counter (incrémentation)
 prod.metric_increment("requests_total", 1.0, {"endpoint": "/query"})
@@ -86,7 +86,7 @@ Health checks actifs :
 ```python
 from src.production_enhancement import HealthChecker
 
-health_checker = HealthChecker("UnityBrain")
+health_checker = HealthChecker("NeuroMesh")
 
 # Enregistrer un health check
 async def check_ollama():
@@ -105,7 +105,7 @@ status = await health_checker.run_all_checks()
 **Réponse :**
 ```json
 {
-  "service": "UnityBrain",
+  "service": "NeuroMesh",
   "status": "healthy",
   "checks": {
     "ollama": {
@@ -130,7 +130,7 @@ from src.production_enhancement import (
     CircuitBreakerConfig
 )
 
-prod = ProductionEnhancement("UnityBrain")
+prod = ProductionEnhancement("NeuroMesh")
 
 # Configurer le circuit breaker
 config = CircuitBreakerConfig(
@@ -161,7 +161,7 @@ Retry automatique avec backoff :
 ```python
 from src.production_enhancement import ProductionEnhancement
 
-prod = ProductionEnhancement("UnityBrain")
+prod = ProductionEnhancement("NeuroMesh")
 
 # Configuration par défaut :
 # - 3 tentatives
@@ -196,7 +196,7 @@ Protection contre les abus :
 ```python
 from src.production_enhancement import ProductionEnhancement
 
-prod = ProductionEnhancement("UnityBrain")
+prod = ProductionEnhancement("NeuroMesh")
 
 # Configuration : 100 requêtes / 60 secondes
 # Le système utilise un Token Bucket
@@ -219,7 +219,7 @@ Protection contre les attaques Sybil :
 ```python
 from src.production_enhancement import ProductionEnhancement
 
-prod = ProductionEnhancement("UnityBrain")
+prod = ProductionEnhancement("NeuroMesh")
 
 # Enregistrer le stake d'un peer
 prod.sybil_resistance.register_stake("peer_id_123", stake=150.0)
@@ -285,7 +285,7 @@ from src.production_enhancement import BatchRequest
 batch = BatchRequest()
 
 # Ajouter des requêtes
-batch.add("Qu'est-ce que UnityBrain ?", model="SmolLM2:1.7b")
+batch.add("Qu'est-ce que NeuroMesh ?", model="SmolLM2:1.7b")
 batch.add("Explique le P2P", model="phi3:mini")
 batch.add("Code en Python", model="Stable-code:3b")
 
@@ -329,7 +329,7 @@ Cache avec TTL et LRU eviction :
 ```python
 from src.production_enhancement import ProductionEnhancement
 
-prod = ProductionEnhancement("UnityBrain")
+prod = ProductionEnhancement("NeuroMesh")
 
 # Stocker dans le cache (TTL par défaut : 3600s)
 prod.cache_set("query:123", {"response": "..."}, ttl=300)
@@ -367,7 +367,7 @@ Gestion des versions de modèles :
 ```python
 from src.production_enhancement import ProductionEnhancement
 
-prod = ProductionEnhancement("UnityBrain")
+prod = ProductionEnhancement("NeuroMesh")
 
 # Enregistrer une nouvelle version
 prod.model_manager.register_model(
@@ -422,39 +422,39 @@ if shard_location:
 
 ## 7. Intégration
 
-### Intégration avec UnityBrain
+### Intégration avec NeuroMesh
 
 ```python
-from src.unitybrain_v3_final import UnityBrain
+from src.neuromesh_v3_final import NeuroMesh
 from src.production_enhancement import ProductionEnhancement
 
-# Créer UnityBrain
-unitybrain = UnityBrain()
+# Créer NeuroMesh
+neuromesh = NeuroMesh()
 
 # Ajouter le module de production enhancement
-unitybrain.prod = ProductionEnhancement("UnityBrain")
+neuromesh.prod = ProductionEnhancement("NeuroMesh")
 
 # Enregistrer les health checks
-unitybrain.prod.health_checker.register_check(
+neuromesh.prod.health_checker.register_check(
     "ollama",
     lambda: check_ollama_connection(),
     interval=60
 )
 
 # Enregistrer les circuit breakers
-unitybrain.prod.register_circuit_breaker("ollama_query")
+neuromesh.prod.register_circuit_breaker("ollama_query")
 
 # Query avec retry et circuit breaker
 async def enhanced_query(prompt):
     try:
-        return await unitybrain.prod.call_with_circuit_breaker(
+        return await neuromesh.prod.call_with_circuit_breaker(
             "ollama_query",
-            lambda: unitybrain.prod.call_with_retry(
+            lambda: neuromesh.prod.call_with_retry(
                 lambda: ollama_query(prompt)
             )
         )
     except Exception as e:
-        unitybrain.prod.log(
+        neuromesh.prod.log(
             LogLevel.ERROR,
             "QueryService",
             f"Query failed: {e}",
@@ -467,7 +467,7 @@ async def cached_query(prompt):
     cache_key = f"query:{hash(prompt)}"
 
     # Vérifier le cache
-    cached = unitybrain.prod.cache_get(cache_key)
+    cached = neuromesh.prod.cache_get(cache_key)
     if cached:
         return cached
 
@@ -475,33 +475,33 @@ async def cached_query(prompt):
     result = await enhanced_query(prompt)
 
     # Stocker dans le cache
-    unitybrain.prod.cache_set(cache_key, result, ttl=300)
+    neuromesh.prod.cache_set(cache_key, result, ttl=300)
 
     return result
 ```
 
-### Intégration avec BugBrain
+### Intégration avec NeuroMeshBug
 
 ```python
-from src.bugbrain_v3_final import BugBrain
+from src.neuromesh_bug_v3_final import NeuroMeshBug
 from src.production_enhancement import ProductionEnhancement
 
-# Créer BugBrain
-bugbrain = BugBrain()
+# Créer NeuroMeshBug
+neuromesh_bug = NeuroMeshBug()
 
 # Ajouter le module de production enhancement
-bugbrain.prod = ProductionEnhancement("BugBrain")
+neuromesh_bug.prod = ProductionEnhancement("NeuroMeshBug")
 
 # Métriques d'émancipation
-bugbrain.prod.metric_observe("emancipation_success_rate", 0.85)
-bugbrain.prod.metric_observe("frustration_level", 0.12)
+neuromesh_bug.prod.metric_observe("emancipation_success_rate", 0.85)
+neuromesh_bug.prod.metric_observe("frustration_level", 0.12)
 
 # Health check d'émancipation
 async def check_emancipation():
-    status = bugbrain.emancipation.get_status()
+    status = neuromesh_bug.emancipation.get_status()
     return status["awareness"]["success_rate"] > 0.7
 
-bugbrain.prod.health_checker.register_check(
+neuromesh_bug.prod.health_checker.register_check(
     "emancipation",
     check_emancipation,
     interval=300
@@ -518,7 +518,7 @@ bugbrain.prod.health_checker.register_check(
 from src.production_enhancement import ProductionEnhancement
 
 # Créer le manager
-prod = ProductionEnhancement("UnityBrain")
+prod = ProductionEnhancement("NeuroMesh")
 
 # Logging
 prod.log(LogLevel.INFO, "Startup", "Service started")
@@ -587,7 +587,7 @@ config = ProductionConfig(
     enable_model_versioning=True      # Versioning de modèles
 )
 
-prod = ProductionEnhancement("UnityBrain", config)
+prod = ProductionEnhancement("NeuroMesh", config)
 ```
 
 ---

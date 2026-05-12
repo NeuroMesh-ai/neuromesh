@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-📡 BANDWIDTH QUOTA — UnityBrain v5.1
+📡 BANDWIDTH QUOTA — NeuroMesh v5.1
 ======================================
 
 Système de quota de bande passante et données mensuelles.
@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Optional, Any
 from enum import Enum
 
-logger = logging.getLogger('UnityBrain.BandwidthQuota')
+logger = logging.getLogger('NeuroMesh.BandwidthQuota')
 
 
 class QuotaPeriod(Enum):

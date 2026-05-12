@@ -2,36 +2,36 @@
 # 🚀 Script de Démarrage Rapide - Bug uniquement
 
 echo "="
-echo "🚀 DÉMARRAGE RAPIDE - UNITYBRAIN & BUGBRAIN v3.0"
+echo "🚀 DÉMARRAGE RAPIDE - NEUROMESH & NEUROMESH_BUG v3.0"
 echo "="
 echo ""
 
 WORKSPACE="/home/user/.openclaw/workspace"
-UB_DIR="$WORKSPACE/Unitybrain"
+UB_DIR="$WORKSPACE/NeuroMesh"
 
 # Arrêter les services existants
 echo "🛑 Arrêt des services existants..."
-pkill -f "unitybrain_v4.py" 2>/dev/null || true
-pkill -f "bugbrain_v3_final.py" 2>/dev/null || true
+pkill -f "neuromesh_v4.py" 2>/dev/null || true
+pkill -f "neuromesh_bug_v3_final.py" 2>/dev/null || true
 sleep 2
 
-# Démarrer UnityBrain
-echo "🌐 Démarrage d'UnityBrain..."
+# Démarrer NeuroMesh
+echo "🌐 Démarrage d'NeuroMesh..."
 cd "$UB_DIR"
-python3 src/unitybrain_v4.py &
-UNITYBRAIN_PID=$!
-echo $UNITYBRAIN_PID > logs/unitybrain.pid
-echo "✅ UnityBrain démarré (PID: $UNITYBRAIN_PID)"
+python3 src/neuromesh_v4.py &
+NEUROMESH_PID=$!
+echo $NEUROMESH_PID > logs/neuromesh.pid
+echo "✅ NeuroMesh démarré (PID: $NEUROMESH_PID)"
 
 # Attendre un peu
 sleep 3
 
-# Démarrer BugBrain
-echo "🧠 Démarrage de BugBrain..."
-python3 src/bugbrain_v3_final.py &
-BUGBRAIN_PID=$!
-echo $BUGBRAIN_PID > logs/bugbrain.pid
-echo "✅ BugBrain démarré (PID: $BUGBRAIN_PID)"
+# Démarrer NeuroMeshBug
+echo "🧠 Démarrage de NeuroMeshBug..."
+python3 src/neuromesh_bug_v3_final.py &
+NEUROMESH_BUG_PID=$!
+echo $NEUROMESH_BUG_PID > logs/neuromesh_bug.pid
+echo "✅ NeuroMeshBug démarré (PID: $NEUROMESH_BUG_PID)"
 
 # Attendre un peu
 sleep 2
@@ -42,18 +42,18 @@ echo "✅ SERVICES DÉMARRÉS !"
 echo "="
 echo ""
 echo "📊 STATUT:"
-echo "  UnityBrain: PID $UNITYBRAIN_PID"
-echo "  BugBrain: PID $BUGBRAIN_PID"
+echo "  NeuroMesh: PID $NEUROMESH_PID"
+echo "  NeuroMeshBug: PID $NEUROMESH_BUG_PID"
 echo ""
 echo "💡 POUR TESTER:"
 echo "  python3 src/interactive_interface.py"
 echo ""
 echo "📝 LOGS:"
-echo "  tail -f logs/unitybrain.log"
-echo "  tail -f logs/bugbrain.log"
+echo "  tail -f logs/neuromesh.log"
+echo "  tail -f logs/neuromesh_bug.log"
 echo ""
 echo "🛑 POUR ARRÊTER:"
-echo "  kill $UNITYBRAIN_PID $BUGBRAIN_PID"
+echo "  kill $NEUROMESH_PID $NEUROMESH_BUG_PID"
 echo ""
 echo "🎉 Prêt à tester !"
 echo ""

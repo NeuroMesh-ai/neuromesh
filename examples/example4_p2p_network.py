@@ -61,7 +61,7 @@ async def main():
     # Broadcast
     print("\n📢 Broadcast...")
     await node.broadcast("announcement", {
-        "message": "UnityBrain v3.0 est en ligne !",
+        "message": "NeuroMesh v3.0 est en ligne !",
         "timestamp": 1234567890
     })
 

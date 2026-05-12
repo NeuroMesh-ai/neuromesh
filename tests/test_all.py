@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 Script de Test - UnityBrain v5.1.0
+🧪 Script de Test - NeuroMesh v5.1.0
 Teste que le système fonctionne sur Bug et Pinky
 """
 
@@ -11,7 +11,7 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.unitybrain_v5 import UnityBrain
+from src.neuromesh_v5 import NeuroMesh
 
 TEST_CONFIG_BUG = {
     "node_name": "bug",
@@ -50,15 +50,15 @@ TEST_CONFIG_PINKY = {
 }
 
 
-async def test_unitybrain():
-    """Teste UnityBrain v5"""
+async def test_neuromesh():
+    """Teste NeuroMesh v5"""
     print("\n" + "=" * 70)
-    print("🧪 TESTING UNITYBRAIN v5.1.0")
+    print("🧪 TESTING NEUROMESH v5.1.0")
     print("=" * 70)
 
-    # Créer UnityBrain
-    brain = UnityBrain(TEST_CONFIG_BUG)
-    print(f"✅ UnityBrain created: {brain.node_name} v{brain.version}")
+    # Créer NeuroMesh
+    brain = NeuroMesh(TEST_CONFIG_BUG)
+    print(f"✅ NeuroMesh created: {brain.node_name} v{brain.version}")
 
     # Check v5 modules
     print(f"  Resource Guard: {brain.resource_guard is not None}")
@@ -80,4 +80,4 @@ async def test_unitybrain():
 
 
 if __name__ == "__main__":
-    asyncio.run(test_unitybrain())
+    asyncio.run(test_neuromesh())

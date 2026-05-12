@@ -12,8 +12,8 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.unitybrain_v5 import (
-    UnityBrain,
+from src.neuromesh_v5 import (
+    NeuroMesh,
     Peer,
     NodeIdentity,
     WebOfTrust,
@@ -119,17 +119,17 @@ class TestSharingQuota:
 
 
 # =============================================================================
-# TESTS UNITYBRAIN PINKY
+# TESTS NEUROMESH PINKY
 # =============================================================================
 
 class TestPinkyNode:
     def test_init(self):
-        brain = UnityBrain(PINKY_CONFIG)
+        brain = NeuroMesh(PINKY_CONFIG)
         assert brain.node_name == "pinky"
         assert brain.version == "5.1.0"
 
     def test_v5_modules(self):
-        brain = UnityBrain(PINKY_CONFIG)
+        brain = NeuroMesh(PINKY_CONFIG)
         assert hasattr(brain, 'resource_guard')
         assert hasattr(brain, 'adaptive_scheduler')
         assert hasattr(brain, 'conversation_store')

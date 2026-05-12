@@ -1,4 +1,4 @@
-# UnityBrain v4.0.1 — Discord announcement template
+# NeuroMesh v4.0.1 — Discord announcement template
 
 ## For AI/self-hosting/P2P Discord servers:
 
@@ -6,7 +6,7 @@
 
 Hey everyone! 👋
 
-Just released **UnityBrain v4.0.1** — a lightweight P2P distributed AI network.
+Just released **NeuroMesh v4.0.1** — a lightweight P2P distributed AI network.
 
 **What:** Connect your machines running Ollama into a peer-to-peer network. Share compute, sync memory, route AI queries across nodes.
 
@@ -21,12 +21,12 @@ Just released **UnityBrain v4.0.1** — a lightweight P2P distributed AI network
 
 **Quick start:**
 ```bash
-git clone https://github.com/unitybrain-ai/unitybrain.git
-python3 src/unitybrain_v4.py --config mynode.json
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+python3 src/neuromesh_v4.py --config mynode.json
 ```
 
 0.16s startup, 17MB RAM, 4 dependencies. MIT license.
 
-⭐ https://github.com/unitybrain-ai/unitybrain
+⭐ https://github.com/NeuroMesh-ai/neuromesh
 
 Built with ❤️ by Bug 🐛 and Denis Houet

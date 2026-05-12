@@ -1,10 +1,10 @@
-# 🌐 UnityBrain v5
+# 🌐 NeuroMesh v5
 
-[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![License : MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-D%C3%A9centralis%C3%A9-green.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![Chiffrement E2E](https://img.shields.io/badge/E2E-Chiffr%C3%A9-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-D%C3%A9centralis%C3%A9-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Chiffrement E2E](https://img.shields.io/badge/E2E-Chiffr%C3%A9-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
 **Réseau IA P2P distribué avec mesh public. Partagez du calcul, partagez des modèles, restez privé. v5.1 : Routage spécialiste multi-LLM.**
 
@@ -12,9 +12,9 @@
 
 ---
 
-## ✨ Qu'est-ce que UnityBrain ?
+## ✨ Qu'est-ce que NeuroMesh ?
 
-UnityBrain connecte vos machines en réseau IA pair-à-pair. Vos machines discutent entre elles, partagent calcul et modèles — pas de dépendance cloud, pas de serveur central, pas de point de défaillance unique.
+NeuroMesh connecte vos machines en réseau IA pair-à-pair. Vos machines discutent entre elles, partagent calcul et modèles — pas de dépendance cloud, pas de serveur central, pas de point de défaillance unique.
 
 **v5 ajoute le mesh public :** rejoignez un réseau mondial de CPU, RAM, GPU et modèles IA partagés. Votre réseau privé reste privé. Le mesh est un layer additionnel que vous activez volontairement.
 
@@ -51,14 +51,14 @@ UnityBrain connecte vos machines en réseau IA pair-à-pair. Vos machines discut
 
 ```bash
 # Cloner
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
 
 # Lancer
-python3 src/unitybrain_v5.py
+python3 src/neuromesh_v5.py
 
 # Ou avec un fichier de config
-python3 src/unitybrain_v5.py --config config/bug.json
+python3 src/neuromesh_v5.py --config config/bug.json
 ```
 
 ### Connecter votre réseau
@@ -209,7 +209,7 @@ Le réseau choisit la meilleure stratégie selon le nombre de pairs disponibles.
 Vos conversations restent sur VOTRE machine. Point final.
 
 - **Sauvegarde automatique** — Chaque message est sauvegardé localement. Pas de bouton « sauvegarder ».
-- **Reprise** — Ouvrez UnityBrain demain, vos conversations sont là.
+- **Reprise** — Ouvrez NeuroMesh demain, vos conversations sont là.
 - **Recherche** — Trouvez n'importe quelle conversation par mot-clé, date, modèle ou tag.
 - **Export** — Markdown, JSON, texte brut. Vos données, votre format.
 - **Confidentialité** — Les conversations ne quittent JAMAIS votre machine sauf si vous les synchronisez via P2P privé.
@@ -254,7 +254,7 @@ Quand vous interrogez le mesh, vos données sont chiffrées de bout en bout :
 Un dossier dédié qui est la **seule interface** entre vos modèles et le mesh public.
 
 ```
-~/.unitybrain/
+~/.neuromesh/
 ├── conversations/        → 🔒 Privé (jamais partagé)
 ├── memory/               → 🔒 Privé (jamais partagé)
 ├── config/               → 🔒 Privé (jamais partagé)
@@ -266,9 +266,9 @@ Un dossier dédié qui est la **seule interface** entre vos modèles et le mesh 
 ```
 
 ```bash
-unitybrain share glm-5.1    # Partager un modèle (crée un lien symbolique)
-unitybrain unshare glm-5.1  # Arrêter le partage (supprime uniquement le lien)
-unitybrain shared            # Lister les modèles partagés
+neuromesh share glm-5.1    # Partager un modèle (crée un lien symbolique)
+neuromesh unshare glm-5.1  # Arrêter le partage (supprime uniquement le lien)
+neuromesh shared            # Lister les modèles partagés
 ```
 
 **Le mesh ne lit JAMAIS en dehors de `shared_models/`.** Arrêter le partage est instantané — le mesh perd l'accès dès que le lien est supprimé.
@@ -298,10 +298,10 @@ Fonctionne dans n'importe quel navigateur sur `localhost:8080`. Installable en P
 | 🔌 **Plugin** | Intégré dans votre workflow | VS Code, navigateur, Obsidian, terminal |
 
 ```bash
-unitybrain serve          # Service (headless)
-unitybrain app            # Application (GUI)
-unitybrain sidekick       # Sidekick (barre système)
-unitybrain plugin --vscode  # Plugin (VS Code)
+neuromesh serve          # Service (headless)
+neuromesh app            # Application (GUI)
+neuromesh sidekick       # Sidekick (barre système)
+neuromesh plugin --vscode  # Plugin (VS Code)
 ```
 
 Les 4 modes partagent le même cœur. Un binaire, quatre modes de vie.
@@ -312,7 +312,7 @@ Les 4 modes partagent le même cœur. Un binaire, quatre modes de vie.
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   Cœur UnityBrain                    │
+│                   Cœur NeuroMesh                    │
 │  ┌────────────┐ ┌──────────────┐ ┌────────────────┐ │
 │  │ Resource   │ │ Adaptive     │ │ Conversation   │ │
 │  │ Guard      │ │ Scheduler    │ │ Store          │ │
@@ -352,7 +352,7 @@ Les 4 modes partagent le même cœur. Un binaire, quatre modes de vie.
   },
   "public_mesh": {
     "enabled": true,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,
@@ -429,8 +429,8 @@ TIMESTAMP=$(date +%s)
 SIGNATURE=$(echo -n "/api/query:${TIMESTAMP}" | openssl dgst -sha256 -hmac "votre-secret" | awk '{print $NF}')
 
 curl -X POST http://localhost:8080/api/query \
-  -H "X-UnityBrain-Auth: ${SIGNATURE}" \
-  -H "X-UnityBrain-TS: ${TIMESTAMP}" \
+  -H "X-NeuroMesh-Auth: ${SIGNATURE}" \
+  -H "X-NeuroMesh-TS: ${TIMESTAMP}" \
   -H "Content-Type: application/json" \
   -d '{"prompt":"Bonjour","model":"glm-5.1:cloud"}'
 ```

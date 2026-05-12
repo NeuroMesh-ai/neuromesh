@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# UnityBrain — Uninstallation script
+# NeuroMesh — Uninstallation script
 # Usage: sudo ./uninstall.sh [options]
 #
 # Options:
@@ -22,12 +22,12 @@ err()  { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 ok()   { echo -e "${GREEN}[OK]${NC} $*"; }
 
 # ─── Defaults ────────────────────────────────────────────────
-UB_USER="unitybrain"
-UB_GROUP="unitybrain"
-UB_CONFIG_DIR="/etc/unitybrain"
-UB_DATA_DIR="/var/lib/unitybrain"
-UB_LOG_DIR="/var/log/unitybrain"
-UB_SERVICE_NAME="unitybrain"
+UB_USER="neuromesh"
+UB_GROUP="neuromesh"
+UB_CONFIG_DIR="/etc/neuromesh"
+UB_DATA_DIR="/var/lib/neuromesh"
+UB_LOG_DIR="/var/log/neuromesh"
+UB_SERVICE_NAME="neuromesh"
 PURGE=false
 
 # ─── Parse arguments ────────────────────────────────────────
@@ -59,7 +59,7 @@ detect_os() {
 
 # ─── Stop service ────────────────────────────────────────────
 stop_service() {
-    log "Stopping UnityBrain service..."
+    log "Stopping NeuroMesh service..."
     if [[ "$OS" == "linux" ]]; then
         if systemctl is-active --quiet "$UB_SERVICE_NAME" 2>/dev/null; then
             systemctl stop "$UB_SERVICE_NAME"
@@ -68,7 +68,7 @@ stop_service() {
             warn "Service not running"
         fi
     elif [[ "$OS" == "macos" ]]; then
-        launchctl unload -w /Library/LaunchDaemons/com.unitybrain.server.plist 2>/dev/null || true
+        launchctl unload -w /Library/LaunchDaemons/com.neuromesh.server.plist 2>/dev/null || true
         ok "Service stopped"
     fi
 }
@@ -82,18 +82,18 @@ remove_service() {
         systemctl daemon-reload
         ok "systemd service removed"
     elif [[ "$OS" == "macos" ]]; then
-        rm -f /Library/LaunchDaemons/com.unitybrain.server.plist
-        launchctl remove com.unitybrain.server 2>/dev/null || true
+        rm -f /Library/LaunchDaemons/com.neuromesh.server.plist
+        launchctl remove com.neuromesh.server 2>/dev/null || true
         ok "launchd plist removed"
     fi
 }
 
 # ─── Uninstall package ──────────────────────────────────────
 uninstall_package() {
-    log "Uninstalling UnityBrain Python package..."
-    pip uninstall -y unitybrain 2>/dev/null || pip3 uninstall -y unitybrain 2>/dev/null || {
+    log "Uninstalling NeuroMesh Python package..."
+    pip uninstall -y neuromesh 2>/dev/null || pip3 uninstall -y neuromesh 2>/dev/null || {
         warn "Could not uninstall via pip — removing manually"
-        rm -f /usr/local/bin/unitybrain /usr/local/bin/bugbrain
+        rm -f /usr/local/bin/neuromesh /usr/local/bin/neuromesh_bug
     }
     ok "Package uninstalled"
 }
@@ -132,7 +132,7 @@ main() {
     detect_os
 
     if [[ "$PURGE" != "true" ]]; then
-        echo -e "${YELLOW}This will uninstall UnityBrain but keep your data.${NC}"
+        echo -e "${YELLOW}This will uninstall NeuroMesh but keep your data.${NC}"
         echo -e "${YELLOW}Use --purge to remove everything.${NC}"
         echo ""
         read -rp "Continue? [y/N] " REPLY
@@ -152,7 +152,7 @@ main() {
     remove_data
 
     echo ""
-    ok "UnityBrain has been uninstalled."
+    ok "NeuroMesh has been uninstalled."
     if [[ "$PURGE" != "true" ]]; then
         echo ""
         log "Your data is still at:"

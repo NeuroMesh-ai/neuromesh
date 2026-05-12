@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 Tests for ConversationStore — UnityBrain v5
+🧪 Tests for ConversationStore — NeuroMesh v5
 ================================================
 
 Comprehensive tests covering:
@@ -45,7 +45,7 @@ from conversation_store import (
 @pytest.fixture
 def temp_dir():
     """Create a temporary directory for test conversations."""
-    d = tempfile.mkdtemp(prefix="unitybrain_test_")
+    d = tempfile.mkdtemp(prefix="neuromesh_test_")
     yield d
     shutil.rmtree(d, ignore_errors=True)
 

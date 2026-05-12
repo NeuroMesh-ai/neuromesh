@@ -1,8 +1,8 @@
-# 🧠 Architecture UnityBrain v5 — Audit des Capacités
+# 🧠 Architecture NeuroMesh v5 — Audit des Capacités
 
 ## Question de Denis
 > Les capacités de réseaux, cryptage, RAID et agentique font-elles bien partie de brain.llm ?
-> Est-ce bien lui qui gère UnityBrain ?
+> Est-ce bien lui qui gère NeuroMesh ?
 
 ## Réponse courte : **Non.** `brain_llm.py` est un orchestrateur LLM minimal. Il ne gère PAS les capacités clés du système.
 
@@ -10,7 +10,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   unitybrain_v5.py (206 KB)                  │
+│                   neuromesh_v5.py (206 KB)                  │
 │                   LE CŒUR DU SYSTÈME                         │
 │                                                              │
 │  ┌─────────────┐  ┌─────────────┐  ┌──────────────────────┐ │

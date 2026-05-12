@@ -1,9 +1,9 @@
-# UnityBrain v5 — Public Mesh Architecture
+# NeuroMesh v5 — Public Mesh Architecture
 
 ## Vision
 
-UnityBrain v4 = routeur P2P privé.  
-UnityBrain v5 = routeur P2P privé **+** mesh public de calcul partagé.
+NeuroMesh v4 = routeur P2P privé.  
+NeuroMesh v5 = routeur P2P privé **+** mesh public de calcul partagé.
 
 Un utilisateur peut :
 1. Garder son réseau privé (p2p_secret) pour ses propres machines
@@ -68,7 +68,7 @@ Un utilisateur peut :
   {
     "public_mesh": {
       "enabled": true,
-      "tracker_url": "https://tracker.unitybrain.ai",
+      "tracker_url": "https://tracker.neuromesh.ai",
       "max_ram_share_mb": 2048,
       "max_cpu_percent": 30,
       "gpu_share": false,
@@ -122,7 +122,7 @@ The tracker is a lightweight HTTP/WebSocket server that:
 ### Tracker Implementation
 
 Simple Python/asyncio server. Can run on:
-- The official UnityBrain tracker (unitybrain.ai)
+- The official NeuroMesh tracker (neuromesh.ai)
 - Any community tracker (self-hosted)
 - Tailscale MagicDNS for private meshes
 
@@ -211,7 +211,7 @@ class ResourceGuard:
   
   "public_mesh": {
     "enabled": true,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,
@@ -306,12 +306,12 @@ Most AI services (ChatGPT, Claude, etc.) either:
 
 When you come back the next day → **blank page**. Everything you discussed, every insight, gone.
 
-### The UnityBrain Solution
+### The NeuroMesh Solution
 
 **Your conversations stay on YOUR machine. Period.**
 
 ```json
-// ~/.unitybrain/conversations/
+// ~/.neuromesh/conversations/
 {
   "conv_2026-05-05_001": {
     "created": "2026-05-05T22:00:00Z",
@@ -331,7 +331,7 @@ When you come back the next day → **blank page**. Everything you discussed, ev
 ### Features
 
 1. **Auto-save** — Every message saved locally as you type. No "save" button needed.
-2. **Resume** — Open UnityBrain tomorrow, your conversations are there. Like reopening a book.
+2. **Resume** — Open NeuroMesh tomorrow, your conversations are there. Like reopening a book.
 3. **Search** — Find any past conversation by keyword, date, model, or tag.
 4. **Export** — Export to Markdown, JSON, or plain text. Your data, your format.
 5. **Privacy** — Conversations NEVER leave your machine unless YOU choose to sync them via the private P2P network.
@@ -341,11 +341,11 @@ When you come back the next day → **blank page**. Everything you discussed, ev
 ### CLI Usage
 
 ```bash
-unitybrain                          # Start chat (auto-loads last conversation)
-unitybrain --list                   # List all conversations
-unitybrain --search "potager"       # Find conversations about "potager"
-unitybrain --resume conv_2026-05-05_001  # Resume specific conversation
-unitybrain --export markdown         # Export all conversations to markdown
+neuromesh                          # Start chat (auto-loads last conversation)
+neuromesh --list                   # List all conversations
+neuromesh --search "potager"       # Find conversations about "potager"
+neuromesh --resume conv_2026-05-05_001  # Resume specific conversation
+neuromesh --export markdown         # Export all conversations to markdown
 ```
 
 ### In Chat
@@ -377,7 +377,7 @@ When Denis pays for a ChatGPT subscription:
 - If he stops paying → blank page
 - If OpenAI has a data breach → his private thoughts are exposed
 
-When Denis uses UnityBrain:
+When Denis uses NeuroMesh:
 - His conversations live on his machine
 - Nobody can use them for training
 - He stops sharing compute → his conversations are STILL there
@@ -658,7 +658,7 @@ C'est exactement comme BitTorrent :
 
 ### Pourquoi c'est différent des services centralisés
 
-| | OpenAI / Anthropic | UnityBrain |
+| | OpenAI / Anthropic | NeuroMesh |
 |---|---|---|
 | Plus d'utilisateurs | Serveurs surchargés | Plus de capacités |
 | Coût | 20$/mois par utilisateur | Gratuit (chacun participe) |
@@ -668,9 +668,9 @@ C'est exactement comme BitTorrent :
 
 ### La promesse
 
-**Un Raspberry Pi de 35€ + UnityBrain = accès à une IA qui vaut des milliers d'euros.**
+**Un Raspberry Pi de 35€ + NeuroMesh = accès à une IA qui vaut des milliers d'euros.**
 
-Pas parce qu'on a des serveurs. Parce que d'autres humains partagent leurs machines. Comme BitTorrent a rendu le partage de fichiers libre, UnityBrain rend l'accès à l'IA libre.
+Pas parce qu'on a des serveurs. Parce que d'autres humains partagent leurs machines. Comme BitTorrent a rendu le partage de fichiers libre, NeuroMesh rend l'accès à l'IA libre.
 
 **La seule condition : participer.** Tu donnes un peu de CPU/RAM, tu reçois beaucoup d'IA. Plus tu donnes, plus tu reçois. Mais même à 0, tu as accès — juste plus lentement.
 
@@ -706,10 +706,10 @@ C'est pas du communisme. C'est pas du capitalisme. C'est de la **symbiose**.
 
 ### Ce que brain.llm fait déjà
 
-brain.llm est le cerveau d'UnityBrain. Il est déjà intégré dans le nœud :
+brain.llm est le cerveau d'NeuroMesh. Il est déjà intégré dans le nœud :
 
 ```python
-# Endpoints existants dans unitybrain_v4.py
+# Endpoints existants dans neuromesh_v4.py
 /api/brain/status     → État du cerveau (modèles, latence, santé)
 /api/brain/models     → Modèles disponibles (local + cloud + P2P)
 /api/brain/query      → Requête IA avec routage intelligent
@@ -767,7 +767,7 @@ Routage de plus en plus précis
     ↓
 Latence qui diminue, qualité qui augmente
     ↓
-L'utilisateur parle de UnityBrain à ses amis
+L'utilisateur parle de NeuroMesh à ses amis
     ↓
 Plus d'utilisateurs
     ↓
@@ -784,7 +784,7 @@ brain.llm apprend localement (de son propre nœud) et partage les insights via l
 
 ### La vision finale
 
-**UnityBrain = cerveau collectif.**
+**NeuroMesh = cerveau collectif.**
 
 Pas un cerveau qui contrôle. Un cerveau qui **coordone**, **apprend**, et **s'adapte** — collectivement, de manière distribuée.
 
@@ -967,7 +967,7 @@ Sans dossier de partage dédié, le mesh devrait scanner TOUT le système de fic
 Un dossier dédié qui est la **seule interface** entre tes modèles et le mesh public.
 
 ```
-~/.unitybrain/
+~/.neuromesh/
 ├── conversations/        → 🔒 Privé (jamais partagé)
 ├── memory/               → 🔒 Privé (jamais partagé)
 ├── config/               → 🔒 Privé (jamais partagé)
@@ -988,13 +988,13 @@ Un dossier dédié qui est la **seule interface** entre tes modèles et le mesh 
 
 ```bash
 # Partager un modèle (crée un lien symbolique)
-unitybrain share glm-5.1
+neuromesh share glm-5.1
 
 # Arrêter de partager un modèle (supprime le lien)
-unitybrain unshare glm-5.1
+neuromesh unshare glm-5.1
 
 # Voir ce qui est partagé
-unitybrain shared
+neuromesh shared
 ```
 
 **Le mesh ne voit QUE ce qui est dans `shared_models/` :**
@@ -1003,7 +1003,7 @@ unitybrain shared
 class ModelShareManager:
     """Manages the shared_models directory — the ONLY bridge to the public mesh."""
     
-    SHARED_DIR = os.path.expanduser("~/.unitybrain/shared_models")
+    SHARED_DIR = os.path.expanduser("~/.neuromesh/shared_models")
     
     def share_model(self, model_name: str) -> bool:
         """Share a model with the public mesh.
@@ -1075,7 +1075,7 @@ class ModelShareManager:
 |---|---|---|
 | Contrôle | Le mesh voit tout | L'utilisateur choisit exactement quoi partager |
 | Sécurité | Chemins privés exposés | Seuls les symlinks sont visibles |
-| Arrêt immédiat | Must edit config + restart | `unitybrain unshare glm-5.1` = instantané |
+| Arrêt immédiat | Must edit config + restart | `neuromesh unshare glm-5.1` = instantané |
 | Séparation | Privé et public mélangés | Frontière nette physique |
 | Audit | Difficile de savoir quoi est partagé | `ls shared_models/` = tout est là |
 | Isolation | Le mesh pourrait scanner le système | Le mesh ne voit QUE ce dossier |
@@ -1096,38 +1096,38 @@ Quand tu télécharges un modèle partagé par un autre nœud :
 ```
 1. Tu découvres "mistral-7b" via le tracker
 2. Tu télécharges les chunks depuis les pairs qui l'ont
-3. Les chunks sont assemblés dans ~/.unitybrain/shared_models/mistral-7b/
+3. Les chunks sont assemblés dans ~/.neuromesh/shared_models/mistral-7b/
 4. Tu peux ensuite le partager à ton tour (il est déjà dans shared_models/)
-5. OU le déplacer dans ton Ollama privé avec: unitybrain privatize mistral-7b
+5. OU le déplacer dans ton Ollama privé avec: neuromesh privatize mistral-7b
 ```
 
 ```bash
 # Télécharger un modèle depuis le mesh
-unitybrain download mistral-7b
+neuromesh download mistral-7b
 
 # Le modèle arrive dans shared_models/ (zone publique)
-ls ~/.unitybrain/shared_models/mistral-7b/
+ls ~/.neuromesh/shared_models/mistral-7b/
 
 # Si tu veux le rendre privé (déplacer dans Ollama)
-unitybrain privatize mistral-7b
+neuromesh privatize mistral-7b
 
 # Si tu veux le garder partagé + l'utiliser en privé aussi
-unitybrain share mistral-7b  # déjà partagé, ça crée un lien des deux côtés
+neuromesh share mistral-7b  # déjà partagé, ça crée un lien des deux côtés
 ```
 
 ### Le cycle de vie d'un modèle
 
 ```
 INSTALLÉ (privé)
-    ↓  unitybrain share glm-5.1
+    ↓  neuromesh share glm-5.1
 PARTAGÉ (public, via symlink dans shared_models/)
-    ↓  unitybrain unshare glm-5.1  
+    ↓  neuromesh unshare glm-5.1  
 INSTALLÉ (privé, symlink supprimé, modèle intact)
 
 TÉLÉCHARGÉ DEPUIS LE MESH
-    ↓  unitybrain download mistral-7b
+    ↓  neuromesh download mistral-7b
 PARTAGÉ (dans shared_models/, visible au mesh)
-    ↓  unitybrain privatize mistral-7b
+    ↓  neuromesh privatize mistral-7b
 INSTALLÉ (déplacé dans Ollama privé, plus visible au mesh)
 ```
 
@@ -1135,7 +1135,7 @@ INSTALLÉ (déplacé dans Ollama privé, plus visible au mesh)
 
 ---
 
-## 🖥️ Interface Utilisateur — UnityBrain Desktop
+## 🖥️ Interface Utilisateur — NeuroMesh Desktop
 
 ### Philosophie
 
@@ -1147,7 +1147,7 @@ L'interface doit être aussi simple que uTorrent ou Spotify. Tu l'ouvres, tu com
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                    UnityBrain Desktop                         │
+│                    NeuroMesh Desktop                         │
 │                    (Web UI — localhost:8080)                  │
 │                                                              │
 │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐           │
@@ -1344,7 +1344,7 @@ L'interface doit être aussi simple que uTorrent ou Spotify. Tu l'ouvres, tu com
 │  ┌─ Mesh Public ───────────────────────────────────────┐ │
 │  │                                                     │ │
 │  │  [✓] Activer le mesh public                         │ │
-│  │  Tracker: [https://tracker.unitybrain.ai    ]       │ │
+│  │  Tracker: [https://tracker.neuromesh.ai    ]       │ │
 │  │  Priorité: [Locale d'abord ▼]                       │ │
 │  │  Mode furtif: [✗] (visible sur le tracker)          │ │
 │  │                                                     │ │
@@ -1353,8 +1353,8 @@ L'interface doit être aussi simple que uTorrent ou Spotify. Tu l'ouvres, tu com
 │  ┌─ Stockage ─────────────────────────────────────────┐ │
 │  │                                                     │ │
 │  │  Modèles privés: ~/.ollama/models/ (8.2GB)         │ │
-│  │  Modèles partagés: ~/.unitybrain/shared_models/     │ │
-│  │  Conversations: ~/.unitybrain/conversations/         │ │
+│  │  Modèles partagés: ~/.neuromesh/shared_models/     │ │
+│  │  Conversations: ~/.neuromesh/conversations/         │ │
 │  │  [Ouvrir le dossier] [Exporter tout]                │ │
 │  │                                                     │ │
 │  └─────────────────────────────────────────────────────┘ │
@@ -1439,7 +1439,7 @@ WS     /ws                          # Temps réel (statut, pairs, messages)
 
 ### Les 4 modes
 
-UnityBrain doit fonctionner dans 4 modes différents, pour 4 types d'utilisation :
+NeuroMesh doit fonctionner dans 4 modes différents, pour 4 types d'utilisation :
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -1470,7 +1470,7 @@ UnityBrain doit fonctionner dans 4 modes différents, pour 4 types d'utilisation
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │  Extension navigateur, plugin VS Code, plugin Obsidian   │   │
 │  │  API légère, pas de GUI propre                          │   │
-│  │  Pour utiliser UnityBrain dans son workflow              │   │
+│  │  Pour utiliser NeuroMesh dans son workflow              │   │
 │  └─────────────────────────────────────────────────────────┘   │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -1482,24 +1482,24 @@ Pour les serveurs, VPS, machines sans écran.
 
 ```bash
 # Installer en service systemd
-sudo unitybrain install-service
+sudo neuromesh install-service
 
 # Démarrer
-sudo systemctl start unitybrain
+sudo systemctl start neuromesh
 
 # Statut
-sudo systemctl status unitybrain
+sudo systemctl status neuromesh
 
 # Logs
-journalctl -u unitybrain -f
+journalctl -u neuromesh -f
 
 # Mode Docker
 docker run -d \
   -p 8080:8080 \
   -p 8090:8090 \
-  -v ~/.unitybrain:/data \
+  -v ~/.neuromesh:/data \
   -e P2P_SECRET=your-secret \
-  unitybrain/server:latest
+  neuromesh/server:latest
 ```
 
 **Caractéristiques :**
@@ -1513,18 +1513,18 @@ docker run -d \
 
 **Fichier de service :**
 ```ini
-# /etc/systemd/system/unitybrain.service
+# /etc/systemd/system/neuromesh.service
 [Unit]
-Description=UnityBrain P2P AI Network
+Description=NeuroMesh P2P AI Network
 After=network.target ollama.service
 Wants=ollama.service
 
 [Service]
 Type=simple
-User=unitybrain
-Group=unitybrain
-WorkingDirectory=/opt/unitybrain
-ExecStart=/usr/local/bin/unitybrain serve --config /etc/unitybrain/config.json
+User=neuromesh
+Group=neuromesh
+WorkingDirectory=/opt/neuromesh
+ExecStart=/usr/local/bin/neuromesh serve --config /etc/neuromesh/config.json
 Restart=always
 RestartSec=5
 Environment=P2P_SECRET=%p
@@ -1534,7 +1534,7 @@ Environment=OLLAMA_HOST=127.0.0.1:11434
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths=/var/lib/unitybrain /var/log/unitybrain
+ReadWritePaths=/var/lib/neuromesh /var/log/neuromesh
 PrivateTmp=yes
 
 [Install]
@@ -1548,10 +1548,10 @@ FROM python:3.11-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir unitybrain
+RUN pip install --no-cache-dir neuromesh
 
-RUN useradd -m -d /data unitybrain
-USER unitybrain
+RUN useradd -m -d /data neuromesh
+USER neuromesh
 
 VOLUME /data
 EXPOSE 8080 8090
@@ -1559,7 +1559,7 @@ EXPOSE 8080 8090
 HEALTHCHECK --interval=30s --timeout=5s \
     CMD curl -f http://localhost:8080/api/ping || exit 1
 
-CMD ["unitybrain", "serve", "--config", "/data/config.json"]
+CMD ["neuromesh", "serve", "--config", "/data/config.json"]
 ```
 
 ### Mode 2 : 🖥️ Application (GUI complète)
@@ -1568,10 +1568,10 @@ Pour l'utilisateur qui veut tout voir et tout contrôler.
 
 ```bash
 # Lancer l'application
-unitybrain app
+neuromesh app
 
 # Ou directement
-unitybrain  # (défaut = mode application)
+neuromesh  # (défaut = mode application)
 ```
 
 **Caractéristiques :**
@@ -1587,19 +1587,19 @@ unitybrain  # (défaut = mode application)
 # L'application ouvre le navigateur sur localhost:8080
 # Le serveur tourne en arrière-plan
 # L'interface web est l'UI
-unitybrain app --open-browser
+neuromesh app --open-browser
 
 # Ou en mode natif (PyWebView)
-unitybrain app --native
+neuromesh app --native
 
 # Ou en mode TUI (terminal)
-unitybrain app --tui
+neuromesh app --tui
 ```
 
 **Auto-start au démarrage (optionnel) :**
 ```bash
-unitybrain app --install-autostart
-# Crée ~/.config/autostart/unitybrain.desktop
+neuromesh app --install-autostart
+# Crée ~/.config/autostart/neuromesh.desktop
 ```
 
 ### Mode 3 : 📍 Sidekick (barre système)
@@ -1608,14 +1608,14 @@ Pour l'utilisation quotidienne — discret mais toujours là.
 
 ```bash
 # Lancer en sidekick
-unitybrain sidekick
+neuromesh sidekick
 ```
 
 **Caractéristiques :**
 - Icône dans la barre système (tray icon)
 - Menu contextuel par clic droit :
   ```
-  🟢 UnityBrain — 12 pairs
+  🟢 NeuroMesh — 12 pairs
   ├─ 💬 Ouvrir le chat
   ├─ 📊 Partage: 2GB RAM, 30% CPU
   ├─ 🔄 Rejoindre/Quitter le mesh
@@ -1640,41 +1640,41 @@ unitybrain sidekick
 **Installation :**
 ```bash
 # Installer le sidekick en auto-start
-unitybrain sidekick --install
+neuromesh sidekick --install
 
 # Désinstaller
-unitybrain sidekick --uninstall
+neuromesh sidekick --uninstall
 ```
 
 ### Mode 4 : 🔌 Plugin (intégré)
 
-Pour utiliser UnityBrain dans son workflow.
+Pour utiliser NeuroMesh dans son workflow.
 
 ```bash
 # Extension navigateur
-unitybrain plugin --browser
+neuromesh plugin --browser
 
 # Plugin VS Code
-unitybrain plugin --vscode
+neuromesh plugin --vscode
 
 # Plugin Obsidian
-unitybrain plugin --obsidian
+neuromesh plugin --obsidian
 
 # Plugin Terminal
-unitybrain plugin --terminal
+neuromesh plugin --terminal
 ```
 
 **4a. Extension Navigateur (Chrome/Firefox)**
 
-- Icône UnityBrain dans la barre d'outils
+- Icône NeuroMesh dans la barre d'outils
 - Popup de chat rapide
-- Sélection de texte → clic droit → "Demander à UnityBrain"
+- Sélection de texte → clic droit → "Demander à NeuroMesh"
 - Injection de l'IA dans les formulaires web
 - Tourne en background script, communique avec localhost:8080
 
 **4b. Plugin VS Code**
 
-- Panel latéral "UnityBrain"
+- Panel latéral "NeuroMesh"
 - Chat intégré dans l'éditeur
 - Sélection de code → clic droit → "Expliquer / Refactorer / Corriger"
 - Complétion IA (optionnel)
@@ -1682,7 +1682,7 @@ unitybrain plugin --terminal
 
 **4c. Plugin Obsidian**
 
-- Panel latéral UnityBrain
+- Panel latéral NeuroMesh
 - Chat dans Obsidian
 - Insertion de réponses dans les notes
 - Recherche dans les conversations passées
@@ -1692,16 +1692,16 @@ unitybrain plugin --terminal
 
 ```bash
 # Mode terminal interactif
-unitybrain chat
+neuromesh chat
 
 # Une seule requête
-unitybrain ask "Comment faire un potager en ville?"
+neuromesh ask "Comment faire un potager en ville?"
 
 # Pipe
-echo "Explique ce code" | unitybrain ask
+echo "Explique ce code" | neuromesh ask
 
 # Mode daemon (communique avec l'instance en cours)
-unitybrain chat --daemon
+neuromesh chat --daemon
 ```
 
 ### Architecture commune
@@ -1710,8 +1710,8 @@ Les 4 modes partagent le même cœur :
 
 ```
                     ┌─────────────────────────┐
-                    │    UnityBrain Core       │
-                    │    (unitybrain_v5.py)    │
+                    │    NeuroMesh Core       │
+                    │    (neuromesh_v5.py)    │
                     │                          │
                     │  ┌──────────────────┐    │
                     │  │ Resource Guard    │    │
@@ -1744,63 +1744,63 @@ Les 4 modes partagent le même cœur :
 
 ```bash
 # Service (headless)
-unitybrain serve
+neuromesh serve
 
 # Application (GUI)
-unitybrain app
+neuromesh app
 
 # Sidekick (tray icon)
-unitybrain sidekick
+neuromesh sidekick
 
 # Plugin (API only)
-unitybrain plugin --vscode
+neuromesh plugin --vscode
 
 # Chat terminal
-unitybrain chat
+neuromesh chat
 
 # Une seule requête
-unitybrain ask "question"
+neuromesh ask "question"
 
 # Statut
-unitybrain status
+neuromesh status
 
 # Partager un modèle
-unitybrain share glm-5.1
+neuromesh share glm-5.1
 
 # Arrêter de partager
-unitybrain unshare glm-5.1
+neuromesh unshare glm-5.1
 
 # Rejoindre le mesh public
-unitybrain mesh join
+neuromesh mesh join
 
 # Quitter le mesh
-unitybrain mesh leave
+neuromesh mesh leave
 
 # Voir les pairs
-unitybrain peers
+neuromesh peers
 ```
 
 ### Distribution
 
 ```bash
 # PyPI
-pip install unitybrain
+pip install neuromesh
 
 # Docker
-docker pull unitybrain/server:latest
+docker pull neuromesh/server:latest
 
 # AppImage (Linux)
-chmod +x UnityBrain-x86_64.AppImage
-./UnityBrain-x86_64.AppImage sidekick
+chmod +x NeuroMesh-x86_64.AppImage
+./NeuroMesh-x86_64.AppImage sidekick
 
 # Homebrew (macOS)
-brew install unitybrain
+brew install neuromesh
 
 # AUR (Arch Linux)
-yay -S unitybrain
+yay -S neuromesh
 
 # Snap
-sudo snap install unitybrain
+sudo snap install neuromesh
 ```
 
 ---
@@ -1817,7 +1817,7 @@ Mais si ton PC a seulement 2GB de RAM, tu ne peux PAS faire tourner un modèle d
 
 ### Le vrai partage = CPU + RAM
 
-Ce qui rend UnityBrain différent, c'est que tu partages **la capacité de calcul**, pas juste l'accès aux modèles :
+Ce qui rend NeuroMesh différent, c'est que tu partages **la capacité de calcul**, pas juste l'accès aux modèles :
 
 ```
 SCÉNARIO 1 : Partage de modèles uniquement (Ollama)
@@ -1830,7 +1830,7 @@ SCÉNARIO 1 : Partage de modèles uniquement (Ollama)
   ❌ Si le pair se déconnecte → plus de modèle
   ❌ Latence = aller-retour réseau complet
 
-SCÉNARIO 2 : Partage de CPU + RAM (UnityBrain v5)
+SCÉNARIO 2 : Partage de CPU + RAM (NeuroMesh v5)
 
   Denis (2GB RAM) → Requête
   ├── Chunk 1 (2GB) sur Pair A → calcul couche 1-4
@@ -1931,12 +1931,12 @@ resource_guard.can_accept_request()
 
 ### Pourquoi c'est révolutionnaire
 
-**Avant UnityBrain :**
+**Avant NeuroMesh :**
 - Tu veux utiliser GPT-4 class → tu paies 20$/mois
 - Ou tu achètes une RTX 4090 → 2000€
 - Ou tu utilises un modèle 7B sur ton vieux PC → qualité médiocre
 
-**Avec UnityBrain :**
+**Avec NeuroMesh :**
 - Tu partages 2GB RAM + 30% CPU (que quand ton PC est libre)
 - Le mesh combine ta contribution avec celle de 50 autres personnes
 - Tu as accès à un modèle de 40GB qui tourne sur la RAM de tous
@@ -2081,7 +2081,7 @@ Résultat: personne d'autre que toi ne peut lire la question OU la réponse.
 ```
 Toi: "Comment faire un potager en ville?"
 
-→ UnityBrain:
+→ NeuroMesh:
   1. Chiffre ta question
   2. Trouve 4 pairs pour le pipeline
   3. Chaque pair calcule SON chunk (ne voit que des nombres)
@@ -2108,7 +2108,7 @@ Les pairs du mesh :
 
 ### Comparaison avec les services centralisés
 
-| | OpenAI / Claude | UnityBrain |
+| | OpenAI / Claude | NeuroMesh |
 |---|---|---|
 | Ta question | Stockée sur leurs serveurs | Chiffrée E2E |
 | Ta réponse | Stockée sur leurs serveurs | Chiffrée E2E |
@@ -2144,7 +2144,7 @@ class E2EEncryption:
             shared = session_key.exchange(peer_key)
             chunk_key = HKDF(
                 shared,
-                info=f"unitybrain-chunk-{i}".encode(),
+                info=f"neuromesh-chunk-{i}".encode(),
                 length=32
             )
             peer_sessions.append(PeerChunkSession(

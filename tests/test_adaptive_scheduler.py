@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 Tests for Adaptive Scheduler — UnityBrain v5
+🧪 Tests for Adaptive Scheduler — NeuroMesh v5
 ==================================================
 
 Covers:

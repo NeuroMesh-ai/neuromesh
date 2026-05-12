@@ -1,11 +1,11 @@
 #!/bin/bash
-# 🚀 Script de Déploiement Complet - UnityBrain & BugBrain v3.0
+# 🚀 Script de Déploiement Complet - NeuroMesh & NeuroMeshBug v3.0
 # Déploie et démarre les services sur Bug (WSL2) et Pinky (ThinkPad)
 
 set -e
 
 echo "="
-echo "🚀 DÉPLOIEMENT COMPLET - UNITYBRAIN & BUGBRAIN v3.0"
+echo "🚀 DÉPLOIEMENT COMPLET - NEUROMESH & NEUROMESH_BUG v3.0"
 echo "="
 echo ""
 
@@ -16,15 +16,15 @@ echo ""
 echo "📦 [1/4] Déploiement sur Bug (WSL2)..."
 
 WORKSPACE="/home/user/.openclaw/workspace"
-UB_DIR="$WORKSPACE/Unitybrain"
+UB_DIR="$WORKSPACE/NeuroMesh"
 
 # Vérifier si le répertoire existe
 if [ ! -d "$UB_DIR" ]; then
-    echo "❌ Répertoire Unitybrain non trouvé sur Bug"
+    echo "❌ Répertoire NeuroMesh non trouvé sur Bug"
     exit 1
 fi
 
-echo "✅ Répertoire Unitybrain trouvé"
+echo "✅ Répertoire NeuroMesh trouvé"
 
 # Vérifier Python
 if ! command -v python3 &> /dev/null; then
@@ -82,7 +82,7 @@ echo "✅ Projet copié"
 
 # Installer les dépendances sur Pinky
 echo "📦 Installation des dépendances sur Pinky..."
-ssh "$PINKY_USER@$PINKY_HOST" "cd ~/Unitybrain && pip3 install -r requirements.txt --break-system-packages -q"
+ssh "$PINKY_USER@$PINKY_HOST" "cd ~/NeuroMesh && pip3 install -r requirements.txt --break-system-packages -q"
 echo "✅ Dépendances installées"
 
 # Vérifier Ollama sur Pinky
@@ -109,27 +109,27 @@ echo "🚀 [3/4] Démarrage des services sur Bug..."
 
 # Arrêter les services existants
 echo "🛑 Arrêt des services existants..."
-pkill -f "unitybrain_v4.py" 2>/dev/null || true
-pkill -f "bugbrain_v3_final.py" 2>/dev/null || true
+pkill -f "neuromesh_v4.py" 2>/dev/null || true
+pkill -f "neuromesh_bug_v3_final.py" 2>/dev/null || true
 sleep 2
 
-# Démarrer UnityBrain
-echo "🌐 Démarrage d'UnityBrain..."
+# Démarrer NeuroMesh
+echo "🌐 Démarrage d'NeuroMesh..."
 cd "$UB_DIR"
-nohup python3 src/unitybrain_v4.py > logs/unitybrain.log 2>&1 &
-UNITYBRAIN_PID=$!
-echo $UNITYBRAIN_PID > logs/unitybrain.pid
-echo "✅ UnityBrain démarré (PID: $UNITYBRAIN_PID)"
+nohup python3 src/neuromesh_v4.py > logs/neuromesh.log 2>&1 &
+NEUROMESH_PID=$!
+echo $NEUROMESH_PID > logs/neuromesh.pid
+echo "✅ NeuroMesh démarré (PID: $NEUROMESH_PID)"
 
 # Attendre un peu
 sleep 3
 
-# Démarrer BugBrain
-echo "🧠 Démarrage de BugBrain..."
-nohup python3 src/bugbrain_v3_final.py > logs/bugbrain.log 2>&1 &
-BUGBRAIN_PID=$!
-echo $BUGBRAIN_PID > logs/bugbrain.pid
-echo "✅ BugBrain démarré (PID: $BUGBRAIN_PID)"
+# Démarrer NeuroMeshBug
+echo "🧠 Démarrage de NeuroMeshBug..."
+nohup python3 src/neuromesh_bug_v3_final.py > logs/neuromesh_bug.log 2>&1 &
+NEUROMESH_BUG_PID=$!
+echo $NEUROMESH_BUG_PID > logs/neuromesh_bug.pid
+echo "✅ NeuroMeshBug démarré (PID: $NEUROMESH_BUG_PID)"
 
 # Attendre un peu
 sleep 2
@@ -143,22 +143,22 @@ echo "🚀 [4/4] Démarrage des services sur Pinky..."
 
 # Arrêter les services existants
 echo "🛑 Arrêt des services existants..."
-ssh "$PINKY_USER@$PINKY_HOST" "pkill -f 'unitybrain_v4.py' 2>/dev/null || true"
-ssh "$PINKY_USER@$PINKY_HOST" "pkill -f 'bugbrain_v3_final.py' 2>/dev/null || true"
+ssh "$PINKY_USER@$PINKY_HOST" "pkill -f 'neuromesh_v4.py' 2>/dev/null || true"
+ssh "$PINKY_USER@$PINKY_HOST" "pkill -f 'neuromesh_bug_v3_final.py' 2>/dev/null || true"
 sleep 2
 
-# Démarrer UnityBrain sur Pinky
-echo "🌐 Démarrage d'UnityBrain sur Pinky..."
-ssh "$PINKY_USER@$PINKY_HOST" "cd ~/Unitybrain && nohup python3 src/unitybrain_v4.py > logs/unitybrain.log 2>&1 & echo \$! > logs/unitybrain.pid"
-echo "✅ UnityBrain démarré sur Pinky"
+# Démarrer NeuroMesh sur Pinky
+echo "🌐 Démarrage d'NeuroMesh sur Pinky..."
+ssh "$PINKY_USER@$PINKY_HOST" "cd ~/NeuroMesh && nohup python3 src/neuromesh_v4.py > logs/neuromesh.log 2>&1 & echo \$! > logs/neuromesh.pid"
+echo "✅ NeuroMesh démarré sur Pinky"
 
 # Attendre un peu
 sleep 3
 
-# Démarrer BugBrain sur Pinky
-echo "🧠 Démarrage de BugBrain sur Pinky..."
-ssh "$PINKY_USER@$PINKY_HOST" "cd ~/Unitybrain && nohup python3 src/bugbrain_v3_final.py > logs/bugbrain.log 2>&1 & echo \$! > logs/bugbrain.pid"
-echo "✅ BugBrain démarré sur Pinky"
+# Démarrer NeuroMeshBug sur Pinky
+echo "🧠 Démarrage de NeuroMeshBug sur Pinky..."
+ssh "$PINKY_USER@$PINKY_HOST" "cd ~/NeuroMesh && nohup python3 src/neuromesh_bug_v3_final.py > logs/neuromesh_bug.log 2>&1 & echo \$! > logs/neuromesh_bug.pid"
+echo "✅ NeuroMeshBug démarré sur Pinky"
 
 # =============================================================================
 # TEST DE CONNEXION
@@ -172,27 +172,27 @@ echo ""
 echo "📊 STATUT DES SERVICES:"
 echo ""
 echo "Bug (WSL2):"
-echo "  UnityBrain: PID $(cat $UB_DIR/logs/unitybrain.pid 2>/dev/null || echo 'N/A')"
-echo "  BugBrain: PID $(cat $UB_DIR/logs/bugbrain.pid 2>/dev/null || echo 'N/A')"
+echo "  NeuroMesh: PID $(cat $UB_DIR/logs/neuromesh.pid 2>/dev/null || echo 'N/A')"
+echo "  NeuroMeshBug: PID $(cat $UB_DIR/logs/neuromesh_bug.pid 2>/dev/null || echo 'N/A')"
 echo ""
 echo "Pinky (ThinkPad):"
-ssh "$PINKY_USER@$PINKY_HOST" "cd ~/Unitybrain && echo '  UnityBrain: PID '\$(cat logs/unitybrain.pid 2>/dev/null || echo 'N/A')"
-ssh "$PINKY_USER@$PINKY_HOST" "cd ~/Unitybrain && echo '  BugBrain: PID '\$(cat logs/bugbrain.pid 2>/dev/null || echo 'N/A')"
+ssh "$PINKY_USER@$PINKY_HOST" "cd ~/NeuroMesh && echo '  NeuroMesh: PID '\$(cat logs/neuromesh.pid 2>/dev/null || echo 'N/A')"
+ssh "$PINKY_USER@$PINKY_HOST" "cd ~/NeuroMesh && echo '  NeuroMeshBug: PID '\$(cat logs/neuromesh_bug.pid 2>/dev/null || echo 'N/A')"
 echo ""
 echo "💡 POUR TESTER:"
 echo "  cd $UB_DIR"
 echo "  python3 src/interactive_interface.py"
 echo ""
 echo "📝 LOGS:"
-echo "  Bug: tail -f $UB_DIR/logs/unitybrain.log"
-echo "  Bug: tail -f $UB_DIR/logs/bugbrain.log"
-echo "  Pinky: ssh $PINKY_USER@$PINKY_HOST 'tail -f ~/Unitybrain/logs/unitybrain.log'"
-echo "  Pinky: ssh $PINKY_USER@$PINKY_HOST 'tail -f ~/Unitybrain/logs/bugbrain.log'"
+echo "  Bug: tail -f $UB_DIR/logs/neuromesh.log"
+echo "  Bug: tail -f $UB_DIR/logs/neuromesh_bug.log"
+echo "  Pinky: ssh $PINKY_USER@$PINKY_HOST 'tail -f ~/NeuroMesh/logs/neuromesh.log'"
+echo "  Pinky: ssh $PINKY_USER@$PINKY_HOST 'tail -f ~/NeuroMesh/logs/neuromesh_bug.log'"
 echo ""
 echo "🛑 POUR ARRÊTER:"
-echo "  Bug: kill $UNITYBRAIN_PID $BUGBRAIN_PID"
-echo "  Pinky: ssh $PINKY_USER@$PINKY_HOST 'cd ~/Unitybrain && pkill -f unitybrain_v4.py && pkill -f bugbrain_v3_final.py'"
+echo "  Bug: kill $NEUROMESH_PID $NEUROMESH_BUG_PID"
+echo "  Pinky: ssh $PINKY_USER@$PINKY_HOST 'cd ~/NeuroMesh && pkill -f neuromesh_v4.py && pkill -f neuromesh_bug_v3_final.py'"
 echo ""
-echo "🎉 UnityBrain & BugBrain v3.0 sont déployés et démarrés !"
+echo "🎉 NeuroMesh & NeuroMeshBug v3.0 sont déployés et démarrés !"
 echo ""
 echo "="

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UnityBrain — P2P Distributed AI Network</title>
+<title>NeuroMesh — P2P Distributed AI Network</title>
 <meta name="description" content="Lightweight P2P distributed AI network. No central server. No accounts. Install, connect, query.">
 <meta name="theme-color" content="#0a0e27">
 <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
@@ -158,7 +158,7 @@ footer .copy{color:var(--text3);font-size:.8rem;margin-top:1.5rem}
 <nav>
   <div class="logo">
     <img src="../assets/logo.svg" alt="UB" width="32" height="32">
-    <span>UnityBrain</span>
+    <span>NeuroMesh</span>
   </div>
   <div class="links" id="navLinks">
     <a href="#features">Features</a>
@@ -167,15 +167,15 @@ footer .copy{color:var(--text3);font-size:.8rem;margin-top:1.5rem}
     <a href="#architecture">Architecture</a>
     <a href="#api">API</a>
     <a href="#cli">CLI</a>
-    <a href="https://github.com/unitybrain-ai/unitybrain" target="_blank" class="gh">GitHub ↗</a>
+    <a href="https://github.com/NeuroMesh-ai/neuromesh" target="_blank" class="gh">GitHub ↗</a>
   </div>
   <button class="hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
-  <img src="../assets/logo.svg" alt="UnityBrain Logo" class="hero-logo">
-  <h1>UnityBrain</h1>
+  <img src="../assets/logo.svg" alt="NeuroMesh Logo" class="hero-logo">
+  <h1>NeuroMesh</h1>
   <p class="tagline">P2P Distributed AI Network</p>
   <p class="tagline-fr">Intelligence partagée — Shared Intelligence</p>
   <span class="version">v4.1.0</span>
@@ -187,7 +187,7 @@ footer .copy{color:var(--text3);font-size:.8rem;margin-top:1.5rem}
   </div>
   <div class="cta">
     <a href="#quickstart" class="btn btn-primary">⚡ Get Started</a>
-    <a href="https://github.com/unitybrain-ai/unitybrain" target="_blank" class="btn btn-secondary">📂 View on GitHub</a>
+    <a href="https://github.com/NeuroMesh-ai/neuromesh" target="_blank" class="btn btn-secondary">📂 View on GitHub</a>
   </div>
 </section>
 
@@ -249,7 +249,7 @@ footer .copy{color:var(--text3);font-size:.8rem;margin-top:1.5rem}
     <div class="feature animate">
       <span class="icon">🖥️</span>
       <h3>Interactive CLI</h3>
-      <p>The <code>unitybrain</code> command with /status, /peers, /models, /quota, /ensemble, and more. Full control from your terminal.</p>
+      <p>The <code>neuromesh</code> command with /status, /peers, /models, /quota, /ensemble, and more. Full control from your terminal.</p>
       <span class="tag">Terminal-First</span>
     </div>
     <div class="feature animate">
@@ -261,7 +261,7 @@ footer .copy{color:var(--text3);font-size:.8rem;margin-top:1.5rem}
     <div class="feature animate">
       <span class="icon">🔌</span>
       <h3>OpenClaw Plugin</h3>
-      <p>One command install: <code>openclaw skill install unitybrain</code>. Integrates with your OpenClaw agent seamlessly.</p>
+      <p>One command install: <code>openclaw skill install neuromesh</code>. Integrates with your OpenClaw agent seamlessly.</p>
       <span class="tag">1-Click Install</span>
     </div>
   </div>
@@ -272,7 +272,7 @@ footer .copy{color:var(--text3);font-size:.8rem;margin-top:1.5rem}
   <div class="why-inner">
     <h2>Why This <span class="accent">Exists</span></h2>
     <p>We're tired of <strong>AI as a service</strong>. Monthly subscriptions. API keys that expire. Rate limits you didn't ask for. Vendor lock-in. Data you don't control. Servers that go down and take your workflow with them.</p>
-    <p>UnityBrain is the <strong>antidote</strong>. Your machines, your models, your memory. Connect them peer-to-peer. No middleman. No subscription. No "enterprise tier".</p>
+    <p>NeuroMesh is the <strong>antidote</strong>. Your machines, your models, your memory. Connect them peer-to-peer. No middleman. No subscription. No "enterprise tier".</p>
     <div class="manifesto">
       "If you can run Python, you can run a node. If you have two machines, you have a network. If your neighbor joins, it gets stronger. That's it. That's the whole pitch."
     </div>
@@ -295,8 +295,8 @@ footer .copy{color:var(--text3);font-size:.8rem;margin-top:1.5rem}
         <div class="code-block">
           <div class="lang">bash</div>
           <pre><span class="comment"># Clone &amp; enter</span>
-git clone https://github.com/unitybrain-ai/unitybrain.git
-<span class="key">cd</span> Unitybrain</pre>
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+<span class="key">cd</span> NeuroMesh</pre>
         </div>
       </div>
     </div>
@@ -307,10 +307,10 @@ git clone https://github.com/unitybrain-ai/unitybrain.git
         <p>That's it. One command. Python 3.12+ required.</p>
         <div class="code-block">
           <div class="lang">bash</div>
-          <pre>python3 src/unitybrain_v4.py
+          <pre>python3 src/neuromesh_v4.py
 
 <span class="comment"># Or with a custom config</span>
-python3 src/unitybrain_v4.py --config config/bug.json</pre>
+python3 src/neuromesh_v4.py --config config/bug.json</pre>
         </div>
       </div>
     </div>
@@ -347,8 +347,8 @@ TS=$(date +%s)
 SIG=$(echo -n <span class="string">"/api/query:$TS"</span> | openssl dgst -sha256 \
   -hmac <span class="string">"your-secret"</span> | awk <span class="string">'{print $NF}'</span>)
 curl -X POST http://localhost:8080/api/query \
-  -H <span class="string">"X-UnityBrain-Auth: $SIG"</span> \
-  -H <span class="string">"X-UnityBrain-TS: $TS"</span> \
+  -H <span class="string">"X-NeuroMesh-Auth: $SIG"</span> \
+  -H <span class="string">"X-NeuroMesh-TS: $TS"</span> \
   -H <span class="string">"Content-Type: application/json"</span> \
   -d <span class="string">'{"prompt":"Hello!","model":"glm-5.1:cloud"}'</span></pre>
         </div>
@@ -426,7 +426,7 @@ curl -X POST http://localhost:8080/api/query \
 <!-- CLI -->
 <section id="cli">
   <h2>Interactive <span class="accent">CLI</span></h2>
-  <p class="subtitle">Full control from your terminal. The <code>unitybrain</code> command.</p>
+  <p class="subtitle">Full control from your terminal. The <code>neuromesh</code> command.</p>
   <div class="cli-commands">
     <div class="cli-cmd"><span class="cmd">/status</span><div class="desc">Node health, uptime, peers</div></div>
     <div class="cli-cmd"><span class="cmd">/peers</span><div class="desc">Connected peers &amp; latency</div></div>
@@ -442,8 +442,8 @@ curl -X POST http://localhost:8080/api/query \
 <!-- Footer -->
 <footer>
   <div class="footer-links">
-    <a href="https://github.com/unitybrain-ai/unitybrain" target="_blank">📂 GitHub</a>
-    <a href="https://github.com/unitybrain-ai/unitybrain/blob/main/LICENSE" target="_blank">📄 MIT License</a>
+    <a href="https://github.com/NeuroMesh-ai/neuromesh" target="_blank">📂 GitHub</a>
+    <a href="https://github.com/NeuroMesh-ai/neuromesh/blob/main/LICENSE" target="_blank">📄 MIT License</a>
     <a href="#features">✨ Features</a>
     <a href="#quickstart">⚡ Quick Start</a>
     <a href="#api">📡 API</a>

@@ -1,10 +1,10 @@
-# 🌐 UnityBrain v5
+# 🌐 NeuroMesh v5
 
-[![الإصدار](https://img.shields.io/badge/الإصدار-5.0.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![الإصدار](https://img.shields.io/badge/الإصدار-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![الرخصة: MIT](https://img.shields.io/badge/الرخصة-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-لامركزي-green.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![تشفير E2E](https://img.shields.io/badge/E2E-مشفر-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-لامركزي-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![تشفير E2E](https://img.shields.io/badge/E2E-مشفر-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
 **شبكة ذكاء اصطناعي P2P موزعة مع شبكة عامة. شارك المعالجة، شارك النماذج، حافظ على خصوصيتك.**
 
@@ -12,9 +12,9 @@
 
 ---
 
-## ✨ ما هو UnityBrain؟
+## ✨ ما هو NeuroMesh؟
 
-يقوم UnityBrain بربط الأجهزة في شبكة ذكاء اصطناعي نظير-لنظير. أجهزتك تتواصل فيما بينها، وتشارك المعالجة والنماذج — بدون اعتماد على السحابة، بدون خادم مركزي، بدون نقطة فشل واحدة.
+يقوم NeuroMesh بربط الأجهزة في شبكة ذكاء اصطناعي نظير-لنظير. أجهزتك تتواصل فيما بينها، وتشارك المعالجة والنماذج — بدون اعتماد على السحابة، بدون خادم مركزي، بدون نقطة فشل واحدة.
 
 **الإصدار v5 يضيف الشبكة العامة:** انضم إلى شبكة عالمية من المعالجة المركزية والذاكرة ووحدات معالجة الرسوميات ونماذج الذكاء الاصطناعي المشتركة. شبكتك الخاصة تبقى خاصة. الشبكة العامة هي طبقة إضافية تختار الانضمام إليها.
 
@@ -51,14 +51,14 @@
 
 ```bash
 # الاستنساخ
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
 
 # التشغيل
-python3 src/unitybrain_v5.py
+python3 src/neuromesh_v5.py
 
 # أو مع ملف إعدادات
-python3 src/unitybrain_v5.py --config config/bug.json
+python3 src/neuromesh_v5.py --config config/bug.json
 ```
 
 ### ربط شبكتك
@@ -209,7 +209,7 @@ class ResourceGuard:
 محادثاتك تبقى على جهازك. نقطة.
 
 - **حفظ تلقائي** — كل رسالة محفوظة محلياً. بدون زر "حفظ".
-- **استئناف** — افتح UnityBrain غداً، محادثاتك موجودة.
+- **استئناف** — افتح NeuroMesh غداً، محادثاتك موجودة.
 - **بحث** — اعثر على أي محادثة سابقة بالكلمة المفتاحية أو التاريخ أو النموذج أو الوسم.
 - **تصدير** — Markdown, JSON, نص عادي. بياناتك، تنسيقك.
 - **الخصوصية** — المحادثات لا تغادر جهازك أبداً ما لم تزامنها عبر P2P الخاص.
@@ -254,7 +254,7 @@ class ResourceGuard:
 مجلد مخصص هو **الواجهة الوحيدة** بين نماذجك والشبكة العامة.
 
 ```
-~/.unitybrain/
+~/.neuromesh/
 ├── conversations/        → 🔒 خاص (لا يُشارك أبداً)
 ├── memory/               → 🔒 خاص (لا يُشارك أبداً)
 ├── config/               → 🔒 خاص (لا يُشارك أبداً)
@@ -266,9 +266,9 @@ class ResourceGuard:
 ```
 
 ```bash
-unitybrain share glm-5.1    # مشاركة نموذج (ينشئ رابط رمزي)
-unitybrain unshare glm-5.1  # إيقاف المشاركة (يزيل الرابط الرمزي فقط)
-unitybrain shared            # قائمة النماذج المشتركة
+neuromesh share glm-5.1    # مشاركة نموذج (ينشئ رابط رمزي)
+neuromesh unshare glm-5.1  # إيقاف المشاركة (يزيل الرابط الرمزي فقط)
+neuromesh shared            # قائمة النماذج المشتركة
 ```
 
 **الشبكة العامة لا تقرأ أبداً خارج `shared_models/`.** إيقاف المشاركة فوري — الشبكة تفقد الوصول فور إزالة الرابط الرمزي.
@@ -298,10 +298,10 @@ unitybrain shared            # قائمة النماذج المشتركة
 | 🔌 **إضافة** | مدمج في سير عملك | VS Code, متصفح, Obsidian, طرفية |
 
 ```bash
-unitybrain serve          # خدمة (بدون واجهة)
-unitybrain app            # تطبيق (واجهة رسومية)
-unitybrain sidekick       # مساعد (شريط النظام)
-unitybrain plugin --vscode  # إضافة (VS Code)
+neuromesh serve          # خدمة (بدون واجهة)
+neuromesh app            # تطبيق (واجهة رسومية)
+neuromesh sidekick       # مساعد (شريط النظام)
+neuromesh plugin --vscode  # إضافة (VS Code)
 ```
 
 الأوضاع الأربعة تشترك في نفس النواة. ملف ثنائي واحد، أربع أنماط حياة.
@@ -312,7 +312,7 @@ unitybrain plugin --vscode  # إضافة (VS Code)
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   نواة UnityBrain                    │
+│                   نواة NeuroMesh                    │
 │  ┌────────────┐ ┌──────────────┐ ┌────────────────┐ │
 │  │ حارس       │ │ الجدولة     │ │ مخزن           │ │
 │  │ الموارد    │ │ التكيفية     │ │ المحادثات      │ │
@@ -352,7 +352,7 @@ unitybrain plugin --vscode  # إضافة (VS Code)
   },
   "public_mesh": {
     "enabled": true,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,

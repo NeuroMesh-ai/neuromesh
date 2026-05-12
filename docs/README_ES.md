@@ -1,10 +1,10 @@
-# 🌐 UnityBrain v5
+# 🌐 NeuroMesh v5
 
-[![Versión](https://img.shields.io/badge/versión-5.0.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![Versión](https://img.shields.io/badge/versión-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![Licencia: MIT](https://img.shields.io/badge/Licencia-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-Descentralizado-green.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![Cifrado E2E](https://img.shields.io/badge/E2E-Cifrado-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-Descentralizado-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Cifrado E2E](https://img.shields.io/badge/E2E-Cifrado-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
 **Red de IA P2P distribuida con malla pública. Comparte cómputo, comparte modelos, mantente privado.**
 
@@ -12,9 +12,9 @@
 
 ---
 
-## ✨ ¿Qué es UnityBrain?
+## ✨ ¿Qué es NeuroMesh?
 
-UnityBrain conecta máquinas en una red de IA peer-to-peer. Tus máquinas se comunican entre sí, comparten cómputo y modelos — sin dependencia de la nube, sin servidor central, sin punto único de fallo.
+NeuroMesh conecta máquinas en una red de IA peer-to-peer. Tus máquinas se comunican entre sí, comparten cómputo y modelos — sin dependencia de la nube, sin servidor central, sin punto único de fallo.
 
 **v5 añade la malla pública:** únete a una red global de CPU, RAM, GPU y modelos IA compartidos. Tu red privada sigue siendo privada. La malla es una capa adicional que activas voluntariamente.
 
@@ -51,14 +51,14 @@ UnityBrain conecta máquinas en una red de IA peer-to-peer. Tus máquinas se com
 
 ```bash
 # Clonar
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
 
 # Ejecutar
-python3 src/unitybrain_v5.py
+python3 src/neuromesh_v5.py
 
 # O con un archivo de configuración
-python3 src/unitybrain_v5.py --config config/bug.json
+python3 src/neuromesh_v5.py --config config/bug.json
 ```
 
 ### Conectar tu red
@@ -209,7 +209,7 @@ La red decide la mejor estrategia según cuántos pares estén disponibles. Sin 
 Tus conversaciones se quedan en TU máquina. Punto final.
 
 - **Guardado automático** — Cada mensaje se guarda localmente. Sin botón "guardar".
-- **Reanudar** — Abre UnityBrain mañana, tus conversaciones están ahí.
+- **Reanudar** — Abre NeuroMesh mañana, tus conversaciones están ahí.
 - **Búsqueda** — Encuentra cualquier conversación por palabra clave, fecha, modelo o etiqueta.
 - **Exportar** — Markdown, JSON, texto plano. Tus datos, tu formato.
 - **Privacidad** — Las conversaciones NUNCA salen de tu máquina a menos que las sincronices vía P2P privado.
@@ -254,7 +254,7 @@ Cuando consultas la malla, tus datos están cifrados de extremo a extremo:
 Una carpeta dedicada que es la **única interfaz** entre tus modelos y la malla pública.
 
 ```
-~/.unitybrain/
+~/.neuromesh/
 ├── conversations/        → 🔒 Privado (nunca compartido)
 ├── memory/               → 🔒 Privado (nunca compartido)
 ├── config/               → 🔒 Privado (nunca compartido)
@@ -266,9 +266,9 @@ Una carpeta dedicada que es la **única interfaz** entre tus modelos y la malla 
 ```
 
 ```bash
-unitybrain share glm-5.1    # Compartir un modelo (crea enlace simbólico)
-unitybrain unshare glm-5.1  # Dejar de compartir (elimina solo el enlace)
-unitybrain shared            # Listar modelos compartidos
+neuromesh share glm-5.1    # Compartir un modelo (crea enlace simbólico)
+neuromesh unshare glm-5.1  # Dejar de compartir (elimina solo el enlace)
+neuromesh shared            # Listar modelos compartidos
 ```
 
 **La malla NUNCA lee fuera de `shared_models/`.** Dejar de compartir es instantáneo — la malla pierde acceso en el momento en que se elimina el enlace.
@@ -298,10 +298,10 @@ Funciona en cualquier navegador en `localhost:8080`. Instalable como PWA para de
 | 🔌 **Plugin** | Integrado en tu flujo de trabajo | VS Code, navegador, Obsidian, terminal |
 
 ```bash
-unitybrain serve          # Servicio (headless)
-unitybrain app            # Aplicación (GUI)
-unitybrain sidekick       # Sidekick (bandeja del sistema)
-unitybrain plugin --vscode  # Plugin (VS Code)
+neuromesh serve          # Servicio (headless)
+neuromesh app            # Aplicación (GUI)
+neuromesh sidekick       # Sidekick (bandeja del sistema)
+neuromesh plugin --vscode  # Plugin (VS Code)
 ```
 
 Los 4 modos comparten el mismo núcleo. Un binario, cuatro estilos de vida.
@@ -312,7 +312,7 @@ Los 4 modos comparten el mismo núcleo. Un binario, cuatro estilos de vida.
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                Núcleo de UnityBrain                  │
+│                Núcleo de NeuroMesh                  │
 │  ┌────────────┐ ┌──────────────┐ ┌────────────────┐ │
 │  │ Resource   │ │ Adaptive     │ │ Conversation   │ │
 │  │ Guard      │ │ Scheduler    │ │ Store          │ │
@@ -352,7 +352,7 @@ Los 4 modos comparten el mismo núcleo. Un binario, cuatro estilos de vida.
   },
   "public_mesh": {
     "enabled": true,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,

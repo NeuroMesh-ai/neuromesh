@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-🔄 NETWORK SYNC — UnityBrain v5.2
+🔄 NETWORK SYNC — NeuroMesh v5.2
 ====================================
-Synchronisation automatique quand un nœud rejoint le réseau UnityBrain.
+Synchronisation automatique quand un nœud rejoint le réseau NeuroMesh.
 
 Processus de connexion:
 1. Authentification au réseau (via tracker/P2P)
@@ -29,7 +29,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Set, Tuple
 
-logger = logging.getLogger('UnityBrain.NetworkSync')
+logger = logging.getLogger('NeuroMesh.NetworkSync')
 
 # ============================================================================
 # CONSTANTES
@@ -49,7 +49,7 @@ MAX_MODELS_PER_NODE = 20             # Max modèles annoncés par nœud
 # ============================================================================
 
 class DynamicDNS:
-    """DNS dynamique pour les nœuds UnityBrain.
+    """DNS dynamique pour les nœuds NeuroMesh.
     
     Maintient une liste de nœuds avec leur IP, port, modèles et dernière
     fois qu'ils ont été vus. Les nœuds absents sont progressivement
@@ -57,7 +57,7 @@ class DynamicDNS:
     """
 
     def __init__(self, persist_dir: str = None):
-        self.persist_dir = Path(persist_dir) if persist_dir else Path.home() / ".unitybrain"
+        self.persist_dir = Path(persist_dir) if persist_dir else Path.home() / ".neuromesh"
         self.persist_dir.mkdir(parents=True, exist_ok=True)
         self._nodes_file = self.persist_dir / "dns_nodes.json"
         self._nodes: Dict[str, Dict] = {}  # node_id -> node_info
@@ -225,7 +225,7 @@ class DynamicDNS:
 # ============================================================================
 
 class NetworkSync:
-    """Synchronisation automatique du réseau UnityBrain.
+    """Synchronisation automatique du réseau NeuroMesh.
     
     Quand un nœud rejoint le réseau:
     1. Découverte des nœuds actifs (via tracker + mDNS + DNS cache)
@@ -386,8 +386,8 @@ class NetworkSync:
             except Exception as e:
                 logger.debug(f"🔄 Tracker discovery failed: {e}")
 
-        # Via mDNS (ZeroConfigDiscovery) — si disponible dans UnityBrain
-        # Cette partie sera branchée par UnityBrain qui a accès à ZeroConfigDiscovery
+        # Via mDNS (ZeroConfigDiscovery) — si disponible dans NeuroMesh
+        # Cette partie sera branchée par NeuroMesh qui a accès à ZeroConfigDiscovery
 
         return nodes
 

@@ -163,7 +163,7 @@ else:
 ```python
 # Broadcast un message à tous les peers
 await node.broadcast("announcement", {
-    "message": "UnityBrain v3.0 is online!",
+    "message": "NeuroMesh v3.0 is online!",
     "timestamp": time.time()
 })
 ```
@@ -435,15 +435,15 @@ print(f"Peers connectés: {status['routing_table']['total_peers']}")
 
 ---
 
-## 🎯 Intégration avec UnityBrain & BugBrain
+## 🎯 Intégration avec NeuroMesh & NeuroMeshBug
 
 ### Ajouter le P2P Network
 
 ```python
 from true_p2p_network import P2PNode, P2PConfig
 
-# Dans votre UnityBrain/BugBrain
-class UnityBrain:
+# Dans votre NeuroMesh/NeuroMeshBug
+class NeuroMesh:
     def __init__(self):
         # ... code existant ...
 
@@ -461,11 +461,11 @@ class UnityBrain:
 
     async def store_p2p(self, key: str, value: Any):
         """Stocke via P2P"""
-        await self.p2p_node.store(f"unitybrain:{key}", value)
+        await self.p2p_node.store(f"neuromesh:{key}", value)
 
     async def get_p2p(self, key: str) -> Optional[Any]:
         """Récupère via P2P"""
-        return await self.p2p_node.get(f"unitybrain:{key}")
+        return await self.p2p_node.get(f"neuromesh:{key}")
 
     async def broadcast_p2p(self, msg_type: str, payload: Dict):
         """Broadcast via P2P"""

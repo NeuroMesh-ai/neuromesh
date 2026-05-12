@@ -1,8 +1,8 @@
-# 🔐 UnityBrain v4.0 — Auth Design
+# 🔐 NeuroMesh v4.0 — Auth Design
 
 ## Overview
 
-UnityBrain v4.0 uses a **decentralized auth model**. There is no central server, no CA, no registry. Authentication is between **nodes** (peers in the P2P network), not between end users. Users don't need accounts.
+NeuroMesh v4.0 uses a **decentralized auth model**. There is no central server, no CA, no registry. Authentication is between **nodes** (peers in the P2P network), not between end users. Users don't need accounts.
 
 ---
 
@@ -17,12 +17,12 @@ Each node generates its own **Ed25519 keypair** on first run. Its identity IS it
 ### First Run
 
 ```bash
-$ unitybrain start bug
+$ neuromesh start bug
 🔑 Node identity generated: bug [fingerprint: a3b2c1d4e5f67890]
 📌 Public key: a3b2c1d4e5f67890abcdef1234567890abcdef1234567890abcdef12345678
 ```
 
-The keypair is stored in `~/.unitybrain/identity/` (or derived from `p2p_secret` in config).
+The keypair is stored in `~/.neuromesh/identity/` (or derived from `p2p_secret` in config).
 
 ---
 
@@ -110,10 +110,10 @@ No central registry needed. Early adopters share a list of seed nodes in the REA
 
 ## User vs Node Auth
 
-**Users** who install UnityBrain **do NOT need to authenticate**. They just:
-1. Install → `pip install unitybrain` or `git clone`
+**Users** who install NeuroMesh **do NOT need to authenticate**. They just:
+1. Install → `pip install neuromesh` or `git clone`
 2. Configure → edit `config/bug.json`
-3. Start → `python -m unitybrain bug`
+3. Start → `python -m neuromesh bug`
 4. Query → `curl http://localhost:8080/api/query`
 
 **Node auth** is automatic and transparent — nodes identify each other via Ed25519 keys.
@@ -122,7 +122,7 @@ No central registry needed. Early adopters share a list of seed nodes in the REA
 
 Users can share their AI models with the network:
 - Config: `"share_ai": true`
-- CLI: `unitybrain share my-model`
+- CLI: `neuromesh share my-model`
 
 When sharing, the node announces its available models to peers. No registration needed.
 

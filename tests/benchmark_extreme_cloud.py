@@ -15,7 +15,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.bugbrain_v3_final import BugBrain
+from src.neuromesh_bug_v3_final import NeuroMeshBug
 
 # 5 questions représentatives de niveau doctoral
 EXTREME_QUERIES_SAMPLE = [
@@ -53,10 +53,10 @@ class CloudBenchmark:
         print(f"   Modèles: {len(CLOUD_MODELS)}")
         print(f"   Total tests: {len(EXTREME_QUERIES_SAMPLE) * len(CLOUD_MODELS)}")
 
-        # Créer BugBrain
-        bugbrain = BugBrain()
-        bugbrain.model = "glm-4.7:cloud"  # Forcer le modèle cloud
-        await bugbrain.initialize()
+        # Créer NeuroMeshBug
+        neuromesh_bug = NeuroMeshBug()
+        neuromesh_bug.model = "glm-4.7:cloud"  # Forcer le modèle cloud
+        await neuromesh_bug.initialize()
 
         self.start_time = datetime.utcnow()
 
@@ -64,7 +64,7 @@ class CloudBenchmark:
             print(f"\n🤖 Testing model: {model}")
 
             # Changer de modèle
-            bugbrain.model = model
+            neuromesh_bug.model = model
 
             for i, query in enumerate(EXTREME_QUERIES_SAMPLE):
                 print(f"\n   [{i+1}/{len(EXTREME_QUERIES_SAMPLE)}] {query[:50]}...")
@@ -72,7 +72,7 @@ class CloudBenchmark:
                 start = time.time()
 
                 try:
-                    result = await bugbrain.query(query)
+                    result = await neuromesh_bug.query(query)
                     latency = (time.time() - start) * 1000
 
                     response = result.get("response", "")

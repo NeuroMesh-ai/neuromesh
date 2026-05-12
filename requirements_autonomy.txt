@@ -1,4 +1,4 @@
-# BUGBRAIN v3.5 - Dépendances pour l'autonomie avancée
+# NEUROMESH_BUG v3.5 - Dépendances pour l'autonomie avancée
 
 # Core dependencies
 aiofiles>=23.2.0

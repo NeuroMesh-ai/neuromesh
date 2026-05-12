@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-🖥️ UnityBrain CLI — Client interactif v5
-Utilise UnityBrain comme application, avec ou sans réseau P2P.
+🖥️ NeuroMesh CLI — Client interactif v5
+Utilise NeuroMesh comme application, avec ou sans réseau P2P.
 Partage CPU/RAM avec le réseau quand share_ai=true.
 
 Commands:
@@ -42,7 +42,7 @@ import ssl
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8080
-HISTORY_FILE = os.path.expanduser("~/.unitybrain_history.json")
+HISTORY_FILE = os.path.expanduser("~/.neuromesh_history.json")
 
 # SSL context (skip verification for local)
 ctx = ssl.create_default_context()
@@ -53,8 +53,8 @@ ctx.verify_mode = ssl.CERT_NONE
 # API CLIENT
 # ============================================================================
 
-class UnityBrainClient:
-    """Lightweight client for UnityBrain API."""
+class NeuroMeshClient:
+    """Lightweight client for NeuroMesh API."""
 
     def __init__(self, host=DEFAULT_HOST, port=DEFAULT_PORT, secret=None):
         self.host = host
@@ -71,8 +71,8 @@ class UnityBrainClient:
                 f"{path}:{ts}".encode(),
                 hashlib.sha256
             ).hexdigest()
-            headers["X-UnityBrain-Auth"] = sig
-            headers["X-UnityBrain-TS"] = ts
+            headers["X-NeuroMesh-Auth"] = sig
+            headers["X-NeuroMesh-TS"] = ts
         return headers
 
     def _request(self, path, data=None, method="GET"):
@@ -122,13 +122,13 @@ class UnityBrainClient:
 
 
 # ============================================================================
-# INTERACTIVE SHELL (unchanged — used by `unitybrain chat`)
+# INTERACTIVE SHELL (unchanged — used by `neuromesh chat`)
 # ============================================================================
 
-class UnityBrainShell:
-    """Interactive shell for UnityBrain."""
+class NeuroMeshShell:
+    """Interactive shell for NeuroMesh."""
 
-    PROMPT = "UnityBrain> "
+    PROMPT = "NeuroMesh> "
     COMMANDS = {
         "help": "Show this help",
         "status": "Show node status",
@@ -141,7 +141,7 @@ class UnityBrainShell:
         "model": "Set default model",
         "ensemble": "Query with ensemble consensus",
         "config": "Show current configuration",
-        "quit": "Exit UnityBrain CLI",
+        "quit": "Exit NeuroMesh CLI",
     }
 
     def __init__(self, client):
@@ -183,15 +183,15 @@ class UnityBrainShell:
     def run(self):
         """Main interactive loop."""
         print()
-        print("🖥️  UnityBrain CLI v5")
+        print("🖥️  NeuroMesh CLI v5")
         print("   P2P Distributed AI Network")
         print()
 
         # Check connection
         status = self.client.status()
         if "error" in status:
-            print(f"❌ Cannot connect to UnityBrain at {self.client.base}")
-            print(f"   Start it with: unitybrain serve")
+            print(f"❌ Cannot connect to NeuroMesh at {self.client.base}")
+            print(f"   Start it with: neuromesh serve")
             print()
             return
 
@@ -233,7 +233,7 @@ class UnityBrainShell:
 
     def _show_help(self):
         print()
-        print("📚 UnityBrain CLI Commands:")
+        print("📚 NeuroMesh CLI Commands:")
         print("─" * 40)
         for cmd, desc in self.COMMANDS.items():
             print(f"  /{cmd:12s} {desc}")
@@ -326,7 +326,7 @@ class UnityBrainShell:
             return
 
         print()
-        print(f"📊 UnityBrain v{status.get('version', '?')} — {status.get('node', '?')}")
+        print(f"📊 NeuroMesh v{status.get('version', '?')} — {status.get('node', '?')}")
         print("─" * 40)
         print(f"  Uptime:   {status.get('uptime', 0)/3600:.1f}h")
         print(f"  Share AI:   {'Yes ✅' if status.get('share_ai') else 'No 🔇'}")
@@ -499,10 +499,10 @@ class UnityBrainShell:
 # ============================================================================
 
 def _load_config_and_client(node, host, port, secret):
-    """Load node config and return a UnityBrainClient."""
+    """Load node config and return a NeuroMeshClient."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
     config_dirs = [
-        os.path.join(os.path.expanduser("~"), ".unitybrain", "config"),
+        os.path.join(os.path.expanduser("~"), ".neuromesh", "config"),
         os.path.join(os.path.dirname(script_dir), "config"),
     ]
 
@@ -518,7 +518,7 @@ def _load_config_and_client(node, host, port, secret):
             except:
                 pass
 
-    return UnityBrainClient(host=host, port=port, secret=secret)
+    return NeuroMeshClient(host=host, port=port, secret=secret)
 
 
 # ============================================================================
@@ -526,18 +526,18 @@ def _load_config_and_client(node, host, port, secret):
 # ============================================================================
 
 def cmd_serve(args):
-    """Start UnityBrain as a headless service (no GUI)."""
+    """Start NeuroMesh as a headless service (no GUI)."""
     node = args.node
     client = _load_config_and_client(node, args.host, args.port, args.secret)
     status = client.status()
     if "error" not in status:
-        print(f"✅ UnityBrain service already running at {client.base}")
+        print(f"✅ NeuroMesh service already running at {client.base}")
         print(f"   Node: {status.get('node', '?')}, v{status.get('version', '?')}")
         return
 
     # Service not running — try to start it
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    server_script = os.path.join(script_dir, "unitybrain_v5.py")
+    server_script = os.path.join(script_dir, "neuromesh_v5.py")
     if not os.path.exists(server_script):
         print(f"❌ Cannot find server script: {server_script}")
         sys.exit(1)
@@ -549,7 +549,7 @@ def cmd_serve(args):
     if args.port != DEFAULT_PORT:
         cmd.extend(["--port", str(args.port)])
 
-    print(f"🔧 Starting UnityBrain service (node: {node})...")
+    print(f"🔧 Starting NeuroMesh service (node: {node})...")
     if args.daemon:
         proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print(f"✅ Service started in background (PID: {proc.pid})")
@@ -563,16 +563,16 @@ def cmd_serve(args):
 
 
 def cmd_app(args):
-    """Start UnityBrain application (opens browser)."""
+    """Start NeuroMesh application (opens browser)."""
     client = _load_config_and_client(args.node, args.host, args.port, args.secret)
 
     # Ensure server is running
     status = client.status()
     if "error" in status:
-        print("⚠️  UnityBrain not running. Starting service...")
+        print("⚠️  NeuroMesh not running. Starting service...")
         import subprocess
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        server_script = os.path.join(script_dir, "unitybrain_v5.py")
+        server_script = os.path.join(script_dir, "neuromesh_v5.py")
         subprocess.Popen([sys.executable, server_script, args.node],
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         import time as _t
@@ -586,7 +586,7 @@ def cmd_app(args):
     if args.native:
         try:
             import pywebview
-            webview.create_window("UnityBrain", url)
+            webview.create_window("NeuroMesh", url)
             webview.start()
         except ImportError:
             print("⚠️  pywebview not installed. Opening in browser instead.")
@@ -594,7 +594,7 @@ def cmd_app(args):
             webbrowser.open(url)
     else:
         import webbrowser
-        print(f"🌐 Opening UnityBrain at {url}")
+        print(f"🌐 Opening NeuroMesh at {url}")
         if not args.no_open:
             webbrowser.open(url)
         print("   Press Ctrl+C to stop.")
@@ -602,20 +602,20 @@ def cmd_app(args):
             while True:
                 time.sleep(1)
         except KeyboardInterrupt:
-            print("\n👋 UnityBrain app closed.")
+            print("\n👋 NeuroMesh app closed.")
 
 
 def cmd_sidekick(args):
-    """Start UnityBrain as a system tray sidekick."""
+    """Start NeuroMesh as a system tray sidekick."""
     client = _load_config_and_client(args.node, args.host, args.port, args.secret)
 
     # Ensure server is running
     status = client.status()
     if "error" in status:
-        print("⚠️  UnityBrain not running. Starting service...")
+        print("⚠️  NeuroMesh not running. Starting service...")
         import subprocess
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        server_script = os.path.join(script_dir, "unitybrain_v5.py")
+        server_script = os.path.join(script_dir, "neuromesh_v5.py")
         subprocess.Popen([sys.executable, server_script, args.node],
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         import time as _t
@@ -643,7 +643,7 @@ def cmd_sidekick(args):
             while True:
                 time.sleep(1)
         except KeyboardInterrupt:
-            print("\n👋 UnityBrain sidekick stopped.")
+            print("\n👋 NeuroMesh sidekick stopped.")
 
 
 def _run_tray_icon(client):
@@ -663,18 +663,18 @@ def _run_tray_icon(client):
     def on_status(icon, item):
         status = client.status()
         if "error" in status:
-            icon.notify("UnityBrain: Disconnected", "UnityBrain")
+            icon.notify("NeuroMesh: Disconnected", "NeuroMesh")
         else:
             peers = status.get("peers", {}).get("available", 0)
-            icon.notify(f"UnityBrain: {peers} peer(s)", "UnityBrain")
+            icon.notify(f"NeuroMesh: {peers} peer(s)", "NeuroMesh")
 
     def on_quit(icon, item):
         icon.stop()
 
     icon = pystray.Icon(
-        "UnityBrain",
+        "NeuroMesh",
         create_icon_image(),
-        "UnityBrain",
+        "NeuroMesh",
         menu=pystray.Menu(
             pystray.MenuItem("💬 Open Chat", on_open),
             pystray.MenuItem("📊 Status", on_status),
@@ -689,13 +689,13 @@ def _install_sidekick_autostart():
     """Install sidekick as autostart entry."""
     autostart_dir = os.path.expanduser("~/.config/autostart")
     os.makedirs(autostart_dir, exist_ok=True)
-    desktop_path = os.path.join(autostart_dir, "unitybrain-sidekick.desktop")
+    desktop_path = os.path.join(autostart_dir, "neuromesh-sidekick.desktop")
     content = f"""[Desktop Entry]
 Type=Application
-Name=UnityBrain Sidekick
-Comment=UnityBrain P2P AI Network - System Tray
+Name=NeuroMesh Sidekick
+Comment=NeuroMesh P2P AI Network - System Tray
 Exec={sys.executable} {os.path.abspath(sys.argv[0])} sidekick
-Icon=unitybrain
+Icon=neuromesh
 Terminal=false
 Categories=Network;AI;
 """
@@ -706,7 +706,7 @@ Categories=Network;AI;
 
 def _uninstall_sidekick_autostart():
     """Remove sidekick autostart entry."""
-    desktop_path = os.path.expanduser("~/.config/autostart/unitybrain-sidekick.desktop")
+    desktop_path = os.path.expanduser("~/.config/autostart/neuromesh-sidekick.desktop")
     if os.path.exists(desktop_path):
         os.remove(desktop_path)
         print("✅ Sidekick autostart removed.")
@@ -717,7 +717,7 @@ def _uninstall_sidekick_autostart():
 def cmd_chat(args):
     """Start interactive terminal chat (REPL)."""
     client = _load_config_and_client(args.node, args.host, args.port, args.secret)
-    shell = UnityBrainShell(client)
+    shell = NeuroMeshShell(client)
     if args.model:
         shell.default_model = args.model
     shell.run()
@@ -739,11 +739,11 @@ def cmd_status(args):
     client = _load_config_and_client(args.node, args.host, args.port, args.secret)
     status = client.status()
     if "error" in status:
-        print(f"❌ Cannot connect to UnityBrain at {client.base}")
-        print(f"   Make sure UnityBrain is running: unitybrain serve")
+        print(f"❌ Cannot connect to NeuroMesh at {client.base}")
+        print(f"   Make sure NeuroMesh is running: neuromesh serve")
         sys.exit(1)
 
-    print(f"📊 UnityBrain v{status.get('version', '?')} — {status.get('node', '?')}")
+    print(f"📊 NeuroMesh v{status.get('version', '?')} — {status.get('node', '?')}")
     print("─" * 50)
     print(f"  Uptime:     {status.get('uptime', 0)/3600:.1f}h")
     print(f"  Share AI:   {'Yes ✅' if status.get('share_ai') else 'No 🔇'}")
@@ -955,9 +955,9 @@ def cmd_conversations(args):
 
 
 def cmd_install_service(args):
-    """Install UnityBrain as a systemd service."""
+    """Install NeuroMesh as a systemd service."""
     service_content = """[Unit]
-Description=UnityBrain P2P AI Network
+Description=NeuroMesh P2P AI Network
 After=network.target ollama.service
 Wants=ollama.service
 
@@ -974,10 +974,10 @@ Environment=OLLAMA_HOST=127.0.0.1:11434
 [Install]
 WantedBy=multi-user.target
 """.format(
-        user=os.environ.get("USER", "unitybrain"),
+        user=os.environ.get("USER", "neuromesh"),
         workdir=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
         python=sys.executable,
-        server=os.path.abspath(os.path.join(os.path.dirname(__file__), "unitybrain_v5.py")),
+        server=os.path.abspath(os.path.join(os.path.dirname(__file__), "neuromesh_v5.py")),
         node=args.node,
     )
 
@@ -985,18 +985,18 @@ WantedBy=multi-user.target
     print(service_content)
     print()
     print("To install, run:")
-    print(f"  sudo tee /etc/systemd/system/unitybrain.service << 'EOF'\n{service_content}EOF")
+    print(f"  sudo tee /etc/systemd/system/neuromesh.service << 'EOF'\n{service_content}EOF")
     print("  sudo systemctl daemon-reload")
-    print("  sudo systemctl enable unitybrain")
-    print("  sudo systemctl start unitybrain")
+    print("  sudo systemctl enable neuromesh")
+    print("  sudo systemctl start neuromesh")
 
 
 def cmd_uninstall_service(args):
-    """Uninstall UnityBrain systemd service."""
+    """Uninstall NeuroMesh systemd service."""
     print("To uninstall the service, run:")
-    print("  sudo systemctl stop unitybrain")
-    print("  sudo systemctl disable unitybrain")
-    print("  sudo rm /etc/systemd/system/unitybrain.service")
+    print("  sudo systemctl stop neuromesh")
+    print("  sudo systemctl disable neuromesh")
+    print("  sudo rm /etc/systemd/system/neuromesh.service")
     print("  sudo systemctl daemon-reload")
 
 
@@ -1008,43 +1008,43 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="UnityBrain CLI — P2P Distributed AI Network",
+        description="NeuroMesh CLI — P2P Distributed AI Network",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""\
 Modes:
-  unitybrain serve              Start headless service
-  unitybrain app                Start application (opens browser)
-  unitybrain sidekick           Start system tray sidekick
-  unitybrain chat               Interactive terminal chat (REPL)
-  unitybrain ask "question"     Single query
+  neuromesh serve              Start headless service
+  neuromesh app                Start application (opens browser)
+  neuromesh sidekick           Start system tray sidekick
+  neuromesh chat               Interactive terminal chat (REPL)
+  neuromesh ask "question"     Single query
 
 Models:
-  unitybrain share <model>      Share a model with the mesh
-  unitybrain unshare <model>    Stop sharing a model
-  unitybrain shared             List shared models
-  unitybrain download <model>   Download a model from the mesh
+  neuromesh share <model>      Share a model with the mesh
+  neuromesh unshare <model>    Stop sharing a model
+  neuromesh shared             List shared models
+  neuromesh download <model>   Download a model from the mesh
 
 Mesh:
-  unitybrain mesh join          Join the public mesh
-  unitybrain mesh leave         Leave the public mesh
-  unitybrain mesh status        Show mesh status
+  neuromesh mesh join          Join the public mesh
+  neuromesh mesh leave         Leave the public mesh
+  neuromesh mesh status        Show mesh status
 
 Conversations:
-  unitybrain conversations           List conversations
-  unitybrain conversations <id>      Show a conversation
-  unitybrain conversations <id> export  Export a conversation
+  neuromesh conversations           List conversations
+  neuromesh conversations <id>      Show a conversation
+  neuromesh conversations <id> export  Export a conversation
 
 Service:
-  unitybrain status              Show node status
-  unitybrain peers               List connected peers
-  unitybrain install-service     Install as systemd service
-  unitybrain uninstall-service   Uninstall systemd service
+  neuromesh status              Show node status
+  neuromesh peers               List connected peers
+  neuromesh install-service     Install as systemd service
+  neuromesh uninstall-service   Uninstall systemd service
 """
     )
 
     # Global options
-    parser.add_argument("--host", default=DEFAULT_HOST, help="UnityBrain host (default: %(default)s)")
-    parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="UnityBrain port (default: %(default)s)")
+    parser.add_argument("--host", default=DEFAULT_HOST, help="NeuroMesh host (default: %(default)s)")
+    parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="NeuroMesh port (default: %(default)s)")
     parser.add_argument("--secret", help="P2P secret for auth")
 
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
@@ -1172,7 +1172,7 @@ Service:
         sys.exit(0)
 
     # Default: interactive chat
-    shell = UnityBrainShell(client)
+    shell = NeuroMeshShell(client)
     if args.model_legacy:
         shell.default_model = args.model_legacy
     shell.run()

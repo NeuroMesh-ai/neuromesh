@@ -1,10 +1,10 @@
 ## r/selfhosted
 
-**Title:** UnityBrain — self-hosted P2P AI network, no server needed
+**Title:** NeuroMesh — self-hosted P2P AI network, no server needed
 
 Hey folks,
 
-I've been working on something that might interest this community. I run Ollama on two machines at home and wanted them to share AI responses and sync memory without relying on any cloud service. So I built UnityBrain.
+I've been working on something that might interest this community. I run Ollama on two machines at home and wanted them to share AI responses and sync memory without relying on any cloud service. So I built NeuroMesh.
 
 It's a lightweight Python P2P network — each node runs an aiohttp server with HTTP REST + WebSocket endpoints. You configure a shared secret for auth, point nodes at each other, and they start syncing CRDT memory and sharing model queries over WebSocket.
 
@@ -25,7 +25,7 @@ It's MIT licensed, Python 3.12+, and works with Ollama, OpenAI, Anthropic, or an
 
 Two machines is the simplest setup, but it's not a limit — it's P2P, so more nodes make the network stronger.
 
-Repo: https://github.com/unitybrain-ai/unitybrain
+Repo: https://github.com/NeuroMesh-ai/neuromesh
 
 Happy to answer questions or take feedback on the auth model / gossip protocol.
 
@@ -33,9 +33,9 @@ Happy to answer questions or take feedback on the auth model / gossip protocol.
 
 ## r/LocalLLaMA
 
-**Title:** UnityBrain — P2P network for sharing local LLM queries (with BYOK for cloud models)
+**Title:** NeuroMesh — P2P network for sharing local LLM queries (with BYOK for cloud models)
 
-I've been building a way for my local LLM machines to share queries and sync memory without a central server. It's called UnityBrain and it's now at v4.1.
+I've been building a way for my local LLM machines to share queries and sync memory without a central server. It's called NeuroMesh and it's now at v4.1.
 
 The idea: you have machines running Ollama (or any LLM provider), and instead of each one being isolated, they form a P2P network. Memory syncs via CRDT with gossip propagation, queries can fall back to peers if your local model is busy, and you can also route to OpenAI/Anthropic/custom APIs — the responses get shared across the network.
 
@@ -67,4 +67,4 @@ I'm particularly interested in feedback on:
 
 MIT licensed, no mining, no premium, no hidden costs.
 
-Repo: https://github.com/unitybrain-ai/unitybrain
+Repo: https://github.com/NeuroMesh-ai/neuromesh

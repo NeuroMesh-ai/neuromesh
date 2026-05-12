@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 Tests for ModelShareManager — UnityBrain v5
+🧪 Tests for ModelShareManager — NeuroMesh v5
 ================================================
 Tests the boundary between private models and the public mesh.
 

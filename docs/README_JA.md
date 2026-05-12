@@ -1,10 +1,10 @@
-# 🌐 UnityBrain v5
+# 🌐 NeuroMesh v5
 
-[![バージョン](https://img.shields.io/badge/バージョン-5.0.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![バージョン](https://img.shields.io/badge/バージョン-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![ライセンス: MIT](https://img.shields.io/badge/ライセンス-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-分散型-green.svg)](https://github.com/unitybrain-ai/unitybrain)
-[![E2E暗号化](https://img.shields.io/badge/E2E-暗号化-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-分散型-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![E2E暗号化](https://img.shields.io/badge/E2E-暗号化-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
 **パブリックメッシュ対応分散P2P AIネットワーク。計算を共有し、モデルを共有し、プライバシーを守る。**
 
@@ -12,9 +12,9 @@
 
 ---
 
-## ✨ UnityBrainとは？
+## ✨ NeuroMeshとは？
 
-UnityBrainは、マシンをピアツーピアのAIネットワークに接続します。マシン同士が通信し、計算資源とモデルを共有します。クラウド依存なし、中央サーバーなし、単一障害点なし。
+NeuroMeshは、マシンをピアツーピアのAIネットワークに接続します。マシン同士が通信し、計算資源とモデルを共有します。クラウド依存なし、中央サーバーなし、単一障害点なし。
 
 **v5はパブリックメッシュを追加:** 共有CPU、RAM、GPU、AIモデルのグローバルネットワークに参加できます。プライベートネットワークはプライベートのまま。パブリックメッシュはオプトインの追加レイヤーです。
 
@@ -51,14 +51,14 @@ UnityBrainは、マシンをピアツーピアのAIネットワークに接続�
 
 ```bash
 # クローン
-git clone https://github.com/unitybrain-ai/unitybrain.git
-cd Unitybrain
+git clone https://github.com/NeuroMesh-ai/neuromesh.git
+cd NeuroMesh
 
 # 実行
-python3 src/unitybrain_v5.py
+python3 src/neuromesh_v5.py
 
 # または設定ファイルを指定
-python3 src/unitybrain_v5.py --config config/bug.json
+python3 src/neuromesh_v5.py --config config/bug.json
 ```
 
 ### ネットワークの接続
@@ -210,7 +210,7 @@ class ResourceGuard:
 あなたの会話はあなたのマシンに残ります。期間限定。
 
 - **自動保存** — 各メッセージはローカルに保存。「保存」ボタン不要。
-- **再開** — 明日UnityBrainを開けば、会話がそのままあります。
+- **再開** — 明日NeuroMeshを開けば、会話がそのままあります。
 - **検索** — キーワード、日付、モデル、タグで過去の会話を検索。
 - **エクスポート** — Markdown、JSON、プレーンテキスト。あなたのデータ、あなたのフォーマット。
 - **プライバシー** — プライベートP2Pで明示的に同期しない限り、会話はマシン外に出ません。
@@ -255,7 +255,7 @@ class ResourceGuard:
 専用フォルダはあなたのモデルとパブリックメッシュ間の**唯一のインターフェース**です。
 
 ```
-~/.unitybrain/
+~/.neuromesh/
 ├── conversations/        → 🔒 プライベート（共有なし）
 ├── memory/               → 🔒 プライベート（共有なし）
 ├── config/               → 🔒 プライベート（共有なし）
@@ -267,9 +267,9 @@ class ResourceGuard:
 ```
 
 ```bash
-unitybrain share glm-5.1    # モデルを共有（シンボリックリンク作成）
-unitybrain unshare glm-5.1  # 共有停止（シンボリックリンクのみ削除）
-unitybrain shared            # 共有モデル一覧
+neuromesh share glm-5.1    # モデルを共有（シンボリックリンク作成）
+neuromesh unshare glm-5.1  # 共有停止（シンボリックリンクのみ削除）
+neuromesh shared            # 共有モデル一覧
 ```
 
 **メッシュは`shared_models/`の外を絶対に読みません。** 共有停止は即座 — シンボリックリンク削除と同時にメッシュのアクセスが失われます。
@@ -299,10 +299,10 @@ unitybrain shared            # 共有モデル一覧
 | 🔌 **プラグイン** | ワークフローに統合 | VS Code、ブラウザ、Obsidian、ターミナル |
 
 ```bash
-unitybrain serve          # サービス（ヘッドレス）
-unitybrain app            # アプリ（GUI）
-unitybrain sidekick       # サイドキック（システムトレイ）
-unitybrain plugin --vscode  # プラグイン（VS Code）
+neuromesh serve          # サービス（ヘッドレス）
+neuromesh app            # アプリ（GUI）
+neuromesh sidekick       # サイドキック（システムトレイ）
+neuromesh plugin --vscode  # プラグイン（VS Code）
 ```
 
 4つのモードは同じコアを共有。1つのバイナリ、4つのライフスタイル。
@@ -313,7 +313,7 @@ unitybrain plugin --vscode  # プラグイン（VS Code）
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   UnityBrainコア                     │
+│                   NeuroMeshコア                     │
 │  ┌────────────┐ ┌──────────────┐ ┌────────────────┐ │
 │  │ Resource   │ │ Adaptive     │ │ 会話ストア     │ │
 │  │ Guard      │ │ Scheduler    │ │ Conversation   │ │
@@ -354,7 +354,7 @@ unitybrain plugin --vscode  # プラグイン（VS Code）
   },
   "public_mesh": {
     "enabled": true,
-    "tracker_url": "https://tracker.unitybrain.ai",
+    "tracker_url": "https://tracker.neuromesh.ai",
     "max_ram_share_mb": 2048,
     "max_cpu_percent": 30,
     "gpu_share": false,

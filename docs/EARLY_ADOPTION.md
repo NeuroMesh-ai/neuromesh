@@ -1,4 +1,4 @@
-# UnityBrain Early Stage Architecture — Early Adoption Strategy
+# NeuroMesh Early Stage Architecture — Early Adoption Strategy
 
 **Pour les premiers 10-100 utilisateurs.**
 
@@ -171,7 +171,7 @@ p2p_min_peers = 5  # P2P quand assez de peers
 ```markdown
 ## Early Adoption Info ⚠️
 
-UnityBrain est nouveau. Au début, peu de peers auront les modèles.
+NeuroMesh est nouveau. Au début, peu de peers auront les modèles.
 
 ### Quoi attendre les premiers mois :
 
@@ -192,7 +192,7 @@ UnityBrain est nouveau. Au début, peu de peers auront les modèles.
 
 ### Mode Hybride
 
-UnityBrain a un **mode hybride** qui selection automatique :
+NeuroMesh a un **mode hybride** qui selection automatique :
 
 - Si <5 peers avec modèle → Direct download
 - Si ≥5 peers avec modèle → P2P parallel
@@ -206,7 +206,7 @@ UnityBrain a un **mode hybride** qui selection automatique :
 
 ### Ollama Direct Download est le fallback
 
-**UnityBrain peut utiliser Ollama direct pour télécharger les modèles :**
+**NeuroMesh peut utiliser Ollama direct pour télécharger les modèles :**
 ```bash
 ollama pull qwen3:8b
 ```
@@ -264,7 +264,7 @@ ollama pull qwen3:8b
 
 Pour les premiers utilisateurs, le mode hybride est crucial.
 
-UnityBrain auto-adapte :
+NeuroMesh auto-adapte :
 - Peu de peers → Direct download rapide
 - Beaucoup de peers → P2P parallel rapide
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-📂 MODEL SHARE MANAGER — UnityBrain v5
+📂 MODEL SHARE MANAGER — NeuroMesh v5
 ========================================
 Manages the shared_models/ directory — the ONLY bridge between private
 models and the public mesh.
@@ -26,13 +26,13 @@ import time
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-logger = logging.getLogger('UnityBrain.ModelShareManager')
+logger = logging.getLogger('NeuroMesh.ModelShareManager')
 
 # ============================================================================
 # CONSTANTS
 # ============================================================================
 
-DEFAULT_BASE_DIR = os.path.expanduser("~/.unitybrain")
+DEFAULT_BASE_DIR = os.path.expanduser("~/.neuromesh")
 SHARED_MODELS_DIR_NAME = "shared_models"
 OLLAMA_MODELS_DIR = os.path.expanduser("~/.ollama/models")
 
@@ -108,7 +108,7 @@ class ModelShareManager:
         """Initialize ModelShareManager.
 
         Args:
-            base_dir: Base directory for UnityBrain data (default: ~/.unitybrain)
+            base_dir: Base directory for NeuroMesh data (default: ~/.neuromesh)
             ollama_dir: Ollama models directory (default: ~/.ollama/models)
         """
         self.base_dir = Path(base_dir or DEFAULT_BASE_DIR)
@@ -1112,7 +1112,7 @@ def asyncio_run(coro):
 
 
 # ============================================================================
-# CLI INTERFACE — for unitybrain share/unshare/shared commands
+# CLI INTERFACE — for neuromesh share/unshare/shared commands
 # ============================================================================
 
 def main():
@@ -1120,7 +1120,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='UnityBrain Model Share Manager',
+        description='NeuroMesh Model Share Manager',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Commands:
@@ -1135,7 +1135,7 @@ Commands:
 """)
     parser.add_argument('command', nargs='?', help='Command to run')
     parser.add_argument('model', nargs='?', help='Model name')
-    parser.add_argument('--base-dir', help='Base directory (default: ~/.unitybrain)')
+    parser.add_argument('--base-dir', help='Base directory (default: ~/.neuromesh)')
     parser.add_argument('--checksum', help='Expected checksum for verify')
 
     args = parser.parse_args()

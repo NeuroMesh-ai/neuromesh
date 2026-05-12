@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to UnityBrain will be documented in this file.
+All notable changes to NeuroMesh will be documented in this file.
 
 ## [5.1.0] - 2026-05-06
 
@@ -42,7 +42,7 @@ All notable changes to UnityBrain will be documented in this file.
 - `GET /api/capabilities` — Node hardware capabilities + peer capabilities
 - `GET /api/score/{peer}` — Gamified score tier for a peer
 - `GET /api/discover` — Zero-Config discovered peers
-- `GET /api/update` — Check for UnityBrain updates
+- `GET /api/update` — Check for NeuroMesh updates
 - `GET /api/daemon` — Daemon/systray status
 - `GET /api/agent` — Sidekick info for OpenClaw
 - `POST /api/agent/query` — Sidekick query with GPU/CPU routing
@@ -59,14 +59,14 @@ All notable changes to UnityBrain will be documented in this file.
 
 - 🔐 **Auth Renforcée (Decentralized)** — Ed25519 node identity (self-generated, no registry). Challenge-response auth with nonce + timestamp (anti-replay). Web of Trust (PGP-like transitive trust). Rate limiting per node (token bucket). Stealth mode (hidden node, no discovery, trusted peers only). Users don't need accounts — auth is between nodes.
 
-- 🧠 **Mémoire Sync P2P** — CRDT-based conflict-free replicated memory. Gossip protocol for propagation. Vector clocks for event ordering. Last-write-wins with metadata (author, timestamp, node_id). API: `/api/memory/sync`, `/api/memory/push`, `/api/memory/pull`. Share AI models via `share_ai: true` config or `unitybrain share` CLI.
+- 🧠 **Mémoire Sync P2P** — CRDT-based conflict-free replicated memory. Gossip protocol for propagation. Vector clocks for event ordering. Last-write-wins with metadata (author, timestamp, node_id). API: `/api/memory/sync`, `/api/memory/push`, `/api/memory/pull`. Share AI models via `share_ai: true` config or `neuromesh share` CLI.
 
 - 🧹 **Clean Architecture** — Removed dead code (`_archive_old`, `archive`, `output`, `__pycache__`). Updated requirements (minimal: aiohttp, psutil, PyNaCl optional). Fast startup, low memory. brain_llm stays async, non-blocking.
 
 - 📝 **Docs** — `docs/AUTH_DESIGN.md` with complete auth design. `DONATIONS.md` with BTC address.
 
 ### Changed
-- Main file renamed: `src/unitybrain_v3.py` → `src/unitybrain_v4.py`
+- Main file renamed: `src/neuromesh_v3.py` → `src/neuromesh_v4.py`
 - VERSION: 3.3.0 → 4.0.0
 - README.md rewritten for v4.0
 - requirements.txt cleaned up (PyJWT removed, PyNaCl optional)
@@ -81,13 +81,13 @@ All notable changes to UnityBrain will be documented in this file.
 ## [3.5.0] - 2026-04-02
 
 ### Added
-- 🤖 **BugBrain v3.5 - Autonomie Complète**
+- 🤖 **NeuroMeshBug v3.5 - Autonomie Complète**
   - Auto-Support - Répond automatiquement aux questions utilisateurs
   - Auto-Monitoring - Surveillance système temps réel (CPU, RAM, Disque, Réseau)
   - Auto-Healing - Détection et réparation automatique des problèmes
   - Auto-Optimization - Optimisation automatique des performances
   - Auto-Upgrade - Mises à jour automatiques avec sauvegardes
-  - BugBrain Autonomy - Mode autonome orchestrant tous les modules
+  - NeuroMeshBug Autonomy - Mode autonome orchestrant tous les modules
 
 - ✨ **Knowledge Base** - Base de connaissances pour auto-support
   - Documentation intégrée (guides, exemples, FAQ)
@@ -159,7 +159,7 @@ All notable changes to UnityBrain will be documented in this file.
   - Store & Get
   - Broadcast
 
-- ✨ **UnityBrain v3.0** - Réseau P2P distribué
+- ✨ **NeuroMesh v3.0** - Réseau P2P distribué
   - Multi-model Ensembling
   - Model Sharing (P2P distribué)
   - Reputation System
@@ -170,7 +170,7 @@ All notable changes to UnityBrain will be documented in this file.
   - Dynamic Model Routing
   - Auto-Selection
 
-- ✨ **BugBrain v3.0** - Système auto-émancipé
+- ✨ **NeuroMeshBug v3.0** - Système auto-émancipé
   - Auto-Emancipation complète
   - Self-Awareness
   - Self-Improvement
@@ -217,7 +217,7 @@ All notable changes to UnityBrain will be documented in this file.
 
 - ✨ **Interactive Interface**
   - CLI complète
-  - Commandes pour UnityBrain et BugBrain
+  - Commandes pour NeuroMesh et NeuroMeshBug
   - Mode ensemble
   - Memory search
   - Status monitoring
@@ -231,8 +231,8 @@ All notable changes to UnityBrain will be documented in this file.
   - Examples d'utilisation
 
 - ✨ **Tests Unitaires**
-  - Tests UnityBrain
-  - Tests BugBrain
+  - Tests NeuroMesh
+  - Tests NeuroMeshBug
   - Tests P2P Network
   - Tests Production Enhancement
   - CI/CD GitHub Actions
@@ -244,7 +244,7 @@ All notable changes to UnityBrain will be documented in this file.
 ### Changed
 - 🔄 Refactorisation complète pour architecture décentralisée
 - 🔄 Optimisation des performances
-- 🔄 Séparation claire entre UnityBrain et BugBrain
+- 🔄 Séparation claire entre NeuroMesh et NeuroMeshBug
 
 ### Fixed
 - 🐛 Problèmes de mémoire

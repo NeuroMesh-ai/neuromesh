@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 BENCHMARK COMPLET - UnityBrain & BugBrain v3.0
+🧪 BENCHMARK COMPLET - NeuroMesh & NeuroMeshBug v3.0
 Test avec 100 requêtes, multi-LLM, et analyse d'évolution
 """
 
@@ -18,23 +18,23 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.unitybrain_v3_final import UnityBrain
-from src.bugbrain_v3_final import BugBrain
+from src.neuromesh_v3_final import NeuroMesh
+from src.neuromesh_bug_v3_final import NeuroMeshBug
 
 # ============================================================================
 # ============== 100 REQUÊTES DE TEST ======================================
 # ============================================================================
 
 TEST_QUERIES = [
-    # Questions générales sur UnityBrain (20)
-    "Qu'est-ce que UnityBrain v3.0 ?",
+    # Questions générales sur NeuroMesh (20)
+    "Qu'est-ce que NeuroMesh v3.0 ?",
     "Comment fonctionne le P2P Network ?",
     "Explique le DHT (Distributed Hash Table)",
     "Qu'est-ce que le Gossip Protocol ?",
     "Comment fonctionne Kademlia ?",
     "Qu'est-ce que l'auto-émancipation ?",
     "Explique la self-awareness",
-    "Comment BugBrain apprend-il ?",
+    "Comment NeuroMeshBug apprend-il ?",
     "Qu'est-ce que le consensus d'ensemble ?",
     "Comment fonctionne le load balancing ?",
     "Qu'est-ce que la distributed memory ?",
@@ -395,22 +395,22 @@ class BenchmarkRunner:
 # ============== MAIN ========================================================
 # ============================================================================
 
-async def benchmark_unitybrain():
-    """Benchmark UnityBrain"""
+async def benchmark_neuromesh():
+    """Benchmark NeuroMesh"""
     print("\n" + "=" * 70)
-    print("🧪 BENCHMARK UNITYBRAIN v3.0")
+    print("🧪 BENCHMARK NEUROMESH v3.0")
     print("=" * 70)
 
-    # Créer UnityBrain
-    unitybrain = UnityBrain()
-    await unitybrain.initialize()
+    # Créer NeuroMesh
+    neuromesh = NeuroMesh()
+    await neuromesh.initialize()
 
     # Créer le runner
-    runner = BenchmarkRunner("UnityBrain")
+    runner = BenchmarkRunner("NeuroMesh")
 
     # Query function
     async def query_func(prompt, model):
-        return await unitybrain.query(prompt, model=model)
+        return await neuromesh.query(prompt, model=model)
 
     # Exécuter le benchmark
     stats = await runner.run_benchmark(query_func, TEST_QUERIES, LLMS_TO_TEST)
@@ -419,33 +419,33 @@ async def benchmark_unitybrain():
     runner.print_stats(stats)
 
     # Sauvegarder
-    runner.save_results("output/unitybrain_benchmark.json")
+    runner.save_results("output/neuromesh_benchmark.json")
 
     # Stats d'émancipation (si disponible)
-    if hasattr(unitybrain, 'prod'):
+    if hasattr(neuromesh, 'prod'):
         print(f"\n🔍 Production stats:")
-        prod_stats = unitybrain.prod.get_status()
+        prod_stats = neuromesh.prod.get_status()
         print(f"   Cache size: {prod_stats.get('cache', {}).get('size', 0)}")
         print(f"   Cache hit rate: {prod_stats.get('cache', {}).get('hit_rate', 0):.2%}")
 
     return runner
 
-async def benchmark_bugbrain():
-    """Benchmark BugBrain"""
+async def benchmark_neuromesh_bug():
+    """Benchmark NeuroMeshBug"""
     print("\n" + "=" * 70)
-    print("🧪 BENCHMARK BUGBRAIN v3.0")
+    print("🧪 BENCHMARK NEUROMESH_BUG v3.0")
     print("=" * 70)
 
-    # Créer BugBrain
-    bugbrain = BugBrain()
-    await bugbrain.initialize()
+    # Créer NeuroMeshBug
+    neuromesh_bug = NeuroMeshBug()
+    await neuromesh_bug.initialize()
 
     # Créer le runner
-    runner = BenchmarkRunner("BugBrain")
+    runner = BenchmarkRunner("NeuroMeshBug")
 
     # Query function
     async def query_func(prompt, model):
-        return await bugbrain.query(prompt)
+        return await neuromesh_bug.query(prompt)
 
     # Exécuter le benchmark
     stats = await runner.run_benchmark(query_func, TEST_QUERIES, LLMS_TO_TEST[:2])
@@ -454,10 +454,10 @@ async def benchmark_bugbrain():
     runner.print_stats(stats)
 
     # Sauvegarder
-    runner.save_results("output/bugbrain_benchmark.json")
+    runner.save_results("output/neuromesh_bug_benchmark.json")
 
     # Stats d'émancipation
-    emancipation_status = bugbrain.emancipation.get_status()
+    emancipation_status = neuromesh_bug.emancipation.get_status()
     print(f"\n🧠 Stats d'émancipation:")
     print(f"   Âge: {emancipation_status['awareness']['age']} interactions")
     print(f"   Success rate: {emancipation_status['awareness']['success_rate']:.2%}")
@@ -474,35 +474,35 @@ async def compare_results():
     print("=" * 70)
 
     try:
-        with open("output/unitybrain_benchmark.json", 'r', encoding='utf-8') as f:
-            unitybrain_data = json.load(f)
+        with open("output/neuromesh_benchmark.json", 'r', encoding='utf-8') as f:
+            neuromesh_data = json.load(f)
     except:
-        print("❌ UnityBrain benchmark not found")
-        unitybrain_data = None
+        print("❌ NeuroMesh benchmark not found")
+        neuromesh_data = None
 
     try:
-        with open("output/bugbrain_benchmark.json", 'r', encoding='utf-8') as f:
-            bugbrain_data = json.load(f)
+        with open("output/neuromesh_bug_benchmark.json", 'r', encoding='utf-8') as f:
+            neuromesh_bug_data = json.load(f)
     except:
-        print("❌ BugBrain benchmark not found")
-        bugbrain_data = None
+        print("❌ NeuroMeshBug benchmark not found")
+        neuromesh_bug_data = None
 
-    if unitybrain_data and bugbrain_data:
+    if neuromesh_data and neuromesh_bug_data:
         print(f"\n📈 Success Rate:")
-        print(f"   UnityBrain: {unitybrain_data['stats']['success_rate']:.2%}")
-        print(f"   BugBrain: {bugbrain_data['stats']['success_rate']:.2%}")
+        print(f"   NeuroMesh: {neuromesh_data['stats']['success_rate']:.2%}")
+        print(f"   NeuroMeshBug: {neuromesh_bug_data['stats']['success_rate']:.2%}")
 
         print(f"\n⚡ Latence moyenne:")
-        print(f"   UnityBrain: {unitybrain_data['stats']['avg_latency']:.1f}ms")
-        print(f"   BugBrain: {bugbrain_data['stats']['avg_latency']:.1f}ms")
+        print(f"   NeuroMesh: {neuromesh_data['stats']['avg_latency']:.1f}ms")
+        print(f"   NeuroMeshBug: {neuromesh_bug_data['stats']['avg_latency']:.1f}ms")
 
         print(f"\n📝 Longueur moyenne des réponses:")
-        print(f"   UnityBrain: {unitybrain_data['stats']['avg_response_length']} chars")
-        print(f"   BugBrain: {bugbrain_data['stats']['avg_response_length']} chars")
+        print(f"   NeuroMesh: {neuromesh_data['stats']['avg_response_length']} chars")
+        print(f"   NeuroMeshBug: {neuromesh_bug_data['stats']['avg_response_length']} chars")
 
         # Meilleur modèle
-        print(f"\n🤖 Meilleur modèle (UnityBrain):")
-        ub_models = unitybrain_data['stats']['model_stats']
+        print(f"\n🤖 Meilleur modèle (NeuroMesh):")
+        ub_models = neuromesh_data['stats']['model_stats']
         best_model = min(ub_models.items(), key=lambda x: x[1]['avg_latency'] if x[1]['avg_latency'] > 0 else float('inf'))
         print(f"   {best_model[0]}: {best_model[1]['avg_latency']:.1f}ms ({best_model[1]['success_rate']:.2%} success)")
 
@@ -515,14 +515,14 @@ async def main():
     # Créer le répertoire output
     os.makedirs("output", exist_ok=True)
 
-    # Benchmark UnityBrain
-    unitybrain_runner = await benchmark_unitybrain()
+    # Benchmark NeuroMesh
+    neuromesh_runner = await benchmark_neuromesh()
 
     # Attendre un peu
     await asyncio.sleep(2)
 
-    # Benchmark BugBrain
-    bugbrain_runner = await benchmark_bugbrain()
+    # Benchmark NeuroMeshBug
+    neuromesh_bug_runner = await benchmark_neuromesh_bug()
 
     # Comparaison
     await compare_results()
@@ -532,8 +532,8 @@ async def main():
     print("=" * 70)
 
     print("\n📁 Fichiers générés:")
-    print("   output/unitybrain_benchmark.json")
-    print("   output/bugbrain_benchmark.json")
+    print("   output/neuromesh_benchmark.json")
+    print("   output/neuromesh_bug_benchmark.json")
 
 if __name__ == '__main__':
     asyncio.run(main())

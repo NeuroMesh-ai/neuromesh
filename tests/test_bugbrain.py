@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Tests Unitaires - BugBrain v5.1.0 (via UnityBrain)
-BugBrain is now a profile of UnityBrain
+Tests Unitaires - NeuroMeshBug v5.1.0 (via NeuroMesh)
+NeuroMeshBug is now a profile of NeuroMesh
 """
 
 import asyncio
@@ -14,8 +14,8 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.unitybrain_v5 import (
-    UnityBrain,
+from src.neuromesh_v5 import (
+    NeuroMesh,
     NodeIdentity,
     RateLimiter,
     CircuitBreaker,
@@ -40,7 +40,7 @@ BUG_CONFIG = {
 }
 
 
-class TestBugBrainIdentity:
+class TestNeuroMeshBugIdentity:
     """Test Bug node identity"""
 
     def test_bug_identity(self):
@@ -54,7 +54,7 @@ class TestBugBrainIdentity:
         assert identity.verify("test_message", sig)
 
 
-class TestBugBrainComponents:
+class TestNeuroMeshBugComponents:
     """Test Bug-specific components"""
 
     def test_rate_limiter(self):
@@ -69,11 +69,11 @@ class TestBugBrainComponents:
         assert not cb.can_execute()
 
 
-class TestBugBrainInit:
-    """Test Bug as UnityBrain node"""
+class TestNeuroMeshBugInit:
+    """Test Bug as NeuroMesh node"""
 
     def test_init(self):
-        brain = UnityBrain(BUG_CONFIG)
+        brain = NeuroMesh(BUG_CONFIG)
         assert brain.node_name == "bug"
         assert brain.version == "5.1.0"
         assert brain.share_ai is True
