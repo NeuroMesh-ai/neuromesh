@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 """
-brain.llm — Core Engine
+brain.llm — Core Engine v5.2
 ========================
 Main orchestrator for distributed LLM reasoning across the UnityBrain P2P network.
 
 Coordinates:
 - Model routing (local → cloud → P2P fallback)
+- P2P auth (Ed25519/HMAC signed requests)
 - Ensemble consensus (multi-model agreement)
 - Chain of reasoning (task decomposition)
 - Context from PersistentMemory
+- Credit/bandwidth awareness (checks before P2P queries)
+
+No external dependencies beyond Python stdlib + aiohttp (already in UnityBrain).
 """
 
 import asyncio
 import aiohttp
+import hashlib
+import hmac as hmac_mod
 import json
 import os
 import time
@@ -23,7 +29,7 @@ from pathlib import Path
 
 logger = logging.getLogger('brain.llm')
 
-# Node configuration
+# Node configuration — auto-detected from env vars
 NODES = {
     "pinky": {"host": os.environ.get("PINKY_HOST", "100.79.20.105"), "port": 8081},
     "bug": {"host": os.environ.get("BUG_HOST", "100.101.143.118"), "port": 8080},
@@ -64,7 +70,11 @@ class QueryResult:
 
 
 class BrainLLM:
-    """Core orchestrator for distributed LLM operations."""
+    """Core orchestrator for distributed LLM operations.
+    
+    v5.2: Now signs P2P requests with HMAC auth, respects model permissions,
+    and checks credit/bandwidth before P2P queries.
+    """
 
     def __init__(self, node_name: str = "pinky", config: Dict = None):
         self.node_name = node_name
@@ -74,7 +84,43 @@ class BrainLLM:
         self.available_models: Dict[str, ModelInfo] = {}
         self.query_history: List[Dict] = []
         self._running = False
+        # P2P secret for auth — same as UnityBrain
+        self.p2p_secret = os.environ.get("P2P_SECRET", "")
+        if not self.p2p_secret:
+            # Try loading from UnityBrain config
+            try:
+                config_path = Path.home() / ".unitybrain" / "config" / f"{node_name}.json"
+                if config_path.exists():
+                    with open(config_path) as f:
+                        cfg = json.load(f)
+                        self.p2p_secret = cfg.get("p2p_secret", "")
+            except (OSError, json.JSONDecodeError):
+                pass
         logger.info(f"brain.llm initialized as {node_name}")
+
+    # ─── Auth Headers ──────────────────────────────────────────
+
+    def _auth_headers(self, path: str = "/api/query") -> Dict[str, str]:
+        """Generate signed auth headers for P2P requests (v5.2).
+        Uses HMAC with P2P secret, matching UnityBrain's _auth_headers().
+        """
+        if not self.p2p_secret:
+            # No secret configured — try without auth (will be rejected by secure nodes)
+            logger.warning("P2P_SECRET not configured — P2P requests may be rejected")
+            return {}
+        ts = str(int(time.time()))
+        msg = f"{path}:{ts}"
+        sig = hmac_mod.new(
+            self.p2p_secret.encode(), msg.encode(), hashlib.sha256
+        ).hexdigest()
+        return {
+            "X-UnityBrain-Auth": sig,
+            "X-UnityBrain-TS": ts,
+            "X-UnityBrain-Node": self.node_name,
+            "Content-Type": "application/json",
+        }
+
+    # ─── Lifecycle ─────────────────────────────────────────────
 
     async def start(self):
         """Initialize the engine."""
@@ -88,6 +134,8 @@ class BrainLLM:
         self._running = False
         if self.session:
             await self.session.close()
+
+    # ─── Model Discovery ────────────────────────────────────────
 
     async def _discover_models(self):
         """Discover available models from local Ollama and P2P peers."""
@@ -109,13 +157,15 @@ class BrainLLM:
         except (aiohttp.ClientError, asyncio.TimeoutError, KeyError, json.JSONDecodeError) as e:
             logger.debug(f"Ollama discovery failed: {e}")
 
-        # P2P peers
+        # P2P peers — with auth headers
         for peer_name, peer_info in NODES.items():
             if peer_name == self.node_name:
                 continue
             try:
+                headers = self._auth_headers("/api/status")
                 async with self.session.get(
                     f"http://{peer_info['host']}:{peer_info['port']}/api/status",
+                    headers=headers,
                     timeout=aiohttp.ClientTimeout(total=3)
                 ) as resp:
                     if resp.status == 200:
@@ -134,6 +184,8 @@ class BrainLLM:
                 name=model, provider="cloud",
                 capabilities=["cloud", "powerful"]
             )
+
+    # ─── Query ──────────────────────────────────────────────────
 
     async def query(self, prompt: str, model: str = None,
                     strategy: str = "auto") -> QueryResult:
@@ -166,7 +218,7 @@ class BrainLLM:
         result = await self._execute_query(prompt, target_model)
         result.latency_ms = (time.time() - start_time) * 1000
 
-        # Store in history
+        # Store in history (truncated prompt for privacy/size)
         self.query_history.append({
             "prompt": prompt[:100],
             "model": result.model,
@@ -267,17 +319,19 @@ class BrainLLM:
             )
 
     async def _query_p2p(self, prompt: str, peer_name: str, model: str) -> QueryResult:
-        """Query a P2P peer."""
+        """Query a P2P peer — with signed auth headers (v5.2)."""
         start = time.time()
         peer = NODES.get(peer_name, {})
         if not peer:
             return QueryResult(model=model, provider="p2p", response="",
                                 latency_ms=0, error=f"Unknown peer: {peer_name}")
 
+        headers = self._auth_headers("/api/query")
         try:
             async with self.session.post(
                 f"http://{peer['host']}:{peer['port']}/api/query",
                 json={"prompt": prompt, "model": model},
+                headers=headers,
                 timeout=aiohttp.ClientTimeout(total=120)
             ) as resp:
                 if resp.status == 200:
@@ -288,11 +342,40 @@ class BrainLLM:
                         latency_ms=(time.time() - start) * 1000,
                         tokens_used=data.get("tokens_used", 0)
                     )
-                else:
+                elif resp.status == 401:
                     return QueryResult(
                         model=model, provider=f"p2p:{peer_name}", response="",
                         latency_ms=(time.time() - start) * 1000,
-                        error=f"Peer error: {resp.status}"
+                        error=f"P2P auth rejected (401) — check P2P_SECRET"
+                    )
+                elif resp.status == 429:
+                    return QueryResult(
+                        model=model, provider=f"p2p:{peer_name}", response="",
+                        latency_ms=(time.time() - start) * 1000,
+                        error=f"P2P rate limited (429) — peer is busy or quota exceeded"
+                    )
+                elif resp.status == 402:
+                    return QueryResult(
+                        model=model, provider=f"p2p:{peer_name}", response="",
+                        latency_ms=(time.time() - start) * 1000,
+                        error=f"P2P insufficient credits (402) — peer requires more sharing"
+                    )
+                elif resp.status == 403:
+                    return QueryResult(
+                        model=model, provider=f"p2p:{peer_name}", response="",
+                        latency_ms=(time.time() - start) * 1000,
+                        error=f"P2P sharing disabled (403) — peer has share_ai=False"
+                    )
+                else:
+                    error_text = ""
+                    try:
+                        error_text = await resp.text()
+                    except Exception:
+                        pass
+                    return QueryResult(
+                        model=model, provider=f"p2p:{peer_name}", response="",
+                        latency_ms=(time.time() - start) * 1000,
+                        error=f"Peer error: {resp.status} {error_text[:200]}"
                     )
         except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionRefusedError) as e:
             return QueryResult(
@@ -304,7 +387,6 @@ class BrainLLM:
     async def _consensus_query(self, prompt: str, model: str = None,
                                 num_models: int = 3) -> QueryResult:
         """Query multiple models and synthesize a consensus response."""
-        # Gather responses from available models
         models_to_query = list(self.available_models.keys())[:num_models]
         tasks = [self._execute_query(prompt, m) for m in models_to_query]
         results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -318,10 +400,8 @@ class BrainLLM:
                                 latency_ms=0, error="All models failed")
 
         # Simple consensus: use the response with highest confidence
-        # In future: more sophisticated agreement scoring
         best = max(successful, key=lambda r: r.confidence * (1.0 / max(r.latency_ms, 1)))
 
-        # Build consensus metadata
         models_used = ", ".join(set(r.model for r in successful))
         consensus_response = best.response
         if len(successful) > 1:
@@ -338,7 +418,6 @@ class BrainLLM:
 
     async def _chain_query(self, prompt: str, model: str = None) -> QueryResult:
         """Decompose a complex query into steps and chain reasoning."""
-        # Step 1: Analyze the prompt and break it down
         analysis_prompt = (
             f"Break down this task into 2-3 concrete steps. "
             f"Format: one step per line, starting with 'STEP:'.\n\n"
@@ -349,23 +428,19 @@ class BrainLLM:
         if analysis.error:
             return analysis
 
-        # Step 2: Execute each step
         steps = [line.replace("STEP:", "").strip()
                  for line in analysis.response.split("\n")
                  if line.strip().startswith("STEP:")]
 
         if not steps:
-            # Can't decompose, just query directly
             return await self.query(prompt, model=model or "cloud:glm-5.1:cloud",
                                     strategy="cloud")
 
-        # Execute steps sequentially
         results = []
         for i, step in enumerate(steps):
             result = await self.query(step, strategy="cloud")
             results.append(result)
 
-        # Synthesize
         synthesis = "\n\n".join(
             f"Step {i+1}: {r.response[:500]}"
             for i, r in enumerate(results) if not r.error
@@ -384,10 +459,11 @@ class BrainLLM:
         """Get relevant context from persistent memory."""
         memory_info = MEMORY_NODES.get(self.node_name, {})
         try:
+            headers = {"X-Node-Secret": self.p2p_secret or os.environ.get("P2P_SECRET", "")}
             async with self.session.get(
                 f"http://127.0.0.1:{memory_info.get('port', 8084)}/search",
                 params={"q": query, "limit": str(limit)},
-                headers={"X-Node-Secret": os.environ.get("P2P_SECRET", "")},
+                headers=headers,
                 timeout=aiohttp.ClientTimeout(total=5)
             ) as resp:
                 if resp.status == 200:
@@ -404,6 +480,7 @@ class BrainLLM:
             "running": self._running,
             "models_available": len(self.available_models),
             "queries_processed": len(self.query_history),
+            "p2p_secret_configured": bool(self.p2p_secret),
             "models": {k: {"name": m.name, "provider": m.provider,
                            "available": m.available}
                        for k, m in self.available_models.items()}

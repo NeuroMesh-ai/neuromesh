@@ -46,6 +46,9 @@ import re
 import uuid
 import logging
 import hashlib
+import threading
+import html
+import secrets as _secrets
 from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple, Set
 from collections import deque
@@ -136,6 +139,16 @@ GLOBAL_RATE_LIMIT_RATE = 30.0  # requests per second globally
 GLOBAL_RATE_LIMIT_BURST = 60
 AUTH_TIMEOUT_SECONDS = 10  # WebSocket auth timeout
 
+# Security constants (v5.2)
+MAX_KEY_LENGTH = 256          # Max CRDT key length
+MAX_VALUE_SIZE = 102400      # Max CRDT value size (100KB)
+MAX_TTL = 86400              # Max TTL (24h)
+MAX_SYNC_ENTRIES = 1000       # Max entries per P2P sync push
+WS_MAX_MSG_SIZE = 1048576     # Max WebSocket message size (1MB)
+HMAC_WINDOW_SECONDS = 30     # HMAC timestamp window (30s)
+MAX_NONCE_CACHE = 10000      # Max nonce cache size
+CSP_HEADER = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws: wss:"
+
 # CORS allowed origins (configurable)
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
@@ -148,6 +161,11 @@ CORS_ALLOWED_ORIGINS = [
 
 log_dir = Path(__file__).parent.parent / "logs"
 log_dir.mkdir(exist_ok=True)
+# LOW-01: Restrict log directory permissions
+try:
+    log_dir.chmod(0o700)
+except OSError:
+    pass
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(name)s] %(levelname)s: %(message)s')
 logger = logging.getLogger('UnityBrain')
 file_handler = logging.handlers.RotatingFileHandler(
@@ -663,8 +681,14 @@ class SystrayDaemon:
     
     def write_pid(self, pid: int):
         """Write PID file for daemon mode."""
+        # LOW-02: Restrict PID file permissions
+        os.makedirs(os.path.dirname(self.pid_file), exist_ok=True)
         with open(self.pid_file, 'w') as f:
             f.write(str(pid))
+        try:
+            os.chmod(self.pid_file, 0o600)
+        except OSError:
+            pass
     
     def read_pid(self) -> Optional[int]:
         """Read daemon PID."""
@@ -729,7 +753,13 @@ class NodeIdentity:
             self.fingerprint = self.public_key_hex[:16]
         else:
             # HMAC fallback — deterministic identity from secret
-            seed = secret_seed or os.environ.get("P2P_SECRET", "changeme")
+            seed = secret_seed or os.environ.get("P2P_SECRET")
+            # NEW-06: Warn if no secret configured
+            if not seed or seed == "changeme":
+                logger.error("⚠️  CRITICAL: P2P_SECRET not configured! Node identity is insecure.")
+                logger.error("   Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'")
+                logger.error("   Then set P2P_SECRET environment variable.")
+                seed = seed or "changeme"
             self._fallback_secret = hashlib.sha256(f"{seed}:{name}".encode()).digest()
             self.public_key_hex = self._fallback_secret.hex()
             self.fingerprint = self.public_key_hex[:16]
@@ -1229,9 +1259,25 @@ class CRDTMemory:
         return result
 
     def merge_from_sync(self, data: Dict[str, Dict]) -> int:
-        """Merge entries from a P2P sync. Returns count of merged entries."""
+        """Merge entries from a P2P sync. Returns count of merged entries.
+        MED-04: Validates key length, value size, and TTL before merging.
+        NEW-04: Rejects sync with too many entries.
+        """
+        if len(data) > MAX_SYNC_ENTRIES:
+            logger.warning(f"Rejecting sync: too many entries ({len(data)} > {MAX_SYNC_ENTRIES})")
+            return 0
         merged = 0
         for key, entry in data.items():
+            # MED-04: Validate key length
+            if len(key) > MAX_KEY_LENGTH:
+                continue
+            # MED-04: Validate value size
+            val = entry.get("value")
+            if val is not None and len(json.dumps(val)) > MAX_VALUE_SIZE:
+                continue
+            # MED-04: Cap TTL
+            if entry.get("ttl") and entry["ttl"] > MAX_TTL:
+                entry["ttl"] = MAX_TTL
             existing = self.store.get(key)
             if not existing:
                 self.store[key] = entry
@@ -1854,6 +1900,15 @@ class UnityBrain:
             rate=GLOBAL_RATE_LIMIT_RATE,
             burst=GLOBAL_RATE_LIMIT_BURST
         )
+        # MED-05 + NEW-01: Nonce anti-replay tracking (set + threading.Lock)
+        self._used_nonces: Set[str] = set()
+        self._nonce_timestamps: Dict[str, float] = {}
+        self._nonce_lock = threading.Lock()
+        # MED-07: Persistent token blacklist
+        self._token_blacklist_file = Path.home() / ".unitybrain" / "token_blacklist.json"
+        self._token_blacklist: Set[str] = set()
+        self._token_blacklist_lock = threading.Lock()
+        self._load_token_blacklist()
         self.sharing_quota = SharingQuota()  # v4.1.5: query quotas per peer
 
         # v4.2.0: New capabilities
@@ -2069,6 +2124,57 @@ class UnityBrain:
         # Event log
         self.event_log: deque = deque(maxlen=50)
 
+    def _check_and_add_nonce(self, nonce: str) -> bool:
+        """NEW-01: Thread-safe nonce check and add. Returns True if nonce is new."""
+        with self._nonce_lock:
+            now = time.time()
+            # Cleanup expired nonces when set is getting large
+            if len(self._used_nonces) > MAX_NONCE_CACHE // 2:
+                expired = [k for k, v in self._nonce_timestamps.items() if now - v > HMAC_WINDOW_SECONDS + 10]
+                for k in expired:
+                    self._used_nonces.discard(k)
+                    del self._nonce_timestamps[k]
+            if nonce in self._used_nonces:
+                return False
+            self._used_nonces.add(nonce)
+            self._nonce_timestamps[nonce] = now
+            return True
+
+    def _load_token_blacklist(self):
+        """MED-07: Load token blacklist from disk."""
+        try:
+            if self._token_blacklist_file.exists():
+                with open(self._token_blacklist_file, 'r') as f:
+                    data = json.load(f)
+                    if isinstance(data, dict):
+                        self._token_blacklist = set(data.get("blacklist", []))
+                    elif isinstance(data, list):
+                        self._token_blacklist = set(data)
+        except (OSError, json.JSONDecodeError):
+            self._token_blacklist = set()
+
+    def _save_token_blacklist(self):
+        """MED-07: Save token blacklist to disk."""
+        try:
+            self._token_blacklist_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(self._token_blacklist_file, 'w') as f:
+                json.dump({"blacklist": list(self._token_blacklist)}, f)
+            # LOW-02: Restrict permissions
+            self._token_blacklist_file.chmod(0o600)
+        except OSError:
+            pass
+
+    def _is_token_blacklisted(self, token_id: str) -> bool:
+        """Check if a token is blacklisted."""
+        with self._token_blacklist_lock:
+            return token_id in self._token_blacklist
+
+    def _blacklist_token(self, token_id: str):
+        """Add a token to the blacklist."""
+        with self._token_blacklist_lock:
+            self._token_blacklist.add(token_id)
+            self._save_token_blacklist()
+
     def log_event(self, event_type: str, message: str, level: str = "info"):
         entry = {
             "time": datetime.now().isoformat(),
@@ -2080,6 +2186,9 @@ class UnityBrain:
         try:
             log_file = Path(__file__).parent.parent / "logs" / "events.jsonl"
             log_file.parent.mkdir(exist_ok=True)
+            # LOW-01: Restrict log file permissions
+            if not log_file.exists():
+                log_file.touch(mode=0o600)
             with open(log_file, 'a') as f:
                 f.write(json.dumps(entry) + '\n')
         except OSError:
@@ -2347,10 +2456,10 @@ class UnityBrain:
             node_name = request.headers.get('X-UnityBrain-Node', '')
             node_key = request.headers.get('X-UnityBrain-Key', '')
 
-            # Anti-replay: timestamp must be within 60s
+            # MED-05: Anti-replay timestamp window (30s)
             if ts:
                 try:
-                    if abs(time.time() - int(ts)) > 60:
+                    if abs(time.time() - int(ts)) > HMAC_WINDOW_SECONDS:
                         logger.debug(f"Auth rejected: timestamp too old ({abs(time.time() - int(ts)):.0f}s)")
                         return None
                 except ValueError:
@@ -2362,13 +2471,21 @@ class UnityBrain:
                 sig = auth[7:]
                 challenge = f"{node_name}:{request.path}:{ts}"
                 verified = self.identity.verify(challenge, sig, node_key)
+                # NEW-01: Nonce check via thread-safe helper
+                nonce = f"{node_name}:{request.path}:{ts}"
+                if not self._check_and_add_nonce(nonce):
+                    logger.debug("Auth rejected: replayed nonce")
+                    return None
                 if verified:
+                    # MED-07: Check token blacklist
+                    token_id = hashlib.sha256(f"{node_name}:{sig}:{ts}".encode()).hexdigest()[:32]
+                    if self._is_token_blacklisted(token_id):
+                        logger.debug(f"Auth rejected: token blacklisted for {node_name}")
+                        return None
                     return {"node": node_name, "public_key": node_key, "method": "ed25519"}
                 else:
-                    logger.info(
-                        f"Auth rejected: sig verify failed for node={node_name} "
-                        f"path={request.path}"
-                    )
+                    # MED-03: no sig/key fragments in logs
+                    logger.info(f"Auth rejected: verify failed for node={node_name}")
 
         # Fallback: shared secret HMAC (v3 compat)
         hmac_auth = request.headers.get('X-UnityBrain-Auth', '')
@@ -2376,7 +2493,12 @@ class UnityBrain:
         if hmac_auth and hmac_ts:
             try:
                 ts = float(hmac_ts)
-                if abs(time.time() - ts) > 60:  # Reduced from 300s to 60s
+                # MED-05: HMAC window reduced to HMAC_WINDOW_SECONDS (30s)
+                if abs(time.time() - ts) > HMAC_WINDOW_SECONDS:
+                    return None
+                # NEW-01: Nonce check for HMAC too
+                nonce = f"hmac:{request.path}:{hmac_ts}"
+                if not self._check_and_add_nonce(nonce):
                     return None
                 path = request.path
                 msg = f"{path}:{hmac_ts}"
@@ -2633,7 +2755,9 @@ class UnityBrain:
             try:
                 with open(index_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                return web.Response(text=content, content_type='text/html')
+                # LOW-04: CSP header
+                return web.Response(text=content, content_type='text/html',
+                                     headers={'Content-Security-Policy': CSP_HEADER})
             except OSError:
                 pass
 
@@ -2683,8 +2807,8 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             icon = "✅" if p.available else "❌"
             cb_state = p.circuit_breaker.state
             html += f"""<div class="peer">
-<span class="{'ok' if p.available else 'ko'}">{icon} {p.name}</span>
-{p.host}:{p.port} — {round(p.latency, 1)}ms — CB:{cb_state}
+<span class="{'ok' if p.available else 'ko'}">{icon} {html.escape(p.name)}</span>
+{html.escape(p.host)}:{p.port} — {round(p.latency, 1)}ms — CB:{cb_state}
 </div>"""
 
         if not self.peers:
@@ -2731,7 +2855,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             for p in self.peers:
                 peer_score = self.sharing_quota.calculate_score(p.name)
                 peer_tier = GamifiedScore.get_tier(peer_score)
-                html += f'<div class="stat"><span>{p.name}</span><span style="color:{peer_tier["color"]}">{peer_tier["tier"]} ({peer_score:.1f})</span></div>'
+                html += f'<div class="stat"><span>{html.escape(p.name)}</span><span style="color:{peer_tier["color"]}">{peer_tier["tier"]} ({peer_score:.1f})</span></div>'
         html += '</div>'
 
         # v4.2.0: Capabilities section
@@ -4049,7 +4173,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
     # ========================================================================
 
     async def handle_websocket(self, request: web.Request) -> web.WebSocketResponse:
-        ws = web.WebSocketResponse(heartbeat=self.heartbeat_interval)
+        ws = web.WebSocketResponse(heartbeat=self.heartbeat_interval, max_msg_size=WS_MAX_MSG_SIZE)  # LOW-07: Limit WS message size
         await ws.prepare(request)
 
         client_id = str(uuid.uuid4())[:8]
@@ -4176,6 +4300,19 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         hmac_sig = data.get('hmac', '')
         hmac_ts = data.get('ts', '')
         if hmac_sig and hmac_ts:
+            # NEW-03: Verify timestamp window for WS auth HMAC too
+            try:
+                if abs(time.time() - float(hmac_ts)) > HMAC_WINDOW_SECONDS:
+                    await ws.send_json({'type': 'auth_ack', 'status': 'failed', 'reason': 'expired'})
+                    return False
+            except ValueError:
+                await ws.send_json({'type': 'auth_ack', 'status': 'failed', 'reason': 'invalid timestamp'})
+                return False
+            # NEW-01: Nonce check for WS auth
+            ws_nonce = f"ws-hmac:{hmac_ts}"
+            if not self._check_and_add_nonce(ws_nonce):
+                await ws.send_json({'type': 'auth_ack', 'status': 'failed', 'reason': 'replay'})
+                return False
             import hmac as hmac_mod
             msg_str = f"/ws:{hmac_ts}"
             expected_sig = hmac_mod.new(
@@ -4573,7 +4710,22 @@ async def main():
     app = await brain.create_app()
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, brain.host, brain.port, reuse_address=True, reuse_port=True)
+    # LOW-03: TLS support via environment variables
+    ssl_context = None
+    cert_path = os.environ.get('UNITYBRAIN_CERT')
+    key_path = os.environ.get('UNITYBRAIN_KEY')
+    if cert_path and key_path:
+        import ssl
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ssl_context.load_cert_chain(cert_path, key_path)
+        logger.info(f"🔒 TLS enabled: {cert_path}")
+    elif cert_path or key_path:
+        logger.warning("⚠️  UNITYBRAIN_CERT or UNITYBRAIN_KEY missing — TLS not enabled")
+    elif brain.host not in ('127.0.0.1', 'localhost', '::1'):
+        logger.warning("⚠️  Running on public interface without TLS! Set UNITYBRAIN_CERT and UNITYBRAIN_KEY env vars.")
+
+    site = web.TCPSite(runner, brain.host, brain.port, reuse_address=True, reuse_port=True,
+                        ssl_context=ssl_context)
     await site.start()
     logger.info(f"🌐 UnityBrain v{brain.version} on http://{brain.host}:{brain.port}")
     brain.log_event("server", f"Listening on {brain.host}:{brain.port}")
