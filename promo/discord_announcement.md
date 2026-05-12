@@ -1,32 +1,37 @@
-# NeuroMesh v4.0.1 — Discord announcement template
+# 🧠 NeuroMesh v5.2 — Discord Announcement
 
-## For AI/self-hosting/P2P Discord servers:
+## For AI / self-hosting / P2P Discord servers:
 
 ---
 
 Hey everyone! 👋
 
-Just released **NeuroMesh v4.0.1** — a lightweight P2P distributed AI network.
+Just released **NeuroMesh v5.2** — a lightweight P2P distributed AI network.
 
 **What:** Connect your machines running Ollama into a peer-to-peer network. Share compute, sync memory, route AI queries across nodes.
 
 **Why:** No central server. No accounts. No premium tier. No mining. Your machines talk directly.
 
+**What's new in v5.2:**
+- **Model Registry** — rich model catalog with SHA-256 hash verification, Ed25519 signatures, schema validation
+- **Network Sync** — automatic DNS, node discovery on connect, mesh catalog sync
+- **Cloud = private by default** — API keys never shared on the mesh unless you explicitly opt-in
+- **Full security audit** — zero personal data in the public repo
+
 **How it works:**
 - WebSocket real-time sync between nodes
 - CRDT-based distributed memory (no merge conflicts)
-- Ed25519 + HMAC decentralized auth with Web of Trust
+- Ed25519 + HMAC decentralized auth
 - Auto-discovery via Tailscale
 - Local AI models first, cloud on demand, peer failover
 
 **Quick start:**
 ```bash
-git clone https://github.com/NeuroMesh-ai/neuromesh.git
-python3 src/neuromesh_v4.py --config mynode.json
+git clone https://github.com/dnshouet-cpu/neuromesh.git
+cd neuromesh
+python3 src/neuromesh_v5.py --config mynode.json
 ```
 
-0.16s startup, 17MB RAM, 4 dependencies. MIT license.
+0.16s startup, 17MB RAM, 4 dependencies. MIT license. Runs on a Core 2 Duo.
 
-⭐ https://github.com/NeuroMesh-ai/neuromesh
-
-Built with ❤️ by Bug 🐛 and Denis Houet
+⭐ https://github.com/dnshouet-cpu/neuromesh

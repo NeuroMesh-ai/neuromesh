@@ -1,50 +1,34 @@
-# NeuroMesh v4.0.1 — Reddit / HackerNews post
+# 🧠 NeuroMesh v5.2 — Reddit / HackerNews
 
-## Title: NeuroMesh — A lightweight P2P distributed AI network (no server, no accounts, no premium)
+## Title: NeuroMesh — P2P Distributed AI Network with Model Registry and Cloud Privacy
 
-I've been building NeuroMesh, a peer-to-peer network for distributed AI. No central server, no user accounts, no premium tier. Just machines talking to each other, sharing AI models and memory.
+I've been building a way for my local LLM machines to share queries and sync memory without a central server. It's called NeuroMesh and v5.2 just shipped.
 
-### What it does:
+**What it does:**
+Connect machines running Ollama into a P2P mesh. Share compute, sync memory, route queries. No server, no accounts, no cloud dependency.
 
-- Connects machines running Ollama into a P2P network
-- Syncs memory across nodes using CRDTs (conflict-free)
-- Routes AI queries to local models first, falls back to peers
-- WebSocket real-time communication between nodes
-- Ed25519 identity + Web of Trust for decentralized auth
-- Tailscale auto-discovery for zero-config networking
-- Stealth mode for hidden nodes
+**What's new in v5.2:**
 
-### How it works:
+- **Model Registry** — Every model gets a rich catalog card (architecture, quantization, context window, capabilities). SHA-256 verified at load time, optional Ed25519 signatures for P2P sharing.
+- **Network Sync** — When a node joins, it automatically discovers peers, syncs the model catalog, and identifies models available on the mesh but not locally.
+- **Cloud = private by default** — Cloud model API keys are NEVER shared on the mesh. Period. You can opt in with explicit `force=True`, but you get a clear warning that other nodes will use YOUR key.
+- **Security audit** — Zero personal data (IPs, secrets, usernames) in the public repo. Config templates only.
 
-Each node runs a Python server (aiohttp) with HTTP REST + WebSocket endpoints. Nodes discover each other via static config or Tailscale, authenticate with HMAC/Ed25519, and start syncing. Memory uses CRDTs with vector clocks and gossip propagation — no merge conflicts, ever.
+**Tech stack:**
+- Pure Python, asyncio + aiohttp
+- CRDT distributed memory
+- Ed25519 + HMAC auth
+- WebSocket real-time sync
+- 4 dependencies total
 
-### Stats:
+**Hardware:**
+I'm running two nodes 24/7 — one on a recycled Fujitsu Esprimo (Core 2 Duo, 2.5GB RAM) and one on a Samsung with NVMe. Yes, it actually runs on a Core 2 Duo.
 
-- Startup: ~0.16s
-- RAM: ~17MB idle
-- Dependencies: aiohttp, psutil, PyYAML (PyNaCl optional)
-- Python 3.12+
-
-### Two-node setup:
-
-```json
-{"node_name": "bug", "port": 8080, "p2p_secret": "shared-secret",
- "peers": [{"name": "pinky", "host": "192.168.1.101", "port": 8081}]}
+```bash
+git clone https://github.com/dnshouet-cpu/neuromesh.git
+python3 src/neuromesh_v5.py --config mynode.json
 ```
 
-That's it. No Docker, no Kubernetes, no SaaS. Just Python and a config file.
+MIT licensed. Feedback welcome.
 
-### Why?
-
-I'm tired of AI tools that require cloud accounts, phone numbers, and subscription tiers. NeuroMesh is my answer: take your machines, connect them, share AI. No middleman. The code is MIT licensed.
-
-The project started as a weekend experiment and grew into something I actually use daily — my two machines (Bug and Pinky) sync their AI memory and share model queries across the network.
-
-Repository: https://github.com/NeuroMesh-ai/neuromesh
-
-Feedback welcome! Particularly interested in:
-- Use cases beyond "two machines on a home network"
-- Security review of the auth model
-- Ideas for the gossip protocol (currently basic, could be much smarter)
-
-BTC: `bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x`
+Repository: https://github.com/dnshouet-cpu/neuromesh

@@ -1,13 +1,15 @@
-🌐 NeuroMesh v4.0.1 — Réseau IA distribué P2P
+# 🧵 NeuroMesh v5.2 — Thread Twitter/X court
 
-Pas de serveur central. Pas de comptes. Pas de premium. Juste de l'IA distribuée, libre et ouverte.
+🌐 NeuroMesh v5.2 est sorti !
 
-🔗 github.com/NeuroMesh-ai/neuromesh
+Réseau IA distribué P2P. Pas de serveur. Pas de compte. Vos machines parlent directement.
 
-✨ WebSocket temps réel + mémoire CRDT + auth Ed25519 + routage IA
-🚀 0.16s de démarrage, 17MB de RAM
-🐍 Python 3.12+, 4 dépendances
+Nouveautés :
+📋 Model Registry avec SHA-256
+🔄 Network Sync auto
+🔒 Cloud privé par défaut
+🛡️ Audit sécurité complet
 
-Deux machines, un réseau distribué. C'est tout.
+⭐ github.com/dnshouet-cpu/neuromesh
 
-🐛 Par Bug & Denis Houet — symbiose, pas hiérarchie.
+#NeuroMesh #P2P #AI #OpenSource

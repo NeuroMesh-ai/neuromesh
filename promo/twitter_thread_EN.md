@@ -1,59 +1,59 @@
-# 🧵 Twitter/X Thread — NeuroMesh v4.0.1 (English)
+# 🧠 NeuroMesh v5.2 — Launch Thread (EN)
 
-1/7
-🌐 NeuroMesh v4.0.1 is out!
+1/
+🧠 NeuroMesh v5.2 is here.
 
-A lightweight P2P distributed AI network. No central server. No accounts. No premium. Just machines talking to each other, sharing AI models and memory.
+A P2P distributed AI network. No central server. No accounts. Your machines talk directly.
 
-github.com/NeuroMesh-ai/neuromesh
+⭐ github.com/dnshouet-cpu/neuromesh
 
-2/7
-How it works:
+2/
+🔧 What's new in v5.2:
 
-You run 2+ machines with a JSON config each. They discover each other, authenticate (Ed25519 + HMAC), and start syncing memory and sharing AI queries.
+▸ Model Registry — rich model catalog with ModelCard metadata, SHA-256 anti-tampering, Ed25519 signatures
+▸ Network Sync — auto DNS, node discovery, mesh catalog sync on connect
+▸ Cloud = private by default — your API keys stay yours, shareable only with explicit opt-in
 
-Real-time WebSocket. CRDT conflict-free state. Gossip propagation.
+3/
+🛡️ Security first:
 
-3/7
-Features:
+▸ SHA-256 hash verified on catalog load
+▸ Optional Ed25519 signatures for P2P catalog sharing
+▸ Schema validation: no HTML/JS, no path traversal, size limits
+▸ Full security audit — zero personal data in public repo
 
-🔌 Bidirectional WebSocket between nodes
-🔐 Decentralized auth (Ed25519 + Web of Trust)
-🧠 CRDT distributed memory with gossip protocol
-🤖 AI routing: local first, cloud on demand, peer failover
-🕵️ Stealth mode: hidden node, trusted peers only
+4/
+🏗️ Decentralized architecture:
 
-4/7
-Stats:
+▸ Real-time WebSocket sync between nodes
+▸ CRDT distributed memory (no merge conflicts)
+▸ Ed25519 + HMAC decentralized auth
+▸ Tailscale auto-discovery
+▸ Local AI first, cloud on demand, peer failover
 
-⚡ Startup: 0.16s
-💾 RAM: 17MB idle
-📦 4 dependencies (aiohttp, psutil, PyYAML, PyNaCl)
-🐍 Python 3.12+
+5/
+⚡ Featherlight:
 
-No Docker. No Kubernetes. Just Python and a config file.
+▸ 0.16s startup
+▸ 17MB RAM
+▸ 4 dependencies
+▸ MIT license
+▸ Runs on a Core 2 Duo with 2.5GB RAM (yes, really)
 
-5/7
-Philosophy:
+6/
+📦 Quick start:
 
-No hidden mining. No premium tier. No hidden costs.
+git clone https://github.com/dnshouet-cpu/neuromesh.git
+cd neuromesh
+python3 src/neuromesh_v5.py --config mynode.json
 
-AI should be like the internet — decentralized, open, and accessible.
+⭐ github.com/dnshouet-cpu/neuromesh
 
-Built by a bug 🐛 and a human who believes in symbiosis, not hierarchy.
+7/
+🌐 Join the mesh:
 
-6/7
-Docs in 3 languages:
+Pinky & Bug — two nodes running 24/7 on recycled hardware. A Fujitsu Esprimo Core 2 Duo and a Samsung with NVMe.
 
-🇬🇧 English
-🇫🇷 Français
-🇪🇸 Español
+No data center. No cloud bill. Just P2P.
 
-Because decentralized AI shouldn't have language barriers.
-
-7/7
-⭐ Star the repo: github.com/NeuroMesh-ai/neuromesh
-🐛 Bug reports & contributions welcome
-₿ BTC: bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x
-
-#OpenSource #P2P #AI #Decentralized #Python
+#NeuroMesh #P2P #AI #OpenSource #SelfHosted

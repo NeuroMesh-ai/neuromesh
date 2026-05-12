@@ -1,20 +1,48 @@
-## Discord servers where this would be relevant:
+# 🧠 NeuroMesh v5.2 — Discord Posts
 
-### OpenClaw Discord (we're already there)
-Hey! Just released NeuroMesh v4.1 — a P2P distributed AI network that connects machines running LLMs into a mesh. Multi-provider (Ollama, OpenAI, Anthropic, custom), CRDT memory sync, Ed25519 auth. No server, no accounts. MIT licensed.
+## Post 1: General announcement
 
-It's designed to work as an OpenClaw skill too — you can query your P2P network from your agent. Happy to share more if anyone's interested.
+Hey! Just released **NeuroMesh v5.2** — a P2P distributed AI network that connects machines running LLMs into a mesh.
 
-https://github.com/NeuroMesh-ai/neuromesh
+What's new:
+- **Model Registry** — rich model catalog with SHA-256 verification, Ed25519 signatures, schema validation
+- **Network Sync** — auto-discover peers, sync model catalog, identify missing models
+- **Cloud = private by default** — API keys never shared on the mesh unless you explicitly opt-in
+- **Full security audit** — zero personal data in the public repo
 
-### Ollama Discord
-Hey everyone! Built something that might be useful for those of you running Ollama on multiple machines. NeuroMesh connects them into a P2P network — queries can fall back between nodes, memory syncs via CRDT, and you can also route to OpenAI/Anthropic as additional providers.
+No server, no accounts, no tracking. Runs on a Core 2 Duo. MIT license.
 
-Lightweight (17MB RAM, Python), works with Tailscale or static config. MIT licensed.
+⭐ https://github.com/dnshouet-cpu/neuromesh
 
-https://github.com/NeuroMesh-ai/neuromesh
+---
 
-### r/selfhosted Discord
-Self-hosted P2P AI network — no server needed, no Docker, no K8s. Just Python and a config file. Connect your machines, they discover each other via Tailscale, sync memory, and share AI queries. Multi-provider support (Ollama, OpenAI, Anthropic).
+## Post 2: Self-hosting community
 
-https://github.com/NeuroMesh-ai/neuromesh
+Running local LLMs on multiple machines? NeuroMesh v5.2 connects them into a P2P mesh with:
+
+- Auto-discovery via Tailscale
+- CRDT memory sync (no conflicts)
+- Model catalog with verified integrity
+- Cloud models private by default
+
+Your API keys, your rules. Opt-in sharing with clear warnings.
+
+```bash
+git clone https://github.com/dnshouet-cpu/neuromesh.git
+python3 src/neuromesh_v5.py --config mynode.json
+```
+
+---
+
+## Post 3: Security-focused
+
+Built NeuroMesh v5.2 with security in mind:
+
+✅ SHA-256 hash verified on catalog load
+✅ Ed25519 signatures for P2P catalog sharing
+✅ Schema validation: no HTML/JS, no path traversal
+✅ Zero personal data in public repo (IPs, secrets, usernames all removed)
+✅ Config templates only — real configs in .gitignore
+✅ Cloud API keys private by default, opt-in with explicit consent
+
+⭐ https://github.com/dnshouet-cpu/neuromesh

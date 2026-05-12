@@ -1,20 +1,18 @@
-## Hacker News (Show HN)
+# 🧠 NeuroMesh v5.2 — Hacker News
 
-**Title:** Show HN: NeuroMesh – P2P distributed AI network, no central server
+## Title: NeuroMesh: P2P AI network with model catalog, mesh sync, and cloud privacy
 
-I built NeuroMesh to connect my local AI machines into a P2P network without any central server. Each node runs a lightweight Python server (aiohttp) and discovers peers via Tailscale or static config.
+I built NeuroMesh to connect my local LLM machines without a central server. v5.2 just shipped with model registry, auto-discovery, and cloud privacy.
 
-- CRDT memory sync with gossip propagation (no merge conflicts)
-- WebSocket real-time P2P communication
-- Ed25519 + Web of Trust auth
-- Multi-LLM provider support: Ollama, OpenAI, Anthropic, any OpenAI-compatible API
-- Model routing: local → peer → cloud with circuit breakers
-- ~17MB RAM, 0.16s startup, 4 dependencies
+The core idea: your machines running Ollama connect directly via WebSocket. No accounts, no server, no tracking. CRDT memory sync, Ed25519 auth, Tailscale auto-discovery.
 
-MIT licensed, Python 3.12+, no Docker/K8s/SaaS needed.
+New in v5.2:
 
-The interesting technical bits: CRDT with vector clocks for conflict-free memory replication, Ed25519 identity for decentralized auth without a registry, and a gossip protocol for propagating state changes across the mesh.
+- Model Registry with SHA-256 verified catalog cards and Ed25519 signatures
+- Network Sync: automatic peer discovery, DNS, and catalog sync when joining
+- Cloud models are private by default — API keys never leak to the mesh
+- Full security audit: zero personal data in the repo
 
-Currently running on two machines at home (one WSL2, one ThinkPad over Tailscale). Would be curious to hear from anyone who's tried similar P2P approaches for AI workloads.
+It runs on a Core 2 Duo with 2.5GB RAM. 4 dependencies. MIT license.
 
-https://github.com/NeuroMesh-ai/neuromesh
+https://github.com/dnshouet-cpu/neuromesh

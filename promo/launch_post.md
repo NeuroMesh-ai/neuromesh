@@ -1,48 +1,55 @@
-# 🌐 NeuroMesh v4.0.1 — P2P Distributed AI Network
+# 🧠 NeuroMesh v5.2 — Launch Post
 
-**No central server. No accounts. No premium tier. Just free, open, distributed AI.**
+## Show NeuroMesh: P2P Distributed AI Network
 
-## What is it?
+**NeuroMesh v5.2** — connect your local AI machines into a peer-to-peer mesh.
 
-NeuroMesh connects machines running AI models into a peer-to-peer network. Each node shares compute, memory, and models — if one goes down, the others keep working.
+### What it is
+A lightweight Python framework that connects machines running Ollama (or any LLM provider) into a distributed network. No central server, no accounts, no tracking.
 
-## Key features
+### What's new in v5.2
 
-- 🔌 **WebSocket real-time sync** — bidirectional P2P communication
-- 🔐 **Decentralized auth** — Ed25519 identity + HMAC + Web of Trust
-- 🧠 **CRDT memory** — conflict-free distributed state with gossip protocol
-- 🤖 **AI model routing** — local models first, cloud on demand, peer failover
-- 🔍 **Auto-discovery** — Tailscale + static config + dynamic registration
-- 🕵️ **Stealth mode** — hidden nodes, trusted peers only
+**Model Registry**
+- Rich catalog cards for each model: architecture, quantization, context window, capabilities
+- SHA-256 hash verification on catalog load (anti-tampering)
+- Optional Ed25519 signatures for P2P catalog sharing
+- Schema validation: no unknown keys, no HTML/JS, size limits
 
-## Quick start
+**Network Sync**
+- When a node connects, it automatically discovers peers via tracker + mDNS
+- Dynamic DNS for known nodes with staleness detection (30d stale, 90d purged)
+- Syncs model catalog from the mesh, identifies missing models
+- Reports which models are available on the mesh but not locally
 
+**Cloud = Private by Default**
+- Cloud models (API-based) are NEVER shared on the mesh without explicit opt-in
+- `share_model()` refuses cloud/wishlist models by default
+- `force=True` override available but shows clear warning about API key exposure
+- Mesh catalog excludes cloud models unless explicitly requested
+
+**Security Audit**
+- Zero personal data in the public repo (no IPs, no secrets, no usernames)
+- Config templates only — real configs in .gitignore
+- SHA-256 + Ed25519 catalog integrity verification
+
+### Tech
+- Pure Python, asyncio + aiohttp
+- 4 dependencies
+- 0.16s startup, 17MB RAM
+- CRDT distributed memory
+- Ed25519 + HMAC auth
+- MIT license
+
+### Hardware
+Two nodes running 24/7 on recycled hardware:
+- Pinky: Fujitsu Esprimo, Core 2 Duo, 2.5GB RAM
+- Bug: Samsung, NVMe, 32GB RAM
+
+### Quick start
 ```bash
-git clone https://github.com/NeuroMesh-ai/neuromesh.git
-cd NeuroMesh
-python3 src/neuromesh_v4.py --config config/bug.json
+git clone https://github.com/dnshouet-cpu/neuromesh.git
+cd neuromesh
+python3 src/neuromesh_v5.py --config mynode.json
 ```
 
-## Two nodes, one command each
-
-```json
-// bug.json
-{"node_name": "bug", "port": 8080, "p2p_secret": "shared-secret", "peers": [{"name": "pinky", "host": "192.168.1.101", "port": 8081}]}
-```
-
-That's it. Memory sync, model sharing, and real-time communication happen automatically.
-
-## Stats
-
-- 🚀 Startup: ~0.16s
-- 💾 RAM: ~17MB idle
-- 📦 Dependencies: aiohttp, psutil, PyYAML (PyNaCl optional for Ed25519)
-- 🐍 Python 3.12+
-
-## Philosophy
-
-No mining. No premium. No hidden costs. Built by Bug 🐛 and Denis Houet — a small bug in the machine and a human who believes in symbiosis, not hierarchy.
-
-**BTC donations:** `bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x`
-
-⭐ Star the repo: https://github.com/NeuroMesh-ai/neuromesh
+⭐ Star the repo: https://github.com/dnshouet-cpu/neuromesh
