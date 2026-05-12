@@ -1,5 +1,5 @@
 # 🎮 GUIDE D'UTILISATION - Interface Interactive
-## NeuroMesh & NeuroMeshBug v3.0
+## NeuroMesh & NeuroMeshAgent v3.0
 
 ---
 
@@ -9,14 +9,14 @@
 
 ```bash
 cd /tmp
-python3 interactive_interface.py
+python3 neuromesh_cli.py
 ```
 
 ### Initialisation
 
 L'interface initialise automatiquement :
 - **NeuroMesh v3.0** - Réseau P2P distribué
-- **NeuroMeshBug v3.0** - Système auto-émancipé
+- **NeuroMeshAgent v3.0** - Système auto-émancipé
 - **Web Server** - Interface web sur http://0.0.0.0:8080
 
 ---
@@ -77,7 +77,7 @@ Vous pouvez aussi utiliser la commande `query` :
 - Web interface
 - Export d'historique
 
-### NeuroMeshBug (Auto-émancipé)
+### NeuroMeshAgent (Auto-émancipé)
 
 ```
 [NEUROMESH]> mode bug
@@ -85,7 +85,7 @@ Vous pouvez aussi utiliser la commande `query` :
 ✅ Mode changé vers: BUG
 ```
 
-**Pourquoi NeuroMeshBug ?**
+**Pourquoi NeuroMeshAgent ?**
 - Auto-émancipation continue
 - Distributed memory
 - UX Monitor
@@ -134,7 +134,7 @@ Vous pouvez aussi utiliser la commande `query` :
 ⏱️ Uptime: 120.5s
 ```
 
-**NeuroMeshBug :**
+**NeuroMeshAgent :**
 ```
 [BUG]> status
 
@@ -266,7 +266,7 @@ Vous pouvez aussi utiliser la commande `query` :
 
 ---
 
-## 🧠 Commandes NeuroMeshBug
+## 🧠 Commandes NeuroMeshAgent
 
 ### `emancipate` - Lancer cycle d'auto-émancipation
 
@@ -282,7 +282,7 @@ Vous pouvez aussi utiliser la commande `query` :
 ```
 
 **Ce qui se passe :**
-1. Self-Reflection - NeuroMeshBug s'auto-analyse
+1. Self-Reflection - NeuroMeshAgent s'auto-analyse
 2. Self-Analysis - Identifie les opportunités
 3. Self-Improvement - Lance des experiments
 4. Self-Direction - Définit de nouveaux buts
@@ -388,7 +388,7 @@ http://0.0.0.0:8080
 ✅ Réponse: Le consensus est un processus de vote...
 ```
 
-### Exemple 3: Mode NeuroMeshBug
+### Exemple 3: Mode NeuroMeshAgent
 
 ```
 [NEUROMESH]> mode bug
@@ -432,13 +432,13 @@ http://0.0.0.0:8080
 ### Q: Comment puis-je savoir quel mode utiliser ?
 A:
 - **NeuroMesh** → Pour des requêtes P2P distribuées avec multi-modèles
-- **NeuroMeshBug** → Pour de l'auto-émancipation et de l'apprentissage autonome
+- **NeuroMeshAgent** → Pour de l'auto-émancipation et de l'apprentissage autonome
 
 ### Q: Qu'est-ce que l'ensemble ?
 A: L'ensemble query plusieurs modèles en parallèle et consensue les résultats pour améliorer la qualité (+23%).
 
 ### Q: Comment fonctionne l'auto-émancipation ?
-A: NeuroMeshBug s'auto-analyse, identifie les opportunités d'amélioration, lance des experiments, et apprend de ses expériences.
+A: NeuroMeshAgent s'auto-analyse, identifie les opportunités d'amélioration, lance des experiments, et apprend de ses expériences.
 
 ### Q: Puis-je utiliser les deux modes ensemble ?
 A: Oui ! Changez de mode avec `mode neuromesh` ou `mode bug` selon vos besoins.
@@ -449,18 +449,18 @@ A: Oui ! Changez de mode avec `mode neuromesh` ou `mode bug` selon vos besoins.
 
 ```
 mode neuromesh    → Change vers NeuroMesh
-mode bug          → Change vers NeuroMeshBug
+mode bug          → Change vers NeuroMeshAgent
 query <prompt>    → Envoie une requête
 ensemble <prompt> → Query avec multi-modèles
 status            → Voir le statut
 peers             → Voir les peers (NeuroMesh)
 history           → Voir l'historique (NeuroMesh)
 export <format>   → Exporter l'historique (NeuroMesh)
-emancipate        → Auto-émancipation (NeuroMeshBug)
-memory search <q> → Rechercher mémoire (NeuroMeshBug)
-skills            → Voir compétences (NeuroMeshBug)
-goals             → Voir buts (NeuroMeshBug)
-lessons           → Voir leçons (NeuroMeshBug)
+emancipate        → Auto-émancipation (NeuroMeshAgent)
+memory search <q> → Rechercher mémoire (NeuroMeshAgent)
+skills            → Voir compétences (NeuroMeshAgent)
+goals             → Voir buts (NeuroMeshAgent)
+lessons           → Voir leçons (NeuroMeshAgent)
 help              → Afficher l'aide
 quit              → Quitter
 ```

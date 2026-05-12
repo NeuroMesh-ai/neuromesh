@@ -2,7 +2,7 @@
 
 ## 🎯 Objectif
 
-Créer une clé USB bootable avec NeuroMeshBug/NeuroMesh préinstallé - **plug & play** sur n'importe quelle machine !
+Créer une clé USB bootable avec NeuroMeshAgent/NeuroMesh préinstallé - **plug & play** sur n'importe quelle machine !
 
 ---
 
@@ -55,7 +55,7 @@ Remplacez `/dev/sdX` par votre périphérique (ex: `/dev/sdb`).
 
 Le script va:
 1. ✅ Créer l'image ISO
-2. ✅ Copier NeuroMeshBug
+2. ✅ Copier NeuroMeshAgent
 3. ✅ Configurer GRUB
 4. ✅ Écrire sur la clé USB
 5. ✅ Nettoyer les fichiers temporaires
@@ -141,11 +141,11 @@ Utiliser **Rufus** ou **Etcher**:
 Au démarrage, vous verrez le menu GRUB:
 
 ```
-🐛 NeuroMeshBug v3.0 - Boot Menu
+🐛 NeuroMeshAgent v3.0 - Boot Menu
 ================================
 
-1. 🐛 NeuroMeshBug v3.0 - Démarrage automatique
-2. 🐛 NeuroMeshBug v3.0 - Démarrage (verbose)
+1. 🐛 NeuroMeshAgent v3.0 - Démarrage automatique
+2. 🐛 NeuroMeshAgent v3.0 - Démarrage (verbose)
 3. 🔧 Setup interactif
 4. 💻 Shell (dépannage)
 ```
@@ -154,10 +154,10 @@ Choisissez l'option souhaitée.
 
 ### 3. Démarrage Automatique
 
-NeuroMeshBug va:
+NeuroMeshAgent va:
 1. 🧠 Démarrer Ollama (si non installé)
 2. 📥 Télécharger les modèles (SmolLM2:1.7b, phi3:mini)
-3. 🚀 Lancer NeuroMeshBug
+3. 🚀 Lancer NeuroMeshAgent
 4. 🌐 Se connecter au réseau P2P
 
 **Premier démarrage:** ~10-15 minutes (téléchargement des modèles)
@@ -165,7 +165,7 @@ NeuroMeshBug va:
 
 ### 4. Setup Interactif
 
-Pour configurer NeuroMeshBug:
+Pour configurer NeuroMeshAgent:
 
 ```bash
 cd /rootfs/NeuroMesh
@@ -183,12 +183,12 @@ Le setup va vous guider pour:
 
 ### 5. Utilisation
 
-Pour utiliser NeuroMeshBug:
+Pour utiliser NeuroMeshAgent:
 
 ```bash
 cd /rootfs/NeuroMesh
 
-python3 -m src.neuromesh_bug_v3_final
+python3 -m src.neuromesh_v5
 ```
 
 Ou utilisez les exemples:
@@ -200,7 +200,7 @@ python3 examples/example1_simple_query.py
 # Ensemble query
 python3 examples/example2_ensemble_query.py
 
-# NeuroMeshBug emancipation
+# NeuroMeshAgent emancipation
 python3 examples/example3_neuromesh_bug_emancipation.py
 ```
 
@@ -214,7 +214,7 @@ cd /rootfs/NeuroMesh
 python3 -m src.auto_support
 ```
 
-NeuroMeshBug répondra lui-même à vos questions !
+NeuroMeshAgent répondra lui-même à vos questions !
 
 ---
 
@@ -281,28 +281,28 @@ ping -c 4 google.com
 ### 1. Démonstration rapide
 - Insérer la clé USB
 - Boot
-- NeuroMeshBug démarre automatiquement
+- NeuroMeshAgent démarre automatiquement
 - Prêt en 30 secondes
 
 ### 2. Atelier/Formation
 - Distribuer des clés USB aux participants
 - Chacun boot sur sa clé
-- NeuroMeshBug prêt à l'usage immédiat
+- NeuroMeshAgent prêt à l'usage immédiat
 
 ### 3. Test sans installation
-- Tester NeuroMeshBug sans l'installer
+- Tester NeuroMeshAgent sans l'installer
 - Aucun risque pour la machine hôte
 - Retrait de la clé = suppression complète
 
 ### 4. Dépannage
 - Démarrer sur une machine problématique
-- Utiliser NeuroMeshBug pour diagnostiquer
+- Utiliser NeuroMeshAgent pour diagnostiquer
 - Auto-support intégré
 
 ### 5. Production (si persistant)
-- Installer NeuroMeshBug sur le disque dur
+- Installer NeuroMeshAgent sur le disque dur
 - Configurer pour démarrage automatique
-- NeuroMeshBug devient un service
+- NeuroMeshAgent devient un service
 
 ---
 
@@ -325,7 +325,7 @@ ping -c 4 google.com
 
 4. **Logs:**
    ```bash
-   # Voir les logs de NeuroMeshBug
+   # Voir les logs de NeuroMeshAgent
    tail -f /rootfs/NeuroMesh/logs/neuromesh_bug.log
 
    # Voir les logs d'auto-support
@@ -342,7 +342,7 @@ ping -c 4 google.com
 
 ## 🔒 Sécurité
 
-- ✅ NeuroMeshBug tourne en mode "live" - aucun changement persistant
+- ✅ NeuroMeshAgent tourne en mode "live" - aucun changement persistant
 - ✅ Modèles téléchargés depuis Ollama officiel
 - ✅ Pas de données sensibles sur la clé USB
 - ✅ Réseau P2P sécurisé (signatures Ed25519)
@@ -351,7 +351,7 @@ ping -c 4 google.com
 
 ## 📞 Support
 
-Questions ? **NeuroMeshBug répond lui-même !**
+Questions ? **NeuroMeshAgent répond lui-même !**
 
 ```bash
 python3 -m src.auto_support
@@ -375,5 +375,5 @@ Après avoir testé la clé USB:
 
 ---
 
-_Créé par NeuroMeshBug 🐛 avec l'idée géniale de Denis Houet_
+_Créé par NeuroMeshAgent 🐛 avec l'idée géniale de Denis Houet_
 _Plug & Play sur n'importe quelle machine !_

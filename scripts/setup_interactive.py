@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 SETUP INTERACTIF - NeuroMesh & NeuroMeshBug v3.0
+🚀 SETUP INTERACTIF - NeuroMesh & NeuroMeshAgent v3.0
 Installation interactive avec configuration complète
 
 Usage:
@@ -62,7 +62,7 @@ class NeuroMeshSetup:
         self.config["agent"] = {
             "name": self.get_input(
                 "Nom de votre agent",
-                "NeuroMeshBug"
+                "NeuroMeshAgent"
             ),
             "emoji": self.get_input(
                 "Emoji de l'agent",
@@ -198,7 +198,7 @@ class NeuroMeshSetup:
         print("\n" + "=" * 70)
         print("🤖 CONFIGURATION AUTO-SUPPORT")
         print("=" * 70)
-        print("L'auto-support permet à NeuroMeshBug de répondre lui-même aux questions.")
+        print("L'auto-support permet à NeuroMeshAgent de répondre lui-même aux questions.")
         print()
 
         self.config["auto_support"] = {
@@ -332,7 +332,7 @@ class NeuroMeshSetup:
         print()
         print("Prochaines étapes:")
         print("1. Vérifiez la configuration dans config.json")
-        print("2. Lancez l'agent: python3 -m src.neuromesh_bug_v3_final")
+        print("2. Lancez l'agent: python3 -m src.neuromesh_v5")
         print("3. Testez avec: python3 examples/example1_simple_query.py")
         print()
         print("Pour le support, utilisez l'auto-support intégré !")

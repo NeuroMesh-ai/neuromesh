@@ -37,7 +37,7 @@ Les grands modèles (LLaMA 3 70B, Mixtral 8x7B, qwen3:8b, etc.) ont besoin de pl
 
 ## 🚀 Solution: Timeouts Dynamiques
 
-NeuroMeshBug v3.1+ supporte des **timeouts dynamiques** adaptés à la taille du modèle.
+NeuroMeshAgent v3.1+ supporte des **timeouts dynamiques** adaptés à la taille du modèle.
 
 ### Activation
 
@@ -46,10 +46,10 @@ Par défaut, les timeouts dynamiques sont activés.
 ### Configuration
 
 ```python
-from src.neuromesh_bug_v3_final import NeuroMeshBug
+from src.neuromesh_v5 import NeuroMeshAgent
 
-# Créer NeuroMeshBug
-neuromesh_bug = NeuroMeshBug()
+# Créer NeuroMeshAgent
+neuromesh_bug = NeuroMeshAgent()
 
 # Optionnel: Surcharge de timeout pour un modèle
 neuromesh_bug.set_timeout_override("qwen3:8b", 300)  # Force 5 minutes
@@ -118,7 +118,7 @@ qwen3:8b + prompt long    → 270s (4.5 min)
 ### 1. Recherche Scientifique (Questions longues)
 
 ```python
-neuromesh_bug = NeuroMeshBug()
+neuromesh_bug = NeuroMeshAgent()
 neuromesh_bug.model = "llama3:70b"
 
 # Question complexe de 2000 caractères
@@ -131,7 +131,7 @@ result = await neuromesh_bug.query(question)
 ### 2. Code Generation (Prompts moyens)
 
 ```python
-neuromesh_bug = NeuroMeshBug()
+neuromesh_bug = NeuroMeshAgent()
 neuromesh_bug.model = "mixtral:8x7b"
 
 # Prompt de 800 caractères
@@ -144,7 +144,7 @@ result = await neuromesh_bug.query(prompt)
 ### 3. Chat Simple (Prompts courts)
 
 ```python
-neuromesh_bug = NeuroMeshBug()
+neuromesh_bug = NeuroMeshAgent()
 neuromesh_bug.model = "phi3:mini"
 
 # Question courte
@@ -182,7 +182,7 @@ Si une requête timeout :
 ### Désactiver les Timeouts Dynamiques
 
 ```python
-neuromesh_bug = NeuroMeshBug()
+neuromesh_bug = NeuroMeshAgent()
 neuromesh_bug.enable_dynamic_timeouts = False  # Toujours utiliser default_timeout
 neuromesh_bug.set_default_timeout(120)  # 2 minutes pour tout
 ```
@@ -190,14 +190,14 @@ neuromesh_bug.set_default_timeout(120)  # 2 minutes pour tout
 ### Ajouter un Nouveau Modèle
 
 ```python
-neuromesh_bug = NeuroMeshBug()
+neuromesh_bug = NeuroMeshAgent()
 neuromesh_bug.add_model_timeout("nouveau_modele:20b", 300)  # 5 minutes
 ```
 
 ### Surcharge Globale
 
 ```python
-neuromesh_bug = NeuroMeshBug()
+neuromesh_bug = NeuroMeshAgent()
 neuromesh_bug.set_timeout_override("default", 300)  # Tout à 5 minutes
 ```
 
@@ -250,7 +250,7 @@ llama3:70b    → 600s ✅ (ajusté)
 
 ## 📝 Note Importante
 
-Les timeouts dynamiques sont une **amélioration proposée** par Denis Houet et seront disponibles dans **NeuroMeshBug v3.1**.
+Les timeouts dynamiques sont une **amélioration proposée** par Denis Houet et seront disponibles dans **NeuroMeshAgent v3.1**.
 
 Pour l'instant (v3.0), le timeout est fixe à 60s.
 

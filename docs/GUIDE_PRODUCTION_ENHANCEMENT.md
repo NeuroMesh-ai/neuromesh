@@ -1,6 +1,6 @@
 # 🔍 GUIDE - Production Enhancement Module
 
-Améliorations de production pour NeuroMesh & NeuroMeshBug v3.0
+Améliorations de production pour NeuroMesh & NeuroMeshAgent v3.0
 
 ## 📋 Table des matières
 
@@ -480,17 +480,17 @@ async def cached_query(prompt):
     return result
 ```
 
-### Intégration avec NeuroMeshBug
+### Intégration avec NeuroMeshAgent
 
 ```python
-from src.neuromesh_bug_v3_final import NeuroMeshBug
+from src.neuromesh_v5 import NeuroMeshAgent
 from src.production_enhancement import ProductionEnhancement
 
-# Créer NeuroMeshBug
-neuromesh_bug = NeuroMeshBug()
+# Créer NeuroMeshAgent
+neuromesh_bug = NeuroMeshAgent()
 
 # Ajouter le module de production enhancement
-neuromesh_bug.prod = ProductionEnhancement("NeuroMeshBug")
+neuromesh_bug.prod = ProductionEnhancement("NeuroMeshAgent")
 
 # Métriques d'émancipation
 neuromesh_bug.prod.metric_observe("emancipation_success_rate", 0.85)

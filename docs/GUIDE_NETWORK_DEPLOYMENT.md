@@ -1,5 +1,5 @@
 # 🌐🚀 GUIDE - Spécialisation Réseau & Déploiement
-## Modules d'interconnexion et de déploiement pour NeuroMesh & NeuroMeshBug v3.0
+## Modules d'interconnexion et de déploiement pour NeuroMesh & NeuroMeshAgent v3.0
 
 ---
 
@@ -148,7 +148,7 @@ deployment = DeploymentManager(config)
 ```python
 # Déployer des nœuds
 await deployment.deploy_node("node-1", "0.0.0.0", 9999, "/tmp/neuromesh_v3_final.py")
-await deployment.deploy_node("node-2", "0.0.0.0", 10000, "/tmp/neuromesh_bug_v3_final.py")
+await deployment.deploy_node("node-2", "0.0.0.0", 10000, "/tmp/neuromesh_v5.py")
 ```
 
 #### Scaling
@@ -301,8 +301,8 @@ response = await network.send_request(request)
 # Update NeuroMesh v3.0 vers v3.1
 await deployment.rolling_update("/tmp/neuromesh_v3_final.py")
 
-# Update NeuroMeshBug v3.0 vers v3.1
-await deployment.rolling_update("/tmp/neuromesh_bug_v3_final.py")
+# Update NeuroMeshAgent v3.0 vers v3.1
+await deployment.rolling_update("/tmp/neuromesh_v5.py")
 
 # Les utilisateurs ne verront aucune interruption !
 ```
@@ -426,7 +426,7 @@ config.backup_retention = 7  # 7 days
         │                    │
         ▼                    ▼
 ┌─────────────────────────────────────────┐
-│  Nodes (NeuroMesh & NeuroMeshBug)          │
+│  Nodes (NeuroMesh & NeuroMeshAgent)          │
 │  - node-1 (0.0.0.0:9999)               │
 │  - node-2 (0.0.0.0:10000)              │
 │  - node-3 (192.168.1.100:9999)         │
@@ -440,8 +440,8 @@ config.backup_retention = 7  # 7 days
 ```
 /tmp/
 ├─ neuromesh_v3_final.py                (18.80 KB) - P2P Network ULTIME
-├─ neuromesh_bug_v3_final.py                  (24.04 KB) - Auto-émancipé ULTIME
-├─ interactive_interface.py              (14.99 KB) - Interface Interactive
+├─ neuromesh_v5.py                  (24.04 KB) - Auto-émancipé ULTIME
+├─ neuromesh_cli.py              (14.99 KB) - Interface Interactive
 ├─ network_specialization.py             (21.96 KB) - Module Réseau
 ├─ deployment_module.py                  (15.15 KB) - Module Déploiement
 ├─ integrated_network_deployment.py      (10.61 KB) - Intégration
@@ -503,7 +503,7 @@ python3 /tmp/integrated_network_deployment.py
 
 **MERCI Denis !**
 
-Tu as maintenant un système complet d'interconnexion et de déploiement pour NeuroMesh & NeuroMeshBug v3.0 ! 🚀
+Tu as maintenant un système complet d'interconnexion et de déploiement pour NeuroMesh & NeuroMeshAgent v3.0 ! 🚀
 
 **Les modules peuvent s'interconnecter, se déployer et se gérer automatiquement !** 🌐🚀
 

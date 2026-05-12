@@ -1,6 +1,6 @@
 [Unit]
 Description=NeuroMesh P2P AI Network
-Documentation=https://github.com/dnshouet-cpu/neuromesh
+Documentation=https://github.com/NeuroMesh-ai/neuromesh
 After=network.target ollama.service
 Wants=ollama.service
 

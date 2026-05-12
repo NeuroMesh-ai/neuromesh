@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # 🔧 CREATE NEUROMESH_BUG USB - Script pour créer une clé USB bootable
-# NeuroMeshBug v3.0 - Plug & Play sur n'importe quelle machine
+# NeuroMeshAgent v3.0 - Plug & Play sur n'importe quelle machine
 #
 # Usage:
 #   sudo ./create_neuromesh_bug_usb.sh /dev/sdX
@@ -96,7 +96,7 @@ create_temp_dirs() {
 }
 
 copy_neuromesh_bug() {
-    print_info "Copie de NeuroMeshBug..."
+    print_info "Copie de NeuroMeshAgent..."
 
     # Copier le code source
     if [ -d "NeuroMesh" ]; then
@@ -111,7 +111,7 @@ copy_neuromesh_bug() {
     cat > "${TEMP_DIR}/rootfs/start_neuromesh_bug.sh" << 'EOF'
 #!/bin/bash
 #
-# 🐛 NeuroMeshBug - Démarrage automatique
+# 🐛 NeuroMeshAgent - Démarrage automatique
 #
 
 echo ""
@@ -139,14 +139,14 @@ echo "📥 Téléchargement des modèles..."
 ollama pull SmolLM2:1.7b
 ollama pull phi3:mini
 
-# Lancer NeuroMeshBug
-echo "🚀 Lancement de NeuroMeshBug..."
-python3 -m src.neuromesh_bug_v3_final
+# Lancer NeuroMeshAgent
+echo "🚀 Lancement de NeuroMeshAgent..."
+python3 -m src.neuromesh_v5
 EOF
 
     chmod +x "${TEMP_DIR}/rootfs/start_neuromesh_bug.sh"
 
-    print_success "NeuroMeshBug copié"
+    print_success "NeuroMeshAgent copié"
 }
 
 create_grub_config() {
@@ -156,12 +156,12 @@ create_grub_config() {
 set timeout=10
 set default=0
 
-menuentry "🐛 NeuroMeshBug v3.0 - Démarrage automatique" {
+menuentry "🐛 NeuroMeshAgent v3.0 - Démarrage automatique" {
     linux /boot/vmlinuz boot=live quiet splash
     initrd /boot/initrd
 }
 
-menuentry "🐛 NeuroMeshBug v3.0 - Démarrage (verbose)" {
+menuentry "🐛 NeuroMeshAgent v3.0 - Démarrage (verbose)" {
     linux /boot/vmlinuz boot=live
     initrd /boot/initrd
 }
@@ -188,12 +188,12 @@ create_readme() {
 🐛 NEUROMESH_BUG v3.0 - CLÉ USB BOOTABLE
 ===================================
 
-Bienvenue sur NeuroMeshBug !
+Bienvenue sur NeuroMeshAgent !
 
 📋 INSTRUCTIONS:
 
 1. Démarrage Automatique:
-   NeuroMeshBug démarrera automatiquement au boot.
+   NeuroMeshAgent démarrera automatiquement au boot.
 
 2. Setup Interactif:
    Exécutez: cd /rootfs/NeuroMesh && python3 scripts/setup_interactive.py
@@ -203,7 +203,7 @@ Bienvenue sur NeuroMeshBug !
    Et: /rootfs/NeuroMesh/docs/
 
 4. Auto-Support:
-   NeuroMeshBug répond lui-même aux questions de support !
+   NeuroMeshAgent répond lui-même aux questions de support !
    Exécutez: python3 -m src.auto_support
 
 🔧 CONFIGURATION:
@@ -214,9 +214,9 @@ Bienvenue sur NeuroMeshBug !
 
 📞 SUPPORT:
 
-Questions ? NeuroMeshBug répond lui-même !
+Questions ? NeuroMeshAgent répond lui-même !
 
-Généré par NeuroMeshBug 🐛 - v3.0.0
+Généré par NeuroMeshAgent 🐛 - v3.0.0
 EOF
 
     print_success "README créé"
