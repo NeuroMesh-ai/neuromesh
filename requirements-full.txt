@@ -1,4 +1,4 @@
-# NeuroMesh v5.1.0 — Full Requirements
+# NeuroMesh v5.2.0 — Full Requirements
 # Everything for all features (P2P auth, encryption, mesh tracker, etc.)
 # These work on Linux, macOS, and Windows
 

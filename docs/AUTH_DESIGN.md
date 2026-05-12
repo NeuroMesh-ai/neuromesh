@@ -1,8 +1,8 @@
-# 🔐 NeuroMesh v4.0 — Auth Design
+# 🔐 NeuroMesh Auth Design
 
 ## Overview
 
-NeuroMesh v4.0 uses a **decentralized auth model**. There is no central server, no CA, no registry. Authentication is between **nodes** (peers in the P2P network), not between end users. Users don't need accounts.
+NeuroMesh uses a **decentralized auth model**. There is no central server, no CA, no registry. Authentication is between **nodes** (peers in the P2P network), not between end users. Users don't need accounts.
 
 ---
 

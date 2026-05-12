@@ -1,4 +1,4 @@
-# NeuroMesh — Model Sharing Design (v4.1)
+# NeuroMesh — Model Sharing Design *(historical)*
 
 ## The Problem
 
@@ -10,7 +10,7 @@ Right now, if Node A has `glm-5.1:cloud` and Node B doesn't have Ollama at all, 
 
 ## Solution: Multi-Provider + P2P Model Sharing
 
-### Config Example (v4.1)
+### Config Example
 
 ```json
 {

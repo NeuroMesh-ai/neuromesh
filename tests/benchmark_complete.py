@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🧪 BENCHMARK COMPLET - NeuroMesh & NeuroMeshBug v3.0
+🧪 BENCHMARK COMPLET - NeuroMesh & NeuroMesh v3.0
 Test avec 100 requêtes, multi-LLM, et analyse d'évolution
 """
 
@@ -19,7 +19,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from src.neuromesh_v3_final import NeuroMesh
-from src.neuromesh_bug_v3_final import NeuroMeshBug
+from src.neuromesh_v5 import NeuroMesh
 
 # ============================================================================
 # ============== 100 REQUÊTES DE TEST ======================================
@@ -34,7 +34,7 @@ TEST_QUERIES = [
     "Comment fonctionne Kademlia ?",
     "Qu'est-ce que l'auto-émancipation ?",
     "Explique la self-awareness",
-    "Comment NeuroMeshBug apprend-il ?",
+    "Comment NeuroMesh apprend-il ?",
     "Qu'est-ce que le consensus d'ensemble ?",
     "Comment fonctionne le load balancing ?",
     "Qu'est-ce que la distributed memory ?",
@@ -431,17 +431,17 @@ async def benchmark_neuromesh():
     return runner
 
 async def benchmark_neuromesh_bug():
-    """Benchmark NeuroMeshBug"""
+    """Benchmark NeuroMesh"""
     print("\n" + "=" * 70)
     print("🧪 BENCHMARK NEUROMESH_BUG v3.0")
     print("=" * 70)
 
-    # Créer NeuroMeshBug
-    neuromesh_bug = NeuroMeshBug()
+    # Créer NeuroMesh
+    neuromesh_bug = NeuroMesh()
     await neuromesh_bug.initialize()
 
     # Créer le runner
-    runner = BenchmarkRunner("NeuroMeshBug")
+    runner = BenchmarkRunner("NeuroMesh")
 
     # Query function
     async def query_func(prompt, model):
@@ -484,21 +484,21 @@ async def compare_results():
         with open("output/neuromesh_bug_benchmark.json", 'r', encoding='utf-8') as f:
             neuromesh_bug_data = json.load(f)
     except:
-        print("❌ NeuroMeshBug benchmark not found")
+        print("❌ NeuroMesh benchmark not found")
         neuromesh_bug_data = None
 
     if neuromesh_data and neuromesh_bug_data:
         print(f"\n📈 Success Rate:")
         print(f"   NeuroMesh: {neuromesh_data['stats']['success_rate']:.2%}")
-        print(f"   NeuroMeshBug: {neuromesh_bug_data['stats']['success_rate']:.2%}")
+        print(f"   NeuroMesh: {neuromesh_bug_data['stats']['success_rate']:.2%}")
 
         print(f"\n⚡ Latence moyenne:")
         print(f"   NeuroMesh: {neuromesh_data['stats']['avg_latency']:.1f}ms")
-        print(f"   NeuroMeshBug: {neuromesh_bug_data['stats']['avg_latency']:.1f}ms")
+        print(f"   NeuroMesh: {neuromesh_bug_data['stats']['avg_latency']:.1f}ms")
 
         print(f"\n📝 Longueur moyenne des réponses:")
         print(f"   NeuroMesh: {neuromesh_data['stats']['avg_response_length']} chars")
-        print(f"   NeuroMeshBug: {neuromesh_bug_data['stats']['avg_response_length']} chars")
+        print(f"   NeuroMesh: {neuromesh_bug_data['stats']['avg_response_length']} chars")
 
         # Meilleur modèle
         print(f"\n🤖 Meilleur modèle (NeuroMesh):")
@@ -521,7 +521,7 @@ async def main():
     # Attendre un peu
     await asyncio.sleep(2)
 
-    # Benchmark NeuroMeshBug
+    # Benchmark NeuroMesh
     neuromesh_bug_runner = await benchmark_neuromesh_bug()
 
     # Comparaison

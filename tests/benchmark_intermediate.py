@@ -15,7 +15,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.neuromesh_bug_v3_final import NeuroMeshBug
+from src.neuromesh_v5 import NeuroMesh
 
 # Questions de niveau intermédiaire (réalisables par nos modèles)
 INTERMEDIATE_QUERIES = [
@@ -83,8 +83,8 @@ class IntermediateBenchmark:
         for model in MODELS:
             print(f"\n🤖 Testing model: {model}")
 
-            # Créer NeuroMeshBug avec le modèle
-            neuromesh_bug = NeuroMeshBug()
+            # Créer NeuroMesh avec le modèle
+            neuromesh_bug = NeuroMesh()
             neuromesh_bug.model = model
             await neuromesh_bug.initialize()
 

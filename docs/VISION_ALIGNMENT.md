@@ -18,7 +18,7 @@ Utilisateur → /api/query {"prompt": "...", "model": "glm-5.1:cloud"}
               Si failover → Pinky → réponse
 ```
 
-## Comment ça devrait marcher (v4.2+)
+## Comment ça devrait marcher (v5.2+)
 
 ```
 Utilisateur → /api/query {"prompt": "Comment réduire la pollution urbaine?", "strategy": "ensemble"}
@@ -94,7 +94,7 @@ L'alignement est le point le plus sensible car :
 - ✅ La mémoire distribuée des erreurs et corrections
 - ✅ La transparence : chaque réponse montre ses sources et ses divergences
 
-## Implémentation (v4.2 Roadmap)
+## Implémentation (Roadmap)
 
 ### Phase 1 : Ensemble Consensus amélioré
 - [ ] Requêter 3+ modèles en parallèle

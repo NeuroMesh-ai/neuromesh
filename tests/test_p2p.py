@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tests Unitaires - P2P Network v5.1.0
+Tests Unitaires - P2P Network v5.2.0
 """
 
 import asyncio
@@ -24,7 +24,7 @@ from src.neuromesh_v5 import (
 
 PINKY_CONFIG = {
     "node_name": "pinky",
-    "version": "5.1.0",
+    "version": "5.2.0",
     "host": "127.0.0.1",
     "port": 8081,
     "ollama_host": "127.0.0.1",
@@ -126,7 +126,7 @@ class TestPinkyNode:
     def test_init(self):
         brain = NeuroMesh(PINKY_CONFIG)
         assert brain.node_name == "pinky"
-        assert brain.version == "5.1.0"
+        assert brain.version == "5.2.0"
 
     def test_v5_modules(self):
         brain = NeuroMesh(PINKY_CONFIG)

@@ -1,4 +1,4 @@
-# NeuroMesh v5.1.0 — Requirements
+# NeuroMesh v5.2.0 — Requirements
 # Cross-platform: Linux, macOS, Windows
 # All packages work on all platforms
 

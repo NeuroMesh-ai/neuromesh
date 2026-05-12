@@ -1,6 +1,6 @@
 # 🌐 NeuroMesh v5
 
-[![Versión](https://img.shields.io/badge/versión-5.0.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Versión](https://img.shields.io/badge/versión-5.2.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![Licencia: MIT](https://img.shields.io/badge/Licencia-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-Descentralizado-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)

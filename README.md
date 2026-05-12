@@ -11,7 +11,7 @@
 [![Specialist](https://img.shields.io/badge/specialist-12_schemas-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![Website](https://img.shields.io/badge/website-neuromesh.ai-blue.svg)](https://neuromesh-ai.github.io/neuromesh)
 
-**Lightweight P2P distributed AI network.** No central server. No accounts. No premium tier. Connect machines, share models, sync memory. **v5.1: Multi-LLM specialist routing — auto-detect prompt type, route to the best model.**
+**Lightweight P2P distributed AI network.** No central server. No accounts. No premium tier. Connect machines, share models, sync memory. **v5.2: Multi-LLM specialist routing, Network Sync, Credit System — auto-detect prompt type, route to the best model.**
 
 🌐 **[Website & Live Demo →](https://neuromesh-ai.github.io/neuromesh)**
 
@@ -61,7 +61,7 @@ rm -rf /tmp/ub
 
 Your OpenClaw agent gets P2P AI access — query any model on the network, share memory between agents, use remote GPU/CPU transparently.
 
-**Sidekick Mode (v4.2+):** When NeuroMesh is running locally, OpenClaw auto-discovers it at `http://localhost:8080/api/agent`. Zero config needed — just start NeuroMesh and your agent becomes smarter.
+**Sidekick Mode (v5.2+):** When NeuroMesh is running locally, OpenClaw auto-discovers it at `http://localhost:8080/api/agent`. Zero config needed — just start NeuroMesh and your agent becomes smarter.
 
 **Either way, NeuroMesh is the same P2P network.** Standalone users and OpenClaw users share the same mesh.
 
@@ -343,7 +343,7 @@ WantedBy=default.target
 
 ---
 
-## 🎯 Specialist Router (v5.1)
+## 🎯 Specialist Router (v5.2)
 
 NeuroMesh auto-detects what kind of prompt you're sending and routes it to the best model.
 

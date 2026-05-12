@@ -16,7 +16,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.neuromesh_bug_v3_final import NeuroMeshBug
+from src.neuromesh_v5 import NeuroMesh
 
 # =============================================================================
 # ============== QUESTIONS DE NIVEAU DOCTORAL ============================
@@ -251,8 +251,8 @@ class ExtremeBenchmark:
         print(f"   Modèles: {len(LLMS_TO_TEST)}")
         print(f"   Total tests: {len(EXTREME_QUERIES) * len(LLMS_TO_TEST)}")
 
-        # Créer NeuroMeshBug
-        neuromesh_bug = NeuroMeshBug()
+        # Créer NeuroMesh
+        neuromesh_bug = NeuroMesh()
         await neuromesh_bug.initialize()
 
         self.start_time = datetime.utcnow()
@@ -476,8 +476,8 @@ async def main():
 
     os.makedirs("output", exist_ok=True)
 
-    # NeuroMeshBug
-    benchmark = ExtremeBenchmark("NeuroMeshBug Extreme")
+    # NeuroMesh
+    benchmark = ExtremeBenchmark("NeuroMesh Extreme")
     stats = await benchmark.run_benchmark()
 
     # Afficher les stats

@@ -20,7 +20,7 @@
 | Change | v4 | v5 |
 |--------|----|-----|
 | P2P authentication | `p2p_secret` in config file | `P2P_SECRET` env var (removed from config) |
-| Version | `"4.1.0"` | `"5.0.0"` |
+| Version | `"5.0.0"` | `"5.2.0"` |
 | Public mesh | Not available | `public_mesh` section (disabled by default) |
 | Conversation store | Not available | `conversation_store` section (enabled by default) |
 | Backward compatibility | — | v5 nodes can talk to v4 nodes on private network |

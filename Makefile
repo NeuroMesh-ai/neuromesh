@@ -1,4 +1,4 @@
-# UnityBrain Makefile
+# NeuroMesh Makefile
 # Quick reference: make help
 
 .PHONY: install uninstall serve test docker-build docker-run \
@@ -11,22 +11,22 @@ DOCKER      ?= docker
 COMPOSE     ?= docker compose
 PROJECT_DIR ?= $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 VERSION     ?= $(shell cat $(PROJECT_DIR)/VERSION 2>/dev/null || echo "0.0.0")
-IMAGE_NAME  ?= unitybrain/server
+IMAGE_NAME  ?= neuromesh/server
 IMAGE_TAG   ?= $(VERSION)
 
 # ─── Install / Uninstall ────────────────────────────────────
-install: ## Install UnityBrain as a system service (requires sudo)
+install: ## Install NeuroMesh as a system service (requires sudo)
 	@sudo bash $(PROJECT_DIR)/deploy/install.sh
 
-uninstall: ## Uninstall UnityBrain service (use --purge to remove all data)
+uninstall: ## Uninstall NeuroMesh service (use --purge to remove all data)
 	@sudo bash $(PROJECT_DIR)/deploy/uninstall.sh
 
 # ─── Run ─────────────────────────────────────────────────────
-serve: ## Run UnityBrain server in foreground (for development)
-	@$(PYTHON) -m src.unitybrain_cli serve --config config/default.json
+serve: ## Run NeuroMesh server in foreground (for development)
+	@$(PYTHON) -m src.neuromesh_cli serve --config config/default.json
 
 serve-dev: ## Run with auto-reload (development)
-	@$(PYTHON) -m src.unitybrain_cli serve --config config/default.json --debug
+	@$(PYTHON) -m src.neuromesh_cli serve --config config/default.json --debug
 
 # ─── Test ────────────────────────────────────────────────────
 test: ## Run all tests
@@ -69,8 +69,8 @@ docker-status: ## Show docker compose status
 	@cd $(PROJECT_DIR)/deploy && $(COMPOSE) ps
 
 # ─── Status ──────────────────────────────────────────────────
-status: ## Show UnityBrain service status
-	@systemctl status unitybrain --no-pager 2>/dev/null || \
+status: ## Show NeuroMesh service status
+	@systemctl status neuromesh --no-pager 2>/dev/null || \
 		echo "Service not installed. Run: make install"
 
 # ─── Clean ───────────────────────────────────────────────────
@@ -83,7 +83,7 @@ clean: ## Remove build artifacts and caches
 
 # ─── Help ────────────────────────────────────────────────────
 help: ## Show this help
-	@echo "UnityBrain Makefile — v$(VERSION)"
+	@echo "NeuroMesh Makefile — v$(VERSION)"
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""
@@ -95,4 +95,4 @@ help: ## Show this help
 	@echo "  PIP         Pip binary (default: pip3)"
 	@echo "  DOCKER      Docker binary (default: docker)"
 	@echo "  COMPOSE     Docker compose command (default: docker compose)"
-	@echo "  IMAGE_NAME  Docker image name (default: unitybrain/server)"
+	@echo "  IMAGE_NAME  Docker image name (default: neuromesh/server)"

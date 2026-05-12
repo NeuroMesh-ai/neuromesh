@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Exemple 3: NeuroMeshBug Auto-Émancipé
+Exemple 3: NeuroMesh Auto-Émancipé
 """
 
 import asyncio
@@ -10,22 +10,22 @@ import os
 # Ajouter le chemin
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.neuromesh_bug_v3_final import NeuroMeshBug
+from src.neuromesh_v5 import NeuroMesh
 
 
 async def main():
-    """Exemple NeuroMeshBug"""
+    """Exemple NeuroMesh"""
 
     print("=" * 70)
-    print("EXEMPLE 3: NeuroMeshBug - Auto-Émancipation")
+    print("EXEMPLE 3: NeuroMesh - Auto-Émancipation")
     print("=" * 70)
 
-    # Créer NeuroMeshBug
-    neuromesh_bug = NeuroMeshBug()
+    # Créer NeuroMesh
+    neuromesh = NeuroMesh()
 
     # Initialiser
     print("\n⚙️ Initialisation...")
-    await neuromesh_bug.initialize()
+    await neuromesh.initialize()
 
     # Faire plusieurs requêtes
     queries = [
@@ -39,7 +39,7 @@ async def main():
     print("\n📝 Test de plusieurs requêtes...")
     for i, query in enumerate(queries, 1):
         print(f"\n{i}. {query}")
-        result = await neuromesh_bug.query(query)
+        result = await neuromesh.query(query)
 
         if result["status"] == "success":
             print(f"   ✅ Success ({result['latency']:.0f}ms)")
@@ -47,7 +47,7 @@ async def main():
 
     # Lancer un cycle d'émancipation
     print("\n🔄 Cycle d'émancipation...")
-    analysis = await neuromesh_bug.emancipation.run_cycle()
+    analysis = await neuromesh.emancipation.run_cycle()
 
     print(f"\n📊 Analyse de l'émancipation:")
     print(f"   Cycles: {analysis['cycles_run']}")
@@ -60,7 +60,7 @@ async def main():
             print(f"   • {lesson}")
 
     # Statistiques de l'émancipation
-    status = neuromesh_bug.emancipation.get_status()
+    status = neuromesh.emancipation.get_status()
 
     print(f"\n🧠 Statistiques d'émancipation:")
     print(f"   Âge: {status['awareness']['age']} interactions")

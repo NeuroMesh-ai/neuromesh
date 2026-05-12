@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tests Unitaires - NeuroMesh v5.1.0
+Tests Unitaires - NeuroMesh v5.2.0
 """
 
 import asyncio
@@ -32,7 +32,7 @@ from src.neuromesh_v5 import (
 
 TEST_CONFIG = {
     "node_name": "test_node",
-    "version": "5.1.0",
+    "version": "5.2.0",
     "host": "127.0.0.1",
     "port": 18080,
     "ollama_host": "127.0.0.1",
@@ -163,7 +163,7 @@ class TestNeuroMeshInit:
     def test_init_with_config(self):
         brain = NeuroMesh(TEST_CONFIG)
         assert brain.node_name == "test_node"
-        assert brain.version == "5.1.0"
+        assert brain.version == "5.2.0"
         assert brain.port == 18080
 
     def test_has_v5_modules(self):

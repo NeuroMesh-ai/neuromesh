@@ -23,11 +23,11 @@
 ### CRIT-03: IPs hardcoded dans le code source
 - **brain_llm.py** : IPs internes en fallback (remplacées par `localhost`)
 - **neuromesh_v5.py** : IPs de broadcast hardcodées (remplacées par auto-détection)
-- **neuromesh_v4.py** : même pattern
+- **neuromesh_v4.py** *(historical)* : même pattern
 - **Fix**: ✅ Remplacé par des variables d'environnement avec fallback `localhost`
 
 ### CRIT-04: Username GitHub dans le code
-- **neuromesh_v4.py** : username GitHub hardcodé (remplacé par variable d'env)
+- **neuromesh_v4.py** *(historical)* : username GitHub hardcodé (remplacé par variable d'env)
 - **neuromesh_v5.py** : username GitHub hardcodé (remplacé par variable d'env)
 - **Fix**: ✅ Remplacé par `NEUROMESH_GITHUB_API` env var
 

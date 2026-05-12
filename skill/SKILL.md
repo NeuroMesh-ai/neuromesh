@@ -89,11 +89,11 @@ The skill checks these locations in order:
 | `/api/memory/{key}` | GET | Read CRDT memory key |
 | `/api/memory/set` | POST | Write CRDT memory key |
 | `/api/peers` | GET | List connected peers |
-| `/api/capabilities` | GET | Node hardware capabilities (v4.2) |
-| `/api/score/{peer}` | GET | Gamified score tier (v4.2) |
-| `/api/discover` | GET | Zero-Config discovered peers (v4.2) |
-| `/api/update` | GET | Check for updates (v4.2) |
-| `/api/daemon` | GET | Daemon/systray status (v4.2) |
+| `/api/capabilities` | GET | Node hardware capabilities ( |
+| `/api/score/{peer}` | GET | Gamified score tier ( |
+| `/api/discover` | GET | Zero-Config discovered peers ( |
+| `/api/update` | GET | Check for updates ( |
+| `/api/daemon` | GET | Daemon/systray status ( |
 
 ## Config
 
@@ -110,4 +110,4 @@ Minimal config for Sidekick mode:
 }
 ```
 
-Or just start it and let Zero-Config discover peers automatically (v4.2+).
+Or just start it and let Zero-Config discover peers automatically .

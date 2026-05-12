@@ -1,5 +1,5 @@
-# UnityBrain Dockerfile — Production-ready, non-root, hardened
-# Build: docker build -t unitybrain/server:latest .
+# NeuroMesh Dockerfile — Production-ready, non-root, hardened
+# Build: docker build -t neuromesh/server:latest .
 # Run:  docker compose up -d
 
 FROM python:3.11-slim AS base
@@ -11,12 +11,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user early
-RUN groupadd -r unitybrain && \
-    useradd -r -m -d /data -g unitybrain -s /sbin/nologin unitybrain
+RUN groupadd -r neuromesh && \
+    useradd -r -m -d /data -g neuromesh -s /sbin/nologin neuromesh
 
-# Install UnityBrain
-COPY . /opt/unitybrain/
-RUN pip install --no-cache-dir --prefer-binary /opt/unitybrain
+# Install NeuroMesh
+COPY . /opt/neuromesh/
+RUN pip install --no-cache-dir --prefer-binary /opt/neuromesh
 
 # Data volume
 VOLUME /data
@@ -29,14 +29,14 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -sf http://localhost:8080/api/ping || exit 1
 
 # Run as non-root user
-USER unitybrain
+USER neuromesh
 
 # Default config path
-ENV UNITYBRAIN_CONFIG=/data/config.json
-ENV UNITYBRAIN_DATA_DIR=/data
+ENV NEUROMESH_CONFIG=/data/config.json
+ENV NEUROMESH_DATA_DIR=/data
 ENV OLLAMA_HOST=host.docker.internal:11434
 
 WORKDIR /data
 
 ENTRYPOINT ["tini", "--"]
-CMD ["unitybrain", "serve", "--config", "/data/config.json"]
+CMD ["neuromesh", "serve", "--config", "/data/config.json"]

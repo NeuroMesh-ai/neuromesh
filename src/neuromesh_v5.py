@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-🌐 NEUROMESH v5.1.0 — RÉSEAU P2P DISTRIBUÉ
+🌐 NEUROMESH v5.2.0 — RÉSEAU P2P DISTRIBUÉ
 ===============================================
-v5.1.0 Specialist release:
+v5.2.0 release:
 1. Model Specialist — 12 specialty schemas with auto-detection and multi-LLM routing
 2. Multi-Model Executor — 6 modes (single, vote, chain, fuse, compare, specialist)
 3. Web UI specialist controls — specialty select, multi-mode select, multi-model rendering
@@ -10,7 +10,7 @@ v5.1.0 Specialist release:
 5. API: /api/specialties, /api/specialties/{name}/models, /api/multi
 6. Bug fixes and cleanup — removed dead code (v3 archive, nested sub-packages)
 
-v5.0.0 Major release:
+v5.0 Major release:
 1. Resource Guard — auto-pause/resume mesh sharing based on local user activity
 2. Adaptive Scheduler — strategy selection (routing/partial_sharding/full_sharding/raid_ram)
 3. Conversation Store — persistent conversations with search, export, privacy levels, encryption
@@ -22,7 +22,7 @@ v5.0.0 Major release:
 9. 18 new API endpoints for chat, resources, models, network, config
 10. CLI v5 with 15 subcommands
 
-v4.2.0 Features preserved:
+Features preserved from v4:
 - mDNS Zero-Config Discovery
 - GPU/CPU Model Negotiation
 - Gamified Score Dashboard
@@ -193,7 +193,7 @@ logger.addHandler(file_handler)
 
 
 # ============================================================================
-# v4.2.0: mDNS ZERO-CONFIG DISCOVERY
+# mDNS Zero-Config Discovery
 # ============================================================================
 
 class ZeroConfigDiscovery:
@@ -238,7 +238,7 @@ class ZeroConfigDiscovery:
         """Build discovery beacon message."""
         return json.dumps({
             'type': 'neuromesh_discovery',
-            'version': '4.2.0',
+            'version': '5.2.0',
             'node': self.node_name,
             'port': self.own_port,
             'ip': self._local_ip,
@@ -366,7 +366,7 @@ class ZeroConfigDiscovery:
 
 
 # ============================================================================
-# v4.2.0: GPU/CPU CAPABILITY NEGOTIATION
+# GPU/CPU Capability Negotiation
 # ============================================================================
 
 class NodeCapabilities:
@@ -563,7 +563,7 @@ class ModelNegotiator:
 
 
 # ============================================================================
-# v4.2.0: GAMIFIED SCORE SYSTEM
+# Gamified Score System
 # ============================================================================
 
 class GamifiedScore:
@@ -615,7 +615,7 @@ class GamifiedScore:
 
 
 # ============================================================================
-# v4.2.0: AUTO-UPDATE CHECKER
+# Auto-Update Checker
 # ============================================================================
 
 class AutoUpdater:
@@ -626,7 +626,7 @@ class AutoUpdater:
     """
     
     GITHUB_API = os.environ.get('NEUROMESH_GITHUB_API', 'https://api.github.com/repos/neuromesh/neuromesh/releases/latest')
-    CURRENT_VERSION = '5.1.0'
+    CURRENT_VERSION = '5.2.0'
     CHECK_INTERVAL = 86400  # once per day
     
     def __init__(self, auto_install: bool = False):
@@ -676,7 +676,7 @@ class AutoUpdater:
 
 
 # ============================================================================
-# v4.2.0: SYSTRAY DAEMON
+# Systray Daemon
 # ============================================================================
 
 class SystrayDaemon:
@@ -1733,7 +1733,7 @@ class ModelRouter:
 
     def route_with_capabilities(self, model: str, available_models: List[str],
                                 peers: List[Any] = None) -> Dict:
-        """v4.2.0: Route considering GPU/CPU capabilities.
+        """Route considering GPU/CPU capabilities.
         
         Returns: {'model': str, 'target': str, 'reason': str}
         target can be 'local', peer name, or 'cloud'
@@ -1817,7 +1817,7 @@ def load_config(config_path: str = None) -> Dict:
     """
     default_config = {
         "node_name": "unknown",
-        "version": "4.2.0",
+        "version": "5.2.0",
         "host": "0.0.0.0",
         "port": 8080,
         "ollama_host": "127.0.0.1",
@@ -1886,16 +1886,16 @@ def load_config(config_path: str = None) -> Dict:
 
 
 # ============================================================================
-# NEUROMESH v4.0 MAIN
+# NEUROMESH v5.2 MAIN
 # ============================================================================
 
 class NeuroMesh:
-    """NeuroMesh v4.0 — P2P Distributed AI Network"""
+    """NeuroMesh v5.2 — P2P Distributed AI Network"""
 
     def __init__(self, config: Dict):
         self.config = config
         self.node_name = config["node_name"]
-        self.version = "5.1.0"
+        self.version = "5.2.0"
         self.host = config["host"]
         self.port = config["port"]
         self.ollama_host = config["ollama_host"]
@@ -1915,18 +1915,18 @@ class NeuroMesh:
             "private_networks": [{"id": 1, "name": "Réseau Principal", "secret": ""}],
             "model_permissions": {}
         })
-        # v4.1.5: Multi-LLM providers
+        # Multi-LLM providers
         self.providers: Dict[str, ProviderAdapter] = {}
         self._model_provider_map: Dict[str, str] = {}  # model_name -> provider_name
         self._init_providers(config)
 
-        # v4.0: Node Identity (Ed25519 or HMAC fallback)
+        # Node Identity (Ed25519 or HMAC fallback)
         self.identity = NodeIdentity(self.node_name, self.p2p_secret)
 
-        # v4.0: Web of Trust
+        # Web of Trust
         self.web_of_trust = WebOfTrust()
 
-        # v4.0: Rate Limiter
+        # Rate Limiter
         self.rate_limiter = RateLimiter(
             rate=config.get("rate_limit", 10.0),
             burst=config.get("rate_burst", 20)
@@ -1945,9 +1945,9 @@ class NeuroMesh:
         self._token_blacklist: Set[str] = set()
         self._token_blacklist_lock = threading.Lock()
         self._load_token_blacklist()
-        self.sharing_quota = SharingQuota()  # v4.1.5: query quotas per peer
+        self.sharing_quota = SharingQuota()  # query quotas per peer
 
-        # v4.2.0: New capabilities
+        # New capabilities
         self.own_capabilities = NodeCapabilities()
         logger.info(f"🖥️ Node capabilities: GPU={self.own_capabilities.gpu_available} "
                     f"({self.own_capabilities.gpu_name or 'none'}), "
@@ -1963,7 +1963,7 @@ class NeuroMesh:
         self.systray = SystrayDaemon(node_name=self.node_name)
 
         # ====================================================================
-        # v5.0.0 MODULES
+        # Core modules
         # ====================================================================
 
         # Resource Guard — protects local user from mesh overload
@@ -2055,7 +2055,7 @@ class NeuroMesh:
         self.ensemble = EnsembleConsensus()
         self.history = QueryHistory()
 
-        # v5.0.0: Specialist Router — multi-LLM specialty-based routing
+        # Specialist Router — multi-LLM specialty-based routing
         if HAS_MODEL_SPECIALIST:
             specialist_config = config.get("specialist", {})
             self.specialist_router = SpecialistRouter(config=specialist_config)
@@ -2096,7 +2096,7 @@ class NeuroMesh:
         providers_config = config.get("providers", {})
 
         if providers_config:
-            # v4.1.5: Multi-provider mode
+            # Multi-provider mode
             for name, pconf in providers_config.items():
                 ptype = pconf.get("type", "ollama")
                 if not pconf.get("enabled", True):
@@ -2111,7 +2111,7 @@ class NeuroMesh:
                 logger.info(f"Provider '{name}' ({ptype}): {len(provider.models)} models "
                             f"- {', '.join(provider.models[:3])}{'...' if len(provider.models) > 3 else ''}")
         else:
-            # v4.0 backward compat: create default Ollama provider from legacy config
+            # Backward compat: create default Ollama provider from legacy config
             ollama_conf = {
                 "type": "ollama",
                 "host": config.get("ollama_host", "127.0.0.1"),
@@ -2131,7 +2131,7 @@ class NeuroMesh:
         self.local_models = list(all_models)
         logger.info(f"Available models ({len(self.local_models)}): {', '.join(sorted(self.local_models)[:5])}{'...' if len(self.local_models) > 5 else ''}")
 
-        # v4.0: CRDT Memory
+        # CRDT Memory
         self.memory = CRDTMemory(
             node_id=self.node_name,
             max_size=config.get("memory_max_size", 1000),
@@ -2176,7 +2176,7 @@ class NeuroMesh:
         self.ws_clients: Dict[str, web.WebSocketResponse] = {}  # id -> ws
         self.ws_authenticated: Set[str] = set()  # authenticated ws client ids
 
-        # v4.0: Gossip protocol state
+        # Gossip protocol state
         self._gossip_seen: Set[str] = set()  # message IDs already seen
         self._gossip_queue: deque = deque(maxlen=200)  # pending gossip messages
 
@@ -2289,7 +2289,7 @@ class NeuroMesh:
                 public_key_hex=peer_info.get('public_key', '')
             )
             await self.add_peer(peer)
-            # v4.1.5: Update sharing quota model count
+            # Update sharing quota model count
             self.sharing_quota.update_models(peer.name, len(peer.models))
 
         # Ping all peers
@@ -2306,12 +2306,12 @@ class NeuroMesh:
 
         self.log_event("init", f"NeuroMesh v{self.version} initialized as '{self.node_name}'")
 
-        # v5.0.0: Start Resource Guard background monitor
+        # Start Resource Guard background monitor
         if self.resource_guard:
             await self.resource_guard.start()
             logger.info(f"🛡️ Resource Guard started: {self.resource_guard._state.value}")
 
-        # v5.0.0: Start Tracker Client if enabled
+        # Start Tracker Client if enabled
         if self.tracker_client:
             try:
                 await self.tracker_client.start()
@@ -2462,7 +2462,7 @@ class NeuroMesh:
             ),
             "zero_config_peers": len(self.zero_config.get_discovered_peers()),
             "daemon": self.systray.status(),
-            # v5.0.0 modules
+            # Core modules
             "resource_guard": {
                 "available": HAS_RESOURCE_GUARD,
                 "state": self.resource_guard._state.value if self.resource_guard else "unavailable",
@@ -2695,7 +2695,7 @@ class NeuroMesh:
         app.router.add_post('/api/brain/chain', self._auth_required(self.handle_brain_chain))
         app.router.add_post('/api/trust/sign', self._auth_required(self.handle_trust_sign))
         app.router.add_get('/api/trust/score/{key}', self.handle_trust_score)
-        # v4.2.0: New endpoints
+        # New endpoints
         app.router.add_get('/api/capabilities', self.handle_capabilities)
         app.router.add_get('/api/score/{peer}', self.handle_gamified_score)
         app.router.add_get('/api/discover', self.handle_discover)
@@ -2783,7 +2783,7 @@ class NeuroMesh:
         app.router.add_get('/api/config', self._auth_required(self.handle_config_get))
         app.router.add_post('/api/config', self._auth_required(self.handle_config_set))
 
-        # v5.0.0: Specialist & Multi-Model endpoints
+        # Specialist & Multi-Model endpoints
         app.router.add_get('/api/specialties', self.handle_specialties_list)
         app.router.add_get('/api/specialties/{name}/models', self.handle_specialty_models)
         app.router.add_post('/api/multi', self._auth_required(self.handle_multi_model_query))
@@ -2925,7 +2925,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             html += '<div>Aucun fournisseur configuré</div>'
         html += '</div>'
 
-        # v4.2.0: Gamified Score section
+        # Gamified Score section
         html += '<div class="card"><h2>🤝 Score de Partage</h2>'
         own_score = self.sharing_quota.calculate_score(self.node_name)
         own_tier = GamifiedScore.get_tier(own_score)
@@ -2949,7 +2949,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                 html += f'<div class="stat"><span>{html.escape(p.name)}</span><span style="color:{peer_tier["color"]}">{peer_tier["tier"]} ({peer_score:.1f})</span></div>'
         html += '</div>'
 
-        # v4.2.0: Capabilities section
+        # Capabilities section
         html += '<div class="card"><h2>🖥️ Capacités</h2>'
         caps = self.own_capabilities
         gpu_str = f"✅ {caps.gpu_name} ({caps.gpu_vram_mb}Mo)" if caps.gpu_available else "❌ Aucun"
@@ -2964,7 +2964,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                 html += f'<div class="stat"><span>{name}</span><span>{pgpu} | {pcaps.max_model_category.upper()}</span></div>'
         html += '</div>'
 
-        # v4.2.0: Zero-Config discovered peers
+        # Zero-Config discovered peers
         zc_peers = self.zero_config.get_discovered_peers()
         if zc_peers:
             html += '<div class="card"><h2>📡 Découverte Zero-Config</h2>'
@@ -3050,7 +3050,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             elif specialty:
                 query_type = "specialty"
 
-            # v4.1.5: Rate limit check (still enforced)
+            # Rate limit check (still enforced)
             if not self.sharing_quota.allow_query(peer_name):
                 score = self.sharing_quota.calculate_score(peer_name)
                 quota = self.sharing_quota.get_quota(peer_name)
@@ -3087,7 +3087,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                         "hint": "Share more resources to earn credits"
                     }, status=402)
         
-        # v5.0.0: Specialty-based routing — if specialty/models specified, use SpecialistRouter
+        # Specialty-based routing — if specialty/models specified, use SpecialistRouter
         if self.specialist_router and (specialty or models or specialties):
             routing = self.specialist_router.route(
                 prompt,
@@ -3264,7 +3264,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                                    "is_trusted": self.web_of_trust.is_trusted(key)})
 
     # ========================================================================
-    # v4.2.0: CAPABILITIES, SCORE, DISCOVERY, UPDATE, DAEMON ENDPOINTS
+    # Capabilities, Score, Discovery, Update, Daemon endpoints
     # ========================================================================
     # v5: NEUROMESH DESKTOP UI API HANDLERS
     # ========================================================================
@@ -3499,7 +3499,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         if self.own_capabilities.gpu_available:
             gpu_info = {"name": self.own_capabilities.gpu_name, "available": True}
 
-        # v5.0.0: Use Resource Guard for sharing state if available
+        # Use Resource Guard for sharing state if available
         if self.resource_guard:
             guard = self.resource_guard
             sharing_active = guard.can_accept_request()
@@ -3712,7 +3712,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             shared_list.append(model_name)
             self._persist_config()
 
-        # v5.0.0: Use ModelShareManager if available
+        # Use ModelShareManager if available
         if self.model_share_manager:
             try:
                 self.model_share_manager.share_model(model_name)
@@ -3746,7 +3746,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             shared_list.remove(model_name)
             self._persist_config()
 
-        # v5.0.0: Use ModelShareManager if available
+        # Use ModelShareManager if available
         if self.model_share_manager:
             try:
                 self.model_share_manager.unshare_model(model_name)
@@ -4411,7 +4411,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
 
     # ========================================================================
 
-    # v5.0.0: SPECIALIST ENDPOINTS
+    # Specialist endpoints
     # ========================================================================
 
     async def handle_specialties_list(self, request: web.Request) -> web.Response:
@@ -5130,7 +5130,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
                     )
                     await self.add_peer(peer)
                     self.log_event("discovery", f"Auto-discovered {peer.name}")
-            # v4.2.0: Also check zero-config discovered peers
+            # Also check zero-config discovered peers
             zc_peers = self.zero_config.get_discovered_peers()
             for p in zc_peers:
                 existing = [ep for ep in self.peers if ep.host == p['host'] and ep.port == p['port']]
@@ -5223,24 +5223,24 @@ async def main():
         asyncio.create_task(brain._discovery_loop()),
     ])
 
-    # v4.2.0: Start zero-config discovery
+    # Start zero-config discovery
     await brain.zero_config.start()
     
-    # v4.2.0: Check for updates on startup
+    # Check for updates on startup
     update = await brain.auto_updater.check()
     if update:
         logger.info(f"🔄 Update available: v{update['latest']} (current v{update['current']})")
         brain.log_event("update", f"v{update['latest']} available")
     
-    # v4.2.0: Write PID for daemon mode
+    # Write PID for daemon mode
     brain.systray.write_pid(os.getpid())
     logger.info(f"🖥️ Daemon PID: {os.getpid()}")
 
-    # v5.0.0: Start resource guard monitor
+    # Start resource guard monitor
     if brain.resource_guard:
         logger.info(f"🛡️ Resource Guard: {brain.resource_guard._state.value}")
 
-    # v5.0.0: Start tracker client announce loop
+    # Start tracker client announce loop
     if brain.tracker_client:
         asyncio.create_task(brain.tracker_client.announce_loop())
         asyncio.create_task(brain.tracker_client.discover_loop())
@@ -5250,10 +5250,10 @@ async def main():
 
     logger.info("Cleaning up...")
     brain.heartbeat_running = False
-    # v5.0.0: Stop resource guard
+    # Stop resource guard
     if brain.resource_guard:
         await brain.resource_guard.stop()
-    # v5.0.0: Stop tracker client
+    # Stop tracker client
     if brain.tracker_client:
         await brain.tracker_client.stop()
     for task in tasks:
@@ -5273,5 +5273,5 @@ async def main():
 if __name__ == '__main__':
     import sys
     node = sys.argv[1] if len(sys.argv) > 1 else "bug"
-    logger.info(f"Starting NeuroMesh v5.0.0 as '{node}'")
+    logger.info(f"Starting NeuroMesh v5.2 as '{node}'")
     asyncio.run(main())

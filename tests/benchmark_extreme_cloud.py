@@ -15,7 +15,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.neuromesh_bug_v3_final import NeuroMeshBug
+from src.neuromesh_v5 import NeuroMesh
 
 # 5 questions représentatives de niveau doctoral
 EXTREME_QUERIES_SAMPLE = [
@@ -53,8 +53,8 @@ class CloudBenchmark:
         print(f"   Modèles: {len(CLOUD_MODELS)}")
         print(f"   Total tests: {len(EXTREME_QUERIES_SAMPLE) * len(CLOUD_MODELS)}")
 
-        # Créer NeuroMeshBug
-        neuromesh_bug = NeuroMeshBug()
+        # Créer NeuroMesh
+        neuromesh_bug = NeuroMesh()
         neuromesh_bug.model = "glm-4.7:cloud"  # Forcer le modèle cloud
         await neuromesh_bug.initialize()
 

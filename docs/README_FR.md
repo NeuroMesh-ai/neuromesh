@@ -1,12 +1,12 @@
 # 🌐 NeuroMesh v5
 
-[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
+[![Version](https://img.shields.io/badge/version-5.2.0-blue.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![License : MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![P2P](https://img.shields.io/badge/P2P-D%C3%A9centralis%C3%A9-green.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 [![Chiffrement E2E](https://img.shields.io/badge/E2E-Chiffr%C3%A9-orange.svg)](https://github.com/NeuroMesh-ai/neuromesh)
 
-**Réseau IA P2P distribué avec mesh public. Partagez du calcul, partagez des modèles, restez privé. v5.1 : Routage spécialiste multi-LLM.**
+**Réseau IA P2P distribué avec mesh public. Partagez du calcul, partagez des modèles, restez privé. v5.2 : Routage spécialiste multi-LLM, Network Sync, Credit System.**
 
 > 🌍 [English](./README_EN.md) | 🌐 [Documentación en español](./README_ES.md) | 🌐 [中文文档](./README_ZH.md) | 🌐 [हिन्दी](./README_HI.md) | 🌐 [العربية](./README_AR.md) | 🌐 [Português](./README_PT.md) | 🌐 [日本語](./README_JA.md)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NeuroMesh v4.1.5 — Setup & Install
+NeuroMesh v5.2.0 — Setup & Install
 
 Installe NeuroMesh sur n'importe quelle machine Linux/macOS.
 Pas besoin d'OpenClaw. Juste Python 3.8+ et Ollama.
@@ -186,7 +186,7 @@ def create_default_config(node_name=None, port=8080, share_ai=True, secret=None)
 
     config = {
         "node_name": node_name,
-        "version": "4.1.0",
+        "version": "5.2.0",
         "host": "0.0.0.0",
         "port": port,
         "ollama_host": "127.0.0.1",
@@ -243,7 +243,7 @@ def create_bin_wrapper(node_name):
     # neuromesh command
     wrapper = BIN_DIR / "neuromesh"
     wrapper.write_text(f"""#!/bin/bash
-# NeuroMesh v4.1.5 — CLI
+# NeuroMesh v5.2.0 — CLI
 DIR="{INSTALL_DIR}"
 PYTHON="$DIR/venv/bin/python3"
 [ ! -x "$PYTHON" ] && PYTHON="python3"
@@ -316,7 +316,7 @@ def print_success(node_name):
     """Print success message with next steps"""
     print()
     print(c("bold", "═" * 50))
-    print(c("green", c("bold", "  🐛 NeuroMesh v4.1.5 installed!")))
+    print(c("green", c("bold", "  🐛 NeuroMesh v5.2.0 installed!")))
     print(c("bold", "═" * 50))
     print()
     print(c("cyan", "  Quick start:"))
@@ -396,7 +396,7 @@ def main():
         return
 
     print()
-    print(c("bold", c("cyan", "🐛 NeuroMesh v4.1.5 — Installer")))
+    print(c("bold", c("cyan", "🐛 NeuroMesh v5.2.0 — Installer")))
     print(c("dim", "   P2P Distributed AI Network"))
     print()
 

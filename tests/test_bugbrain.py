@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Tests Unitaires - NeuroMeshBug v5.1.0 (via NeuroMesh)
-NeuroMeshBug is now a profile of NeuroMesh
+Tests Unitaires - NeuroMesh v5.2.0 (via NeuroMesh profile)
+NeuroMesh is now a profile of NeuroMesh
 """
 
 import asyncio
@@ -23,7 +23,7 @@ from src.neuromesh_v5 import (
 
 BUG_CONFIG = {
     "node_name": "bug",
-    "version": "5.1.0",
+    "version": "5.2.0",
     "host": "127.0.0.1",
     "port": 8080,
     "ollama_host": "127.0.0.1",
@@ -40,7 +40,7 @@ BUG_CONFIG = {
 }
 
 
-class TestNeuroMeshBugIdentity:
+class TestNeuroMeshIdentity:
     """Test Bug node identity"""
 
     def test_bug_identity(self):
@@ -54,7 +54,7 @@ class TestNeuroMeshBugIdentity:
         assert identity.verify("test_message", sig)
 
 
-class TestNeuroMeshBugComponents:
+class TestNeuroMeshComponents:
     """Test Bug-specific components"""
 
     def test_rate_limiter(self):
@@ -69,11 +69,11 @@ class TestNeuroMeshBugComponents:
         assert not cb.can_execute()
 
 
-class TestNeuroMeshBugInit:
+class TestNeuroMeshInit:
     """Test Bug as NeuroMesh node"""
 
     def test_init(self):
         brain = NeuroMesh(BUG_CONFIG)
         assert brain.node_name == "bug"
-        assert brain.version == "5.1.0"
+        assert brain.version == "5.2.0"
         assert brain.share_ai is True

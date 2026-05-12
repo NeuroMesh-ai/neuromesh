@@ -1,8 +1,8 @@
 """
-NeuroMesh v5.1.0
+NeuroMesh v5.2.0
 """
 
-__version__ = "5.1.0"
+__version__ = "5.2.0"
 __author__ = "Bug & Pinky 🐛🩷"
 __license__ = "MIT"
 

@@ -16,7 +16,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from src.neuromesh_v3_final import NeuroMesh
-from src.neuromesh_bug_v3_final import NeuroMeshBug
+from src.neuromesh_v5 import NeuroMesh
 
 # 10 requêtes de test (version réduite)
 TEST_QUERIES_SHORT = [
@@ -206,12 +206,12 @@ async def main():
 
     await asyncio.sleep(1)
 
-    # NeuroMeshBug
-    print("\n🧠 NeuroMeshBug v3.0")
-    neuromesh_bug = NeuroMeshBug()
+    # NeuroMesh
+    print("\n🧠 NeuroMesh v3.0")
+    neuromesh_bug = NeuroMesh()
     await neuromesh_bug.initialize()
 
-    runner2 = BenchmarkRunner("NeuroMeshBug")
+    runner2 = BenchmarkRunner("NeuroMesh")
     async def query_func2(prompt, model):
         return await neuromesh_bug.query(prompt)
 
@@ -225,10 +225,10 @@ async def main():
     print("=" * 70)
     print(f"\nSuccess Rate:")
     print(f"   NeuroMesh: {stats.success_rate:.2%}")
-    print(f"   NeuroMeshBug: {stats2.success_rate:.2%}")
+    print(f"   NeuroMesh: {stats2.success_rate:.2%}")
     print(f"\nLatence moyenne:")
     print(f"   NeuroMesh: {stats.avg_latency:.1f}ms")
-    print(f"   NeuroMeshBug: {stats2.avg_latency:.1f}ms")
+    print(f"   NeuroMesh: {stats2.avg_latency:.1f}ms")
 
     print("\n✅ TERMINÉ !")
 

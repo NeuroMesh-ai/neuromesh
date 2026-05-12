@@ -15,7 +15,7 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from src.neuromesh_bug_v3_final import NeuroMeshBug
+from src.neuromesh_v5 import NeuroMesh
 
 # 5 questions représentatives de niveau doctoral
 EXTREME_QUERIES_SAMPLE = [
@@ -54,8 +54,8 @@ class CapableBenchmark:
         print(f"   Modèle: {MODEL} (8B paramètres)")
         print(f"   Total tests: {len(EXTREME_QUERIES_SAMPLE)}")
 
-        # Créer NeuroMeshBug avec qwen3:8b
-        neuromesh_bug = NeuroMeshBug()
+        # Créer NeuroMesh avec qwen3:8b
+        neuromesh_bug = NeuroMesh()
         neuromesh_bug.model = MODEL
         await neuromesh_bug.initialize()
 

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "neuromesh"
-version = "4.0.1"
-description = "NeuroMesh & NeuroMeshBug v3.5 - Système d'IA 100% décentralisé et auto-émancipé"
+version = "5.2.0"
+description = "NeuroMesh - Distributed P2P AI Network"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
@@ -74,7 +74,7 @@ Changelog = "https://github.com/NeuroMesh-ai/neuromesh/blob/main/CHANGELOG.md"
 
 [project.scripts]
 neuromesh = "src.neuromesh_cli:main"
-neuromesh_bug = "src.neuromesh_bug_cli:main"
+neuromesh = "src.neuromesh_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

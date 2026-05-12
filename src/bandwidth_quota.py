@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-📡 BANDWIDTH QUOTA — NeuroMesh v5.1
+📡 BANDWIDTH QUOTA — NeuroMesh v5.2
 ======================================
 
 Système de quota de bande passante et données mensuelles.
