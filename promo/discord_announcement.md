@@ -21,12 +21,12 @@ Just released **UnityBrain v4.0.1** — a lightweight P2P distributed AI network
 
 **Quick start:**
 ```bash
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 python3 src/unitybrain_v4.py --config mynode.json
 ```
 
 0.16s startup, 17MB RAM, 4 dependencies. MIT license.
 
-⭐ https://github.com/dnshouet-cpu/Unitybrain
+⭐ https://github.com/unitybrain-ai/unitybrain
 
 Built with ❤️ by Bug 🐛 and Denis Houet

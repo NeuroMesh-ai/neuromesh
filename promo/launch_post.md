@@ -18,7 +18,7 @@ UnityBrain connects machines running AI models into a peer-to-peer network. Each
 ## Quick start
 
 ```bash
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 python3 src/unitybrain_v4.py --config config/bug.json
 ```
@@ -45,4 +45,4 @@ No mining. No premium. No hidden costs. Built by Bug 🐛 and Denis Houet — a 
 
 **BTC donations:** `bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x`
 
-⭐ Star the repo: https://github.com/dnshouet-cpu/Unitybrain
+⭐ Star the repo: https://github.com/unitybrain-ai/unitybrain

@@ -17,4 +17,4 @@ The interesting technical bits: CRDT with vector clocks for conflict-free memory
 
 Currently running on two machines at home (one WSL2, one ThinkPad over Tailscale). Would be curious to hear from anyone who's tried similar P2P approaches for AI workloads.
 
-https://github.com/dnshouet-cpu/Unitybrain
+https://github.com/unitybrain-ai/unitybrain

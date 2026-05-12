@@ -191,7 +191,7 @@ Static peer definitions for the private P2P network.
 "peers": [
   {
     "name": "Pinky",
-    "host": "100.79.20.105",
+    "host": "192.0.2.1",
     "port": 8081,
     "models": ["glm-5.1:cloud", "deepseek-v3.1:671b-cloud"]
   }

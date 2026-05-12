@@ -20,7 +20,7 @@ Simuler un **utilisateur réel** qui:
 **But:** Installer BugBrain sur une machine vierge
 
 **Étapes:**
-1. Cloner le repo depuis GitHub: `git clone https://github.com/dnshouet-cpu/Unitybrain.git`
+1. Cloner le repo depuis GitHub: `git clone https://github.com/unitybrain-ai/unitybrain.git`
 2. Entrer dans le répertoire: `cd Unitybrain`
 3. Installer les dépendances: `pip install -r requirements.txt --break-system-packages`
 4. Installer les dépendances d'autonomie: `pip install -r requirements_autonomy.txt --break-system-packages`

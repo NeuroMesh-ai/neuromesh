@@ -4,7 +4,7 @@ import hmac, hashlib, time, json, urllib.request, urllib.error
 
 HOST = "localhost"
 PORT = 8080
-SECRET = "bug-pinky-2026-unity"
+SECRET = "test-secret-change-me"
 BASE = f"http://{HOST}:{PORT}"
 
 def hmac_headers(path, secret):
@@ -67,7 +67,7 @@ s, data = post(f"{BASE}/api/sync", {"memory": cross_mem}, h)
 if s == 200:
     print(f"  20 clés syncées: {data.get('keys_synced')} synced ✅")
     # Vérifier côté Pinky
-    s2, data2 = get(f"http://100.79.20.105:8081/api/status")
+    s2, data2 = get(f"http://localhost:8081/api/status")
     if s2 == 200:
         print(f"  Pinky mémoire: {data2.get('memory', {}).get('keys', '?')} clés")
 else:

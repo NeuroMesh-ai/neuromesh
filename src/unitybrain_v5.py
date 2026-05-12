@@ -128,6 +128,22 @@ except ImportError:
     logger_v5 = logging.getLogger('UnityBrain.v5')
     logger_v5.warning("tracker_client not available — public mesh discovery disabled")
 
+try:
+    from model_registry import ModelRegistry, ModelCard, ModelSource, ModelStatus
+    HAS_MODEL_REGISTRY = True
+except ImportError:
+    HAS_MODEL_REGISTRY = False
+    logger_v5 = logging.getLogger('UnityBrain.v5')
+    logger_v5.warning("model_registry not available — model catalog disabled")
+
+try:
+    from network_sync import NetworkSync, DynamicDNS, NODE_STALE_THRESHOLD_DAYS, MODEL_STALE_THRESHOLD_DAYS
+    HAS_NETWORK_SYNC = True
+except ImportError:
+    HAS_NETWORK_SYNC = False
+    logger_v5 = logging.getLogger('UnityBrain.v5')
+    logger_v5.warning("network_sync not available — automatic mesh sync disabled")
+
 # ============================================================================
 # SECURITY CONSTANTS
 # ============================================================================
@@ -285,7 +301,7 @@ class ZeroConfigDiscovery:
             sock.settimeout(2)
             msg = self._build_beacon()
             # Broadcast to derived subnet + common subnets
-            targets = [self._get_broadcast_addr(), '192.168.1.255', '100.64.0.255']
+            targets = [self._get_broadcast_addr()]
             for target in targets:
                 try:
                     sock.sendto(msg, (target, self.BROADCAST_PORT))
@@ -609,7 +625,7 @@ class AutoUpdater:
     Preserves the lightweight ethos — only checks on startup + periodic.
     """
     
-    GITHUB_API = 'https://api.github.com/repos/dnshouet-cpu/Unitybrain/releases/latest'
+    GITHUB_API = os.environ.get('UNITYBRAIN_GITHUB_API', 'https://api.github.com/repos/unitybrain/unitybrain/releases/latest')
     CURRENT_VERSION = '5.1.0'
     CHECK_INTERVAL = 86400  # once per day
     
@@ -1400,7 +1416,7 @@ class PeerDiscovery:
                 'node': self.node_name,
                 'port': self.own_port
             }).encode()
-            for subnet in ['192.168.1.255', '192.168.129.255', '100.64.0.255']:
+            for subnet in [self._get_broadcast_addr()]:
                 try:
                     sock.sendto(msg, (subnet, 8090))
                 except OSError:
@@ -1870,7 +1886,7 @@ class UnityBrain:
             logger.error("⚠️  P2P_SECRET not configured! Set P2P_SECRET env var or p2p_secret in config.")
             logger.error("⚠️  Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'")
             self.p2p_secret = os.environ.get("P2P_SECRET", "changeme-configure-in-config")
-        elif self.p2p_secret in ("changeme", "changeme-configure-in-config", "bug-pinky-2026-unity"):
+        elif self.p2p_secret in ("changeme", "changeme-configure-in-config"):
             logger.warning("⚠️  P2P_SECRET is a known default — please change it!")
         self.stealth_mode = config.get("stealth_mode", False)
         self.share_ai = config.get("share_ai", False)
@@ -2031,6 +2047,29 @@ class UnityBrain:
         else:
             self.specialist_router = None
             self.multi_model_executor = None
+
+        # v5.2.0: Model Registry — catalogue de modèles avec métadonnées riches
+        if HAS_MODEL_REGISTRY:
+            self.model_registry = ModelRegistry(base_dir=base_dir)
+            try:
+                self.model_registry.initialize()
+                logger.info(f"📚 Model Registry: {len(self.model_registry._cards)} models in catalog")
+            except Exception as e:
+                logger.warning(f"Model Registry init failed: {e}")
+                self.model_registry = None
+        else:
+            self.model_registry = None
+
+        # v5.2.0: Network Sync — DNS dynamique + sync catalogue mesh
+        if HAS_NETWORK_SYNC:
+            self.network_sync = NetworkSync(
+                model_registry=self.model_registry,
+                tracker_client=None,  # Sera branché plus tard avec self.tracker_client
+                persist_dir=str(Path.home() / ".unitybrain"),
+            )
+            logger.info("🔄 NetworkSync initialized")
+        else:
+            self.network_sync = None
 
     def _init_providers(self, config: Dict):
         """Initialize LLM providers from config. Falls back to Ollama-only if no providers."""
@@ -2261,6 +2300,13 @@ class UnityBrain:
                 logger.warning(f"Tracker Client start failed: {e}")
                 self.tracker_client = None
 
+        # Brancher NetworkSync avec le tracker_client
+        if self.network_sync:
+            self.network_sync.tracker_client = self.tracker_client
+            # Lancer la sync périodique en arrière-plan
+            asyncio.create_task(self.network_sync.start())
+            logger.info("🔄 NetworkSync background sync started")
+
     async def check_peers(self):
         if not self.session:
             return
@@ -2407,6 +2453,7 @@ class UnityBrain:
             } if self.adaptive_scheduler else {"available": False, "strategy": "unavailable"},
             "conversation_store": {"available": HAS_CONVERSATION_STORE} if self.conversation_store else {"available": False},
             "model_share_manager": {"available": HAS_MODEL_SHARE_MANAGER} if self.model_share_manager else {"available": False},
+            "model_registry": {"available": HAS_MODEL_REGISTRY, "models": len(self.model_registry._cards)} if self.model_registry and HAS_MODEL_REGISTRY else {"available": False},
             "tracker_client": {
                 "available": HAS_TRACKER_CLIENT and self.tracker_client is not None,
                 "state": self.tracker_client.state if self.tracker_client else "unavailable",
@@ -2676,6 +2723,30 @@ class UnityBrain:
         app.router.add_get('/api/models', self._auth_required(self.handle_models_list))
         app.router.add_post('/api/models/{name}/share', self._auth_required(self.handle_model_share))
         app.router.add_post('/api/models/{name}/unshare', self._auth_required(self.handle_model_unshare))
+
+        # v5.2: Model Registry — catalogue, recherche, recommandations
+        app.router.add_get('/api/registry', self.handle_registry_list)
+        app.router.add_get('/api/registry/stats', self.handle_registry_stats)
+        app.router.add_get('/api/registry/{name}', self.handle_registry_info)
+        app.router.add_post('/api/registry', self._auth_required(self.handle_registry_add))
+        app.router.add_delete('/api/registry/{name}', self._auth_required(self.handle_registry_remove))
+        app.router.add_put('/api/registry/{name}', self._auth_required(self.handle_registry_update))
+        app.router.add_get('/api/registry/search/{query}', self.handle_registry_search)
+        app.router.add_get('/api/registry/recommend', self.handle_registry_recommend)
+        app.router.add_get('/api/registry/mesh', self.handle_registry_mesh)
+        app.router.add_get('/api/registry/wishlist', self.handle_registry_wishlist)
+        app.router.add_post('/api/registry/wishlist/{name}', self._auth_required(self.handle_registry_wishlist_add))
+        app.router.add_post('/api/registry/{name}/share', self._auth_required(self.handle_registry_share))
+        app.router.add_post('/api/registry/{name}/unshare', self._auth_required(self.handle_registry_unshare))
+        app.router.add_post('/api/registry/purge', self._auth_required(self.handle_registry_purge))
+        app.router.add_get('/api/registry/stale', self.handle_registry_stale)
+
+        # v5.2: Network Sync — DNS dynamique + sync mesh
+        app.router.add_get('/api/network/sync', self.handle_network_sync_status)
+        app.router.add_post('/api/network/sync', self._auth_required(self.handle_network_sync_run))
+        app.router.add_get('/api/network/dns', self.handle_dns_list)
+        app.router.add_get('/api/network/dns/stats', self.handle_dns_stats)
+        app.router.add_get('/api/network/missing', self.handle_missing_models)
 
         # Network
         app.router.add_get('/api/network/private/peers', self._auth_required(self.handle_network_private_peers))
@@ -3675,9 +3746,388 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         self.log_event("model_unshare", f"Model '{model_name}' unshared from mesh")
         return web.json_response({"unshared": model_name, "models_share": shared_list})
 
+    # --- v5.2: Model Registry endpoints ---
+
+    async def handle_registry_list(self, request: web.Request) -> web.Response:
+        """GET /api/registry — Lister les modèles du catalogue avec filtres."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        source = request.query.get("source")
+        category = request.query.get("category")
+        tag = request.query.get("tag")
+        language = request.query.get("language")
+        try:
+            min_quality = int(request.query.get("min_quality", "0"))
+        except (ValueError, TypeError):
+            min_quality = None
+        shared_only = request.query.get("shared", "").lower() == "true"
+        available_only = request.query.get("available", "").lower() == "true"
+        downloadable = request.query.get("downloadable", "").lower() == "true"
+        sort_by = request.query.get("sort", "quality")
+        models = self.model_registry.list_models(
+            source=source, category=category, tag=tag,
+            language=language, min_quality=min_quality or None,
+            shared_only=shared_only, available_only=available_only,
+            downloadable_only=downloadable, sort_by=sort_by,
+        )
+        return web.json_response({
+            "models": [m.to_dict() for m in models],
+            "total": len(models),
+            "filters": {
+                "source": source, "category": category, "tag": tag,
+                "language": language, "min_quality": min_quality,
+                "shared_only": shared_only, "available_only": available_only,
+                "downloadable_only": downloadable, "sort_by": sort_by,
+            }
+        })
+
+    async def handle_registry_stats(self, request: web.Request) -> web.Response:
+        """GET /api/registry/stats — Statistiques du registre."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        stats = self.model_registry.get_stats()
+        return web.json_response(stats)
+
+    async def handle_registry_info(self, request: web.Request) -> web.Response:
+        """GET /api/registry/{name} — Fiche détaillée d'un modèle."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        card = self.model_registry.get_model(name)
+        if not card:
+            # Try URL-decoded name
+            from urllib.parse import unquote
+            name = unquote(name)
+            card = self.model_registry.get_model(name)
+        if not card:
+            # Fuzzy search
+            results = self.model_registry.search(name)
+            if results:
+                card = results[0]
+            else:
+                return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+        return web.json_response(card.to_dict())
+
+    async def handle_registry_add(self, request: web.Request) -> web.Response:
+        """POST /api/registry — Ajouter un modèle au registre.
+
+        Body: {
+            "name": "model-name",
+            "display_name": "Model Name",
+            "description": "...",
+            "source": "local|cloud|wishlist|mesh",
+            "categories": ["code", "reasoning"],
+            "quality_rating": 7,
+            "speed_rating": 8,
+            "context_window": 32768,
+            "size_category": "small",
+            "params_count": "8B",
+            "ram_required_gb": 8,
+            "vram_required_gb": 0,
+            "strengths": ["..."],
+            "limitations": ["..."],
+            "best_for": ["..."],
+            "not_for": ["..."],
+            "languages": ["en", "fr"],
+            "provider": "ollama",
+            "license": "...",
+            "notes": "..."
+        }
+        """
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        data = await request.json()
+        name = data.get("name", "").strip()
+        if not name:
+            return web.json_response({"error": "name is required"}, status=400)
+        try:
+            source = ModelSource(data.get("source", "local"))
+        except ValueError:
+            source = ModelSource.LOCAL
+        try:
+            status = ModelStatus(data.get("status", "ready"))
+        except ValueError:
+            status = ModelStatus.READY
+        card = ModelCard(
+            name=name,
+            display_name=data.get("display_name", ""),
+            description=data.get("description", ""),
+            long_description=data.get("long_description", ""),
+            source=source,
+            status=status,
+            categories=data.get("categories", []),
+            tags=data.get("tags", []),
+            quality_rating=int(data.get("quality_rating", 5)),
+            speed_rating=int(data.get("speed_rating", 5)),
+            context_window=int(data.get("context_window", 8192)),
+            size_category=data.get("size_category", "small"),
+            params_count=data.get("params_count", ""),
+            ram_required_gb=float(data.get("ram_required_gb", 4)),
+            vram_required_gb=float(data.get("vram_required_gb", 0)),
+            disk_size_gb=float(data.get("disk_size_gb", 0)),
+            strengths=data.get("strengths", []),
+            limitations=data.get("limitations", []),
+            best_for=data.get("best_for", []),
+            not_for=data.get("not_for", []),
+            languages=data.get("languages", ["en"]),
+            primary_language=data.get("primary_language", "en"),
+            provider=data.get("provider", "ollama"),
+            architecture=data.get("architecture", ""),
+            license=data.get("license", ""),
+            quantization=data.get("quantization", ""),
+            price_per_million_input=float(data.get("price_per_million_input", 0)),
+            price_per_million_output=float(data.get("price_per_million_output", 0)),
+            notes=data.get("notes", ""),
+        )
+        self.model_registry.add_model(card)
+        self.log_event("registry_add", f"Model '{name}' added to registry ({source.value})")
+        return web.json_response({"added": card.to_dict()}, status=201)
+
+    async def handle_registry_remove(self, request: web.Request) -> web.Response:
+        """DELETE /api/registry/{name} — Supprimer un modèle du registre."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        if self.model_registry.remove_model(name):
+            self.log_event("registry_remove", f"Model '{name}' removed from registry")
+            return web.json_response({"removed": name})
+        return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+
+    async def handle_registry_update(self, request: web.Request) -> web.Response:
+        """PUT /api/registry/{name} — Mettre à jour un modèle."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        data = await request.json()
+        if self.model_registry.update_model(name, data):
+            card = self.model_registry.get_model(name)
+            self.log_event("registry_update", f"Model '{name}' updated")
+            return web.json_response(card.to_dict())
+        return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+
+    async def handle_registry_search(self, request: web.Request) -> web.Response:
+        """GET /api/registry/search/{query} — Rechercher des modèles."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        query = request.match_info.get('query', '')
+        from urllib.parse import unquote
+        query = unquote(query)
+        results = self.model_registry.search(query)
+        return web.json_response({
+            "query": query,
+            "results": [m.to_dict() for m in results],
+            "total": len(results),
+        })
+
+    async def handle_registry_recommend(self, request: web.Request) -> web.Response:
+        """GET /api/registry/recommend — Recommandations personnalisées.
+
+        Query params: task, language, max_ram_gb, min_quality
+        """
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        task = request.query.get("task")
+        language = request.query.get("language", "fr")
+        try:
+            max_ram = float(request.query.get("max_ram_gb", "0"))
+        except (ValueError, TypeError):
+            max_ram = None
+        try:
+            min_q = int(request.query.get("min_quality", "0"))
+        except (ValueError, TypeError):
+            min_q = None
+        recs = self.model_registry.get_recommendations(
+            task=task, language=language,
+            max_ram_gb=max_ram if max_ram and max_ram > 0 else None,
+            min_quality=min_q if min_q and min_q > 0 else None,
+        )
+        return web.json_response({
+            "recommendations": [m.to_dict() for m in recs[:10]],
+            "total": len(recs),
+            "params": {"task": task, "language": language, "max_ram_gb": max_ram, "min_quality": min_q},
+        })
+
+    async def handle_registry_mesh(self, request: web.Request) -> web.Response:
+        """GET /api/registry/mesh — Catalogue des modèles disponibles sur le mesh public."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        mesh_models = self.model_registry.get_mesh_catalog()
+        return web.json_response({
+            "mesh_catalog": [m.to_dict() for m in mesh_models],
+            "total": len(mesh_models),
+        })
+
+    async def handle_registry_wishlist(self, request: web.Request) -> web.Response:
+        """GET /api/registry/wishlist — Liste des modèles souhaités."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        wishlist = self.model_registry.get_wishlist()
+        return web.json_response({
+            "wishlist": [m.to_dict() for m in wishlist],
+            "total": len(wishlist),
+        })
+
+    async def handle_registry_wishlist_add(self, request: web.Request) -> web.Response:
+        """POST /api/registry/wishlist/{name} — Ajouter un modèle à la wishlist."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        data = await request.json() if request.content_type == 'application/json' else {}
+        notes = data.get("notes", "") if isinstance(data, dict) else ""
+        card = self.model_registry.add_to_wishlist(name, notes=notes)
+        self.log_event("registry_wishlist", f"Model '{name}' added to wishlist")
+        return web.json_response({"wishlist": card.to_dict()}, status=201)
+
+    async def handle_registry_share(self, request: web.Request) -> web.Response:
+        """POST /api/registry/{name}/share — Marquer un modèle comme partagé dans le registre.
+        
+        Par défaut, les modèles cloud et wishlist ne sont PAS partageables.
+        Utiliser ?force=true pour forcer le partage d'un modèle cloud (à vos risques).
+        
+        ⚠️ ATTENTION : partager un modèle cloud sur le mesh public signifie que
+        d'autres nœuds peuvent rediriger des requêtes vers VOTRE clé API. Vous êtes
+        responsable de l'usage et des coûts générés. Le programme de raid/share prend
+        tout son sens quand plusieurs utilisateurs partagent leurs ressources cloud,
+        mais chacun le fait à ses propres risques.
+        """
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        force = request.query.get("force", "false").lower() == "true"
+        
+        # Vérifier le type de modèle avant de partager
+        card = self.model_registry.get_model(name)
+        if not card:
+            return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+        
+        # Avertissement si c'est un modèle cloud
+        is_cloud = card.source.value == "cloud" or name.endswith(":cloud") or ":cloud:" in name
+        if is_cloud and not force:
+            return web.json_response({
+                "error": f"Cloud model '{name}' cannot be shared on the public mesh by default",
+                "reason": "cloud_private_by_default",
+                "model": name,
+                "source": card.source.value,
+                "warning": "Sharing a cloud model means other nodes will route requests through YOUR API key. You are responsible for usage and costs.",
+                "hint": "Add ?force=true to override this policy at your own risk"
+            }, status=403)
+        
+        if self.model_registry.share_model(name, force=force):
+            log_msg = f"Model '{name}' shared on mesh"
+            if is_cloud and force:
+                log_msg += " (CLOUD MODEL — user acknowledged risk)"
+            self.log_event("registry_share", log_msg)
+            response = {"shared": name, "source": card.source.value}
+            if is_cloud:
+                response["warning"] = "You are sharing a cloud model on the public mesh. Other nodes will use YOUR API key. You are responsible for all costs incurred."
+                response["risk_acknowledged"] = True
+            return web.json_response(response)
+        return web.json_response({"error": f"Model '{name}' cannot be shared"}, status=400)
+
+    async def handle_registry_unshare(self, request: web.Request) -> web.Response:
+        """POST /api/registry/{name}/unshare — Arrêter le partage d'un modèle dans le registre."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        name = request.match_info['name']
+        if self.model_registry.unshare_model(name):
+            self.log_event("registry_unshare", f"Model '{name}' unshared in registry")
+            return web.json_response({"unshared": name})
+        return web.json_response({"error": f"Model '{name}' not found"}, status=404)
+
+    async def handle_registry_purge(self, request: web.Request) -> web.Response:
+        """POST /api/registry/purge — Purger les modèles mesh sans nœud actif depuis > 12 mois."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        try:
+            max_age_days = int(request.query.get("max_age_days", "365"))
+        except (ValueError, TypeError):
+            max_age_days = 365
+        purged = self.model_registry.purge_stale_models(max_age_days=max_age_days)
+        purged_names = [p.name for p in purged]
+        if purged_names:
+            self.log_event("registry_purge", f"Purged {len(purged_names)} stale mesh models: {purged_names}")
+        return web.json_response({
+            "purged": purged_names,
+            "count": len(purged_names),
+            "max_age_days": max_age_days,
+            "message": f"Purged {len(purged_names)} mesh models not seen in {max_age_days}+ days"
+        })
+
+    async def handle_registry_stale(self, request: web.Request) -> web.Response:
+        """GET /api/registry/stale — Vérifier les modèles proches de l'obsolescence."""
+        if not self.model_registry:
+            return web.json_response({"error": "Model Registry not available"}, status=501)
+        try:
+            max_age_days = int(request.query.get("max_age_days", "365"))
+        except (ValueError, TypeError):
+            max_age_days = 365
+        stale = self.model_registry.check_stale_models(max_age_days=max_age_days)
+        return web.json_response({
+            "stale": stale,
+            "count": len(stale),
+            "threshold_days": max_age_days,
+        })
+
     # --- Network endpoints ---
 
-    async def handle_network_private_peers(self, request: web.Request) -> web.Response:
+    async def handle_network_sync_status(self, request: web.Request) -> web.Response:
+        """GET /api/network/sync — Statut de la synchronisation réseau."""
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        status = self.network_sync.get_sync_status()
+        # Ajouter le rapport des modèles manquants
+        status["missing_models"] = self.network_sync._find_missing_models() if self.model_registry else []
+        return web.json_response(status)
+
+    async def handle_network_sync_run(self, request: web.Request) -> web.Response:
+        """POST /api/network/sync — Lancer une synchronisation manuelle."""
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        results = await self.network_sync.full_sync()
+        self.log_event("network_sync", f"Manual sync: {results}")
+        return web.json_response(results)
+
+    async def handle_dns_list(self, request: web.Request) -> web.Response:
+        """GET /api/network/dns — Liste des nœuds du DNS dynamique.
+        
+        Query params:
+            active_only: bool — ne retourner que les nœuds actifs (défaut: true)
+            max_age_days: float — âge max en jours (défaut: 30)
+        """
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        active_only = request.query.get("active_only", "true").lower() == "true"
+        try:
+            max_age_days = float(request.query.get("max_age_days", str(NODE_STALE_THRESHOLD_DAYS)))
+        except (ValueError, TypeError):
+            max_age_days = NODE_STALE_THRESHOLD_DAYS
+        if active_only:
+            nodes = self.network_sync.dns.get_active_nodes(max_age_days=max_age_days)
+        else:
+            nodes = list(self.network_sync.dns._nodes.values())
+        return web.json_response({
+            "nodes": nodes,
+            "total": len(nodes),
+            "active_only": active_only,
+            "max_age_days": max_age_days,
+        })
+
+    async def handle_dns_stats(self, request: web.Request) -> web.Response:
+        """GET /api/network/dns/stats — Statistiques du DNS dynamique."""
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        return web.json_response(self.network_sync.dns.get_stats())
+
+    async def handle_missing_models(self, request: web.Request) -> web.Response:
+        """GET /api/network/missing — Modèles disponibles sur le mesh mais pas locaux."""
+        if not self.network_sync:
+            return web.json_response({"error": "NetworkSync not available"}, status=501)
+        missing = self.network_sync._find_missing_models()
+        return web.json_response({
+            "missing_models": missing,
+            "count": len(missing),
+            "message": f"{len(missing)} model(s) available on mesh but not in local catalog",
+        })
         """GET /api/network/private/peers — List private network peers."""
         peers_list = []
         for p in self.peers:

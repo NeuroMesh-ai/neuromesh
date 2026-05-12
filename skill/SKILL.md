@@ -10,7 +10,7 @@ metadata:
     install:
       - id: git-clone
         kind: shell
-        cmd: "git clone https://github.com/dnshouet-cpu/Unitybrain.git ${UNITYBRAIN_PATH:-$HOME/Unitybrain}"
+        cmd: "git clone https://github.com/unitybrain-ai/unitybrain.git ${UNITYBRAIN_PATH:-$HOME/Unitybrain}"
     auto-discover:
       - kind: http
         method: GET
@@ -102,10 +102,10 @@ Minimal config for Sidekick mode:
 {
   "node_name": "bug",
   "port": 8080,
-  "p2p_secret": "bug-pinky-2026-unity",
+  "p2p_secret": "your-secret-here-change-me",
   "share_ai": true,
   "peers": [
-    {"name": "pinky", "host": "100.79.20.105", "port": 8081}
+    {"name": "pinky", "host": "192.0.2.1", "port": 8081}
   ]
 }
 ```

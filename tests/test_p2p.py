@@ -47,9 +47,9 @@ PINKY_CONFIG = {
 
 class TestPeer:
     def test_create_peer(self):
-        peer = Peer(name="Bug", host="100.101.143.118", port=8080, models=["model1"])
+        peer = Peer(name="Bug", host="192.0.2.1", port=8080, models=["model1"])
         assert peer.name == "Bug"
-        assert peer.host == "100.101.143.118"
+        assert peer.host == "192.0.2.1"
         assert peer.port == 8080
 
 

@@ -1,10 +1,10 @@
 # 🌐 UnityBrain v5
 
-[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-Decentralized-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![E2E Encrypted](https://img.shields.io/badge/E2E-Encrypted-orange.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-Decentralized-green.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![E2E Encrypted](https://img.shields.io/badge/E2E-Encrypted-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
 
 **Distributed P2P AI network with public mesh. Share compute, share models, stay private. v5.1: Multi-LLM specialist routing.**
 
@@ -51,7 +51,7 @@ UnityBrain connects machines into a peer-to-peer AI network. Your machines talk 
 
 ```bash
 # Clone
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 
 # Run
@@ -346,7 +346,7 @@ All 4 modes share the same core. One binary, four lifestyles.
   "private": {
     "p2p_secret": "my-secret-network",
     "peers": [
-      {"name": "my-server", "host": "100.101.143.118", "port": 8080}
+      {"name": "my-server", "host": "192.0.2.2", "port": 8080}
     ],
     "share_ai": true
   },

@@ -40,7 +40,7 @@ I'm tired of AI tools that require cloud accounts, phone numbers, and subscripti
 
 The project started as a weekend experiment and grew into something I actually use daily — my two machines (Bug and Pinky) sync their AI memory and share model queries across the network.
 
-Repository: https://github.com/dnshouet-cpu/Unitybrain
+Repository: https://github.com/unitybrain-ai/unitybrain
 
 Feedback welcome! Particularly interested in:
 - Use cases beyond "two machines on a home network"

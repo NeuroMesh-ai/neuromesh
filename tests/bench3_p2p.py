@@ -4,9 +4,9 @@ import hmac, hashlib, time, json, urllib.request, urllib.error
 
 HOST = "localhost"
 PORT = 8080
-SECRET = "bug-pinky-2026-unity"
+SECRET = "test-secret-change-me"
 BASE = f"http://{HOST}:{PORT}"
-PINKY = "http://100.79.20.105:8081"
+PINKY = "http://localhost:8081"
 
 def hmac_headers(path, secret):
     ts = str(time.time())

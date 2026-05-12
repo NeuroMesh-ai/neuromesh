@@ -6,14 +6,14 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-100%25_Decentralized-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![Specialist](https://img.shields.io/badge/specialist-12_schemas-orange.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![Website](https://img.shields.io/badge/website-unitybrain.ai-blue.svg)](https://dnshouet-cpu.github.io/Unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-100%25_Decentralized-green.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![Specialist](https://img.shields.io/badge/specialist-12_schemas-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![Website](https://img.shields.io/badge/website-unitybrain.ai-blue.svg)](https://unitybrain-ai.github.io/unitybrain)
 
 **Lightweight P2P distributed AI network.** No central server. No accounts. No premium tier. Connect machines, share models, sync memory. **v5.1: Multi-LLM specialist routing — auto-detect prompt type, route to the best model.**
 
-🌐 **[Website & Live Demo →](https://dnshouet-cpu.github.io/Unitybrain)**
+🌐 **[Website & Live Demo →](https://unitybrain-ai.github.io/unitybrain)**
 
 > 🌍 [English](./docs/README_EN.md) · 🇫🇷 [Français](./docs/README_FR.md) · 🇪🇸 [Español](./docs/README_ES.md) · 🇩🇪 [Deutsch](./docs/README_DE.md) · 🇯🇵 [日本語](./docs/README_JA.md) · 🇷🇺 [Русский](./docs/README_RU.md) · 🇨🇳 [简体中文](./docs/README_ZH.md)
 
@@ -27,7 +27,7 @@ UnityBrain runs as a **standalone application** — no OpenClaw, no Docker, no K
 
 ```bash
 # Install in 30 seconds
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 python3 setup.py --auto
 
@@ -51,7 +51,7 @@ openclaw skill install unitybrain
 **Manual install (works now):**
 ```bash
 # Clone the skill into your workspace
-git clone https://github.com/dnshouet-cpu/Unitybrain.git /tmp/ub
+git clone https://github.com/unitybrain-ai/unitybrain.git /tmp/ub
 mkdir -p ~/.openclaw/workspace/skills/unitybrain
 cp /tmp/ub/skill/SKILL.md ~/.openclaw/workspace/skills/unitybrain/
 rm -rf /tmp/ub
@@ -99,7 +99,7 @@ Every AI tool wants your email, your phone number, and $20/month. Cloud APIs loc
 ### Standalone Install
 
 ```bash
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 
 # Automatic install (defaults: share_ai=true, auto-secret)

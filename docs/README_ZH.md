@@ -1,10 +1,10 @@
 # 🌐 UnityBrain v5
 
-[![版本](https://img.shields.io/badge/版本-5.0.0-blue.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![版本](https://img.shields.io/badge/版本-5.0.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
 [![许可证：MIT](https://img.shields.io/badge/许可证-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-去中心化-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![端到端加密](https://img.shields.io/badge/E2E-加密-orange.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-去中心化-green.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![端到端加密](https://img.shields.io/badge/E2E-加密-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
 
 **分布式P2P人工智能网络，支持公共网格。共享算力，共享模型，保持隐私。**
 
@@ -51,7 +51,7 @@ UnityBrain 将机器连接成点对点人工智能网络。你的机器相互通
 
 ```bash
 # 克隆
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 
 # 运行
@@ -348,7 +348,7 @@ unitybrain plugin --vscode  # 插件（VS Code）
   "private": {
     "p2p_secret": "my-secret-network",
     "peers": [
-      {"name": "my-server", "host": "100.101.143.118", "port": 8080}
+      {"name": "my-server", "host": "192.0.2.2", "port": 8080}
     ],
     "share_ai": true
   },

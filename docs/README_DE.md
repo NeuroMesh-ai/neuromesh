@@ -2,8 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-100%25_Dezentralisiert-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-100%25_Dezentralisiert-green.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![Providers](https://img.shields.io/badge/providers-Ollama%20%7C%20OpenAI%20%7C%20Anthropic-purple.svg)](https://github.com/unitybrain-ai/unitybrain)
 
 **Leichtgewichtiges P2P-verteiltes KI-Netzwerk.** Kein zentraler Server. Keine Accounts. Kein Premium. Maschinen verbinden, Modelle teilen, Speicher synchronisieren.
 
@@ -36,7 +36,7 @@ Jedes KI-Tool will deine E-Mail, deine Telefonnummer und 20€/Monat. Cloud-APIs
 ## Schnellstart
 
 ```bash
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 python3 src/unitybrain_v4.py --config config/bug.json
 ```

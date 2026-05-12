@@ -34,7 +34,7 @@
 
 Les fichiers de configuration contiennent le secret P2P en clair:
 ```json
-"p2p_secret": "bug-pinky-2026-unity"
+"p2p_secret": "your-secret-here-change-me"
 ```
 
 Ce secret est commité dans le dépôt Git. Toute personne avec accès au repo peut:
@@ -46,7 +46,7 @@ Ce secret est commité dans le dépôt Git. Toute personne avec accès au repo p
 ```bash
 # N'importe qui avec le secret peut forger un header HMAC valide
 ts=$(date +%s)
-sig=$(echo -n "/api/query:${ts}" | openssl dgst -sha256 -hmac "bug-pinky-2026-unity" | awk '{print $NF}')
+sig=$(echo -n "/api/query:${ts}" | openssl dgst -sha256 -hmac "your-secret-here-change-me" | awk '{print $NF}')
 curl -H "X-UnityBrain-Auth: ${sig}" -H "X-UnityBrain-TS: ${ts}" http://target:8080/api/query
 ```
 

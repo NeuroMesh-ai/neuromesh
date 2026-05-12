@@ -31,18 +31,18 @@ logger = logging.getLogger('brain.llm')
 
 # Node configuration — auto-detected from env vars
 NODES = {
-    "pinky": {"host": os.environ.get("PINKY_HOST", "100.79.20.105"), "port": 8081},
-    "bug": {"host": os.environ.get("BUG_HOST", "100.101.143.118"), "port": 8080},
+    "pinky": {"host": os.environ.get("PINKY_HOST", "localhost"), "port": 8081},
+    "bug": {"host": os.environ.get("BUG_HOST", "localhost"), "port": 8080},
 }
 
 MEMORY_NODES = {
-    "pinky": {"host": os.environ.get("PINKY_HOST", "100.79.20.105"), "port": 8084},
-    "bug": {"host": os.environ.get("BUG_HOST", "100.101.143.118"), "port": 8085},
+    "pinky": {"host": os.environ.get("PINKY_HOST", "localhost"), "port": 8084},
+    "bug": {"host": os.environ.get("BUG_HOST", "localhost"), "port": 8085},
 }
 
 MESSENGER_NODES = {
-    "pinky": {"host": os.environ.get("PINKY_HOST", "100.79.20.105"), "port": 8082},
-    "bug": {"host": os.environ.get("BUG_HOST", "100.101.143.118"), "port": 8083},
+    "pinky": {"host": os.environ.get("PINKY_HOST", "localhost"), "port": 8082},
+    "bug": {"host": os.environ.get("BUG_HOST", "localhost"), "port": 8083},
 }
 
 

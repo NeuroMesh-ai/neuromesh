@@ -66,11 +66,11 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/dnshouet-cpu/Unitybrain"
-Documentation = "https://github.com/dnshouet-cpu/Unitybrain#readme"
-Repository = "https://github.com/dnshouet-cpu/Unitybrain.git"
-"Bug Tracker" = "https://github.com/dnshouet-cpu/Unitybrain/issues"
-Changelog = "https://github.com/dnshouet-cpu/Unitybrain/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/unitybrain-ai/unitybrain"
+Documentation = "https://github.com/unitybrain-ai/unitybrain#readme"
+Repository = "https://github.com/unitybrain-ai/unitybrain.git"
+"Bug Tracker" = "https://github.com/unitybrain-ai/unitybrain/issues"
+Changelog = "https://github.com/unitybrain-ai/unitybrain/blob/main/CHANGELOG.md"
 
 [project.scripts]
 unitybrain = "src.unitybrain_cli:main"

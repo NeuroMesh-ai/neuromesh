@@ -289,7 +289,7 @@ class ZeroConfigDiscovery:
             sock.settimeout(2)
             msg = self._build_beacon()
             # Broadcast to derived subnet + common subnets
-            targets = [self._get_broadcast_addr(), '192.168.1.255', '100.64.0.255']
+            targets = [self._get_broadcast_addr()]
             for target in targets:
                 try:
                     sock.sendto(msg, (target, self.BROADCAST_PORT))
@@ -608,7 +608,7 @@ class AutoUpdater:
     Preserves the lightweight ethos — only checks on startup + periodic.
     """
     
-    GITHUB_API = 'https://api.github.com/repos/dnshouet-cpu/Unitybrain/releases/latest'
+    GITHUB_API = os.environ.get('UNITYBRAIN_GITHUB_API', 'https://api.github.com/repos/unitybrain/unitybrain/releases/latest')
     CURRENT_VERSION = '4.2.0'
     CHECK_INTERVAL = 86400  # once per day
     
@@ -1481,7 +1481,7 @@ class PeerDiscovery:
                 'node': self.node_name,
                 'port': self.own_port
             }).encode()
-            for subnet in ['192.168.1.255', '192.168.129.255', '100.64.0.255']:
+            for subnet in [self._get_broadcast_addr()]:
                 try:
                     sock.sendto(msg, (subnet, 8090))
                 except OSError:

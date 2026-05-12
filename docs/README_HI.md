@@ -1,10 +1,10 @@
 # 🌐 UnityBrain v5
 
-[![संस्करण](https://img.shields.io/badge/संस्करण-5.0.0-blue.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![संस्करण](https://img.shields.io/badge/संस्करण-5.0.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
 [![लाइसेंस: MIT](https://img.shields.io/badge/लाइसेंस-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-विकेन्द्रीकृत-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![E2E एन्क्रिप्टेड](https://img.shields.io/badge/E2E-एन्क्रिप्टेड-orange.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-विकेन्द्रीकृत-green.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![E2E एन्क्रिप्टेड](https://img.shields.io/badge/E2E-एन्क्रिप्टेड-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
 
 **सार्वजनिक मेश के साथ वितरित P2P AI नेटवर्क। कंप्यूट शेयर करें, मॉडल शेयर करें, निजी रहें।**
 
@@ -51,7 +51,7 @@ UnityBrain मशीनों को पीयर-टू-पीयर AI ने�
 
 ```bash
 # क्लोन करें
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 
 # चलाएं
@@ -346,7 +346,7 @@ unitybrain plugin --vscode  # प्लगइन (VS Code)
   "private": {
     "p2p_secret": "mera-secret-network",
     "peers": [
-      {"name": "mera-server", "host": "100.101.143.118", "port": 8080}
+      {"name": "mera-server", "host": "192.0.2.2", "port": 8080}
     ],
     "share_ai": true
   },

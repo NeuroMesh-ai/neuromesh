@@ -1,10 +1,10 @@
 # 🌐 UnityBrain v5
 
-[![バージョン](https://img.shields.io/badge/バージョン-5.0.0-blue.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![バージョン](https://img.shields.io/badge/バージョン-5.0.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
 [![ライセンス: MIT](https://img.shields.io/badge/ライセンス-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-分散型-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![E2E暗号化](https://img.shields.io/badge/E2E-暗号化-orange.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-分散型-green.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![E2E暗号化](https://img.shields.io/badge/E2E-暗号化-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
 
 **パブリックメッシュ対応分散P2P AIネットワーク。計算を共有し、モデルを共有し、プライバシーを守る。**
 
@@ -51,7 +51,7 @@ UnityBrainは、マシンをピアツーピアのAIネットワークに接続�
 
 ```bash
 # クローン
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 
 # 実行
@@ -348,7 +348,7 @@ unitybrain plugin --vscode  # プラグイン（VS Code）
   "private": {
     "p2p_secret": "my-secret-network",
     "peers": [
-      {"name": "my-server", "host": "100.101.143.118", "port": 8080}
+      {"name": "my-server", "host": "192.0.2.2", "port": 8080}
     ],
     "share_ai": true
   },

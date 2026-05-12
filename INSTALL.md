@@ -3,7 +3,7 @@
 ## Quick Install
 
 ```bash
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 python3 setup.py --auto
 ```

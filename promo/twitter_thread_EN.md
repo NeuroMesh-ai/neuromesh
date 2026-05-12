@@ -5,7 +5,7 @@
 
 A lightweight P2P distributed AI network. No central server. No accounts. No premium. Just machines talking to each other, sharing AI models and memory.
 
-github.com/dnshouet-cpu/Unitybrain
+github.com/unitybrain-ai/unitybrain
 
 2/7
 How it works:
@@ -52,7 +52,7 @@ Docs in 3 languages:
 Because decentralized AI shouldn't have language barriers.
 
 7/7
-⭐ Star the repo: github.com/dnshouet-cpu/Unitybrain
+⭐ Star the repo: github.com/unitybrain-ai/unitybrain
 🐛 Bug reports & contributions welcome
 ₿ BTC: bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x
 

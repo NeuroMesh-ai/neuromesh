@@ -1,10 +1,10 @@
 # 🌐 UnityBrain v5
 
-[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![Version](https://img.shields.io/badge/version-5.1.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
 [![License : MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-D%C3%A9centralis%C3%A9-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![Chiffrement E2E](https://img.shields.io/badge/E2E-Chiffr%C3%A9-orange.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-D%C3%A9centralis%C3%A9-green.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![Chiffrement E2E](https://img.shields.io/badge/E2E-Chiffr%C3%A9-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
 
 **Réseau IA P2P distribué avec mesh public. Partagez du calcul, partagez des modèles, restez privé. v5.1 : Routage spécialiste multi-LLM.**
 
@@ -51,7 +51,7 @@ UnityBrain connecte vos machines en réseau IA pair-à-pair. Vos machines discut
 
 ```bash
 # Cloner
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 
 # Lancer
@@ -346,7 +346,7 @@ Les 4 modes partagent le même cœur. Un binaire, quatre modes de vie.
   "private": {
     "p2p_secret": "mon-réseau-secret",
     "peers": [
-      {"name": "mon-serveur", "host": "100.101.143.118", "port": 8080}
+      {"name": "mon-serveur", "host": "192.0.2.2", "port": 8080}
     ],
     "share_ai": true
   },

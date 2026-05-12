@@ -1,10 +1,10 @@
 # 🌐 UnityBrain v5
 
-[![الإصدار](https://img.shields.io/badge/الإصدار-5.0.0-blue.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![الإصدار](https://img.shields.io/badge/الإصدار-5.0.0-blue.svg)](https://github.com/unitybrain-ai/unitybrain)
 [![الرخصة: MIT](https://img.shields.io/badge/الرخصة-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![P2P](https://img.shields.io/badge/P2P-لامركزي-green.svg)](https://github.com/dnshouet-cpu/Unitybrain)
-[![تشفير E2E](https://img.shields.io/badge/E2E-مشفر-orange.svg)](https://github.com/dnshouet-cpu/Unitybrain)
+[![P2P](https://img.shields.io/badge/P2P-لامركزي-green.svg)](https://github.com/unitybrain-ai/unitybrain)
+[![تشفير E2E](https://img.shields.io/badge/E2E-مشفر-orange.svg)](https://github.com/unitybrain-ai/unitybrain)
 
 **شبكة ذكاء اصطناعي P2P موزعة مع شبكة عامة. شارك المعالجة، شارك النماذج، حافظ على خصوصيتك.**
 
@@ -51,7 +51,7 @@
 
 ```bash
 # الاستنساخ
-git clone https://github.com/dnshouet-cpu/Unitybrain.git
+git clone https://github.com/unitybrain-ai/unitybrain.git
 cd Unitybrain
 
 # التشغيل
@@ -346,7 +346,7 @@ unitybrain plugin --vscode  # إضافة (VS Code)
   "private": {
     "p2p_secret": "my-secret-network",
     "peers": [
-      {"name": "my-server", "host": "100.101.143.118", "port": 8080}
+      {"name": "my-server", "host": "192.0.2.2", "port": 8080}
     ],
     "share_ai": true
   },

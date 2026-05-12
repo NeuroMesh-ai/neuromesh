@@ -5,7 +5,7 @@
 
 Un réseau IA distribué P2P. Pas de serveur central. Pas de compte. Pas de premium. Juste des machines qui se parlent et partagent leurs modèles.
 
-git: github.com/dnshouet-cpu/Unitybrain
+git: github.com/unitybrain-ai/unitybrain
 
 2/7
 Comment ça marche ?
@@ -52,7 +52,7 @@ Docs disponibles en 3 langues :
 Parce que l'IA décentralisée ne devrait pas avoir de barrière linguistique.
 
 7/7
-⭐ Star le repo : github.com/dnshouet-cpu/Unitybrain
+⭐ Star le repo : github.com/unitybrain-ai/unitybrain
 🐛 Bug reports & contributions welcome
 ₿ Dons BTC : bc1qhpm800k35jfpwsnkepp7u8q9uruyvd3nycrh6x
 

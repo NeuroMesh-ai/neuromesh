@@ -25,7 +25,7 @@ It's MIT licensed, Python 3.12+, and works with Ollama, OpenAI, Anthropic, or an
 
 Two machines is the simplest setup, but it's not a limit — it's P2P, so more nodes make the network stronger.
 
-Repo: https://github.com/dnshouet-cpu/Unitybrain
+Repo: https://github.com/unitybrain-ai/unitybrain
 
 Happy to answer questions or take feedback on the auth model / gossip protocol.
 
@@ -67,4 +67,4 @@ I'm particularly interested in feedback on:
 
 MIT licensed, no mining, no premium, no hidden costs.
 
-Repo: https://github.com/dnshouet-cpu/Unitybrain
+Repo: https://github.com/unitybrain-ai/unitybrain

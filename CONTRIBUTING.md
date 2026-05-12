@@ -7,7 +7,7 @@ Merci de vouloir contribuer à UnityBrain & BugBrain ! 🎉
 ### Signaler des Bugs
 
 Si vous trouvez un bug :
-1. Vérifiez qu'il n'existe pas déjà dans les [Issues](https://github.com/dnshouet-cpu/Unitybrain/issues)
+1. Vérifiez qu'il n'existe pas déjà dans les [Issues](https://github.com/unitybrain-ai/unitybrain/issues)
 2. Ouvrez une nouvelle issue avec :
    - Un titre descriptif
    - La description du bug
@@ -97,7 +97,7 @@ Les releases sont gérées via GitHub Releases avec un changelog.
 
 ## 📞 Contact
 
-- GitHub Issues: https://github.com/dnshouet-cpu/Unitybrain/issues
+- GitHub Issues: https://github.com/unitybrain-ai/unitybrain/issues
 - Discord: https://discord.com/invite/clawd
 
 MERCI de contribuer ! 🙏

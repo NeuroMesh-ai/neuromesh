@@ -2,7 +2,7 @@
 
 Pas de serveur central. Pas de comptes. Pas de premium. Juste de l'IA distribuée, libre et ouverte.
 
-🔗 github.com/dnshouet-cpu/Unitybrain
+🔗 github.com/unitybrain-ai/unitybrain
 
 ✨ WebSocket temps réel + mémoire CRDT + auth Ed25519 + routage IA
 🚀 0.16s de démarrage, 17MB de RAM

@@ -17,7 +17,7 @@ C'est open source, MIT, et ça tourne sur du Python 3.12+. Pas de Docker, pas de
 
 Le projet est né d'un bug 🐛 et d'une idée simple : l'IA devrait être comme l'internet — décentralisée, ouverte, et accessible à tous.
 
-→ github.com/dnshouet-cpu/Unitybrain
+→ github.com/unitybrain-ai/unitybrain
 
 Docs en 🇬🇧🇫🇷🇪🇸🇩🇪🇯🇵🇷🇺🇨🇳
 

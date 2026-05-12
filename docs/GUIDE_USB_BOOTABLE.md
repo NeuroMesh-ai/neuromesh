@@ -70,7 +70,7 @@ Le script va:
 
 Depuis GitHub:
 ```bash
-wget https://github.com/dnshouet-cpu/Unitybrain/releases/download/v3.0.0/bugbrain-3.0.0.iso
+wget https://github.com/unitybrain-ai/unitybrain/releases/download/v3.0.0/bugbrain-3.0.0.iso
 ```
 
 ### Étape 2: Graver sur la clé USB

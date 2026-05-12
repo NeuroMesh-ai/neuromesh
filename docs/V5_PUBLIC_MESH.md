@@ -103,7 +103,7 @@ The tracker is a lightweight HTTP/WebSocket server that:
        "bandwidth_kbps": 10000
      },
      "uptime_seconds": 86400,
-     "address": "100.79.20.105:8081"
+     "address": "192.0.2.1:8081"
    }
    ```
 
@@ -204,7 +204,7 @@ class ResourceGuard:
   "private": {
     "p2p_secret": "my-secret-network",
     "peers": [
-      {"name": "my-server", "host": "100.101.143.118", "port": 8080}
+      {"name": "my-server", "host": "192.0.2.2", "port": 8080}
     ],
     "share_ai": true
   },
