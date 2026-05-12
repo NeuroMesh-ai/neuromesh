@@ -66,11 +66,11 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/dnshouet-cpu/neuromesh"
-Documentation = "https://github.com/dnshouet-cpu/neuromesh#readme"
-Repository = "https://github.com/dnshouet-cpu/neuromesh.git"
-"Bug Tracker" = "https://github.com/dnshouet-cpu/neuromesh/issues"
-Changelog = "https://github.com/dnshouet-cpu/neuromesh/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/NeuroMesh-ai/neuromesh"
+Documentation = "https://github.com/NeuroMesh-ai/neuromesh#readme"
+Repository = "https://github.com/NeuroMesh-ai/neuromesh.git"
+"Bug Tracker" = "https://github.com/NeuroMesh-ai/neuromesh/issues"
+Changelog = "https://github.com/NeuroMesh-ai/neuromesh/blob/main/CHANGELOG.md"
 
 [project.scripts]
 neuromesh = "src.neuromesh_cli:main"

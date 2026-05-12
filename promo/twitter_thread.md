@@ -10,6 +10,6 @@ Nouveautés :
 🔒 Cloud privé par défaut
 🛡️ Audit sécurité complet
 
-⭐ github.com/dnshouet-cpu/neuromesh
+⭐ github.com/NeuroMesh-ai/neuromesh
 
 #NeuroMesh #P2P #AI #OpenSource
