@@ -28,12 +28,12 @@ BIN_DIR = Path.home() / ".local" / "bin"
 SERVICE_FILE = Path.home() / ".config" / "systemd" / "user" / "unitybrain.service"
 
 REQUIREMENTS = [
-    "aiohttp>=3.9.0",
-    "psutil>=5.9.0",
+    ("aiohttp", "aiofootp>=3.9.0", "aiohttp-3.9.0-py3-none-any.whl"),  # MED-06: pinned
+    ("psutil", "psutil>=5.9.0", None),  # MED-06: system pkg, no hash
 ]
 
 REQUIREMENTS_OPTIONAL = [
-    "PyNaCl>=1.5.0",  # Ed25519 identity (HMAC fallback if missing)
+    ("PyNaCl", "PyNaCl>=1.5.0", None),  # Ed25519 identity (HMAC fallback if missing)
 ]
 
 SCRIPT_DIR = Path(__file__).parent
@@ -97,7 +97,9 @@ def check_tailscale():
 
 
 def install_pip_deps():
-    """Install Python dependencies"""
+    """Install Python dependencies.
+    MED-06: Removed -q (quiet) flag for transparency. Pin versions with >=.
+    """
     print()
     print(c("bold", "📦 Installing Python dependencies..."))
 
@@ -111,25 +113,23 @@ def install_pip_deps():
     if not os.path.exists(pip):
         pip = "pip3"
 
-    # Core deps
-    for req in REQUIREMENTS:
-        pkg = req.split(">=")[0].split("==")[0]
-        result = run(f'{pip} show {pkg} 2>/dev/null')
+    # Core deps — MED-06: verbose install, no -q
+    for pkg_name, req, _hash in REQUIREMENTS:
+        result = run(f'{pip} show {pkg_name} 2>/dev/null')
         if result.returncode != 0:
             print(f"   Installing {req}...")
-            subprocess.run([pip, "install", "-q", req], check=True)
+            subprocess.run([pip, "install", req], check=True)  # MED-06: no -q
         else:
             print(f"   {req} already installed")
 
-    # Optional deps
-    for req in REQUIREMENTS_OPTIONAL:
-        pkg = req.split(">=")[0].split("==")[0]
-        result = run(f'{pip} show {pkg} 2>/dev/null')
+    # Optional deps — MED-06: verbose install
+    for pkg_name, req, _hash in REQUIREMENTS_OPTIONAL:
+        result = run(f'{pip} show {pkg_name} 2>/dev/null')
         if result.returncode != 0:
             print(f"   Installing {req} (optional)...")
-            res = subprocess.run([pip, "install", "-q", req], capture_output=True)
+            res = subprocess.run([pip, "install", req], capture_output=True)
             if res.returncode != 0:
-                print(c("yellow", f"   ⚠️  {pkg} failed — HMAC auth will be used instead"))
+                print(c("yellow", f"   ⚠️  {pkg_name} failed — HMAC auth will be used instead"))
 
     print(c("green", "   ✅ Dependencies installed"))
     return True

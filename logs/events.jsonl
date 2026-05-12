@@ -598,3 +598,586 @@
 {"time": "2026-05-06T19:08:34.059134", "type": "ws", "message": "WS authenticated 21bf78b7 from 100.101.143.118 (2 total)", "level": "info"}
 {"time": "2026-05-06T19:20:36.937880", "type": "bandwidth", "message": "Bandwidth quota updated: {'monthly_data_gb': 10.0, 'bandwidth_limit_kbps': 10000}", "level": "info"}
 {"time": "2026-05-06T19:20:36.951795", "type": "bandwidth", "message": "Bandwidth quota updated: {'monthly_data_gb': 5.0, 'bandwidth_limit_kbps': 5000}", "level": "info"}
+{"time": "2026-05-06T20:17:35.957633", "type": "ws", "message": "WS disconnected 21bf78b7 (1 total)", "level": "info"}
+{"time": "2026-05-06T20:18:12.911990", "type": "ws", "message": "WS pending auth cf58bd62 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-06T20:18:18.840820", "type": "ws", "message": "WS authenticated cf58bd62 from 100.101.143.118 (2 total)", "level": "info"}
+{"time": "2026-05-06T20:21:03.733743", "type": "ws", "message": "WS disconnected cf58bd62 (0 total)", "level": "info"}
+{"time": "2026-05-06T20:21:08.389405", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-06T20:21:08.438599", "type": "init", "message": "UnityBrain v5.1.0 initialized as 'pinky'", "level": "info"}
+{"time": "2026-05-06T20:21:08.446652", "type": "server", "message": "Listening on 0.0.0.0:8081", "level": "info"}
+{"time": "2026-05-06T20:21:43.751390", "type": "ws", "message": "WS pending auth ba23cd69 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-06T20:21:43.762248", "type": "ws", "message": "WS authenticated ba23cd69 from 100.101.143.118 (2 total)", "level": "info"}
+{"time": "2026-05-06T20:44:34.244969", "type": "ws", "message": "WS disconnected ba23cd69 (1 total)", "level": "info"}
+{"time": "2026-05-06T20:45:14.802801", "type": "ws", "message": "WS pending auth 99d104f9 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-06T20:45:14.869445", "type": "ws", "message": "WS authenticated 99d104f9 from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-06T21:48:48.856005", "type": "ws", "message": "WS disconnected 99d104f9 (0 total)", "level": "info"}
+{"time": "2026-05-06T21:49:02.533880", "type": "ws", "message": "WS pending auth 4d7ceff0 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-06T21:49:02.545164", "type": "ws", "message": "WS authenticated 4d7ceff0 from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-06T23:04:40.123135", "type": "ws", "message": "WS disconnected 4d7ceff0 (0 total)", "level": "info"}
+{"time": "2026-05-06T23:04:52.008267", "type": "ws", "message": "WS pending auth bfb25e17 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-06T23:04:52.030604", "type": "ws", "message": "WS authenticated bfb25e17 from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-06T23:37:37.877154", "type": "ws", "message": "WS disconnected bfb25e17 (0 total)", "level": "info"}
+{"time": "2026-05-06T23:51:09.361412", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-06T23:51:09.361698", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-06T23:56:09.375957", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-06T23:56:09.376276", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:01:09.391082", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:01:09.391400", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:06:09.406646", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:06:09.406928", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:11:09.423263", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:11:09.423550", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:16:09.440169", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:16:09.440501", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:21:09.456676", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:21:09.456957", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:26:09.472221", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:26:09.472508", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:31:09.486916", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:31:09.487223", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:36:09.502404", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:36:09.502684", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:41:09.517419", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:41:09.517808", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:46:09.533293", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:46:09.533577", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:51:09.548315", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:51:09.549345", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T00:56:09.564674", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T00:56:09.564952", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:01:09.580038", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:01:09.580355", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:06:09.595331", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:06:09.595614", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:11:09.610643", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:11:09.610926", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:16:09.626110", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:16:09.626416", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:21:09.641085", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:21:09.641385", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:26:09.657312", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:26:09.657600", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:31:09.673023", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:31:09.673339", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:36:09.690149", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:36:09.690465", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:41:09.705935", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:41:09.706243", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:46:09.721336", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:46:09.721625", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:51:09.736945", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:51:09.737260", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T01:56:09.752927", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T01:56:09.753241", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:01:09.768170", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:01:09.768472", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:06:09.784085", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:06:09.784400", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:11:09.808586", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:11:09.808867", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:16:09.823931", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:16:09.824232", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:21:09.851734", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:21:09.852015", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:26:09.867008", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:26:09.867293", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:31:09.882542", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:31:09.882824", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:36:09.897660", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:36:09.897950", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:41:09.912910", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:41:09.913229", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:46:09.929428", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:46:09.929697", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:51:09.944363", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:51:09.944649", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T02:56:09.959765", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T02:56:09.960059", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:01:09.975120", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:01:09.975429", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:06:09.991133", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:06:09.991452", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:11:10.006789", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:11:10.007076", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:16:10.022704", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:16:10.022988", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:21:10.038238", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:21:10.038524", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:26:10.054068", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:26:10.054384", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:31:10.069694", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:31:10.069979", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:36:10.097045", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:36:10.097355", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:41:10.112434", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:41:10.112724", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:46:10.142790", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:46:10.143075", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:51:10.158417", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:51:10.158702", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T03:56:10.174027", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T03:56:10.174340", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:01:10.189597", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:01:10.189886", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:06:10.203942", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:06:10.204287", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:11:10.220416", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:11:10.220702", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:16:10.235486", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:16:10.235773", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:21:10.251227", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:21:10.251515", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:26:10.265998", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:26:10.266360", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:31:10.281439", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:31:10.281699", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:36:10.296286", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:36:10.296574", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:41:10.312052", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:41:10.312365", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:46:10.327755", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:46:10.328040", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:51:10.343741", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:51:10.344036", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T04:56:10.359114", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T04:56:10.359431", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:01:10.383308", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:01:10.383592", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:06:10.398501", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:06:10.398788", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:11:10.414269", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:11:10.414557", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:16:10.429514", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:16:10.429802", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:21:10.445558", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:21:10.445847", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:26:10.460377", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:26:10.460659", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:31:10.475501", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:31:10.475785", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:36:10.490913", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:36:10.491175", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:41:10.505876", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:41:10.506160", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:46:10.521309", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:46:10.521592", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:51:10.537121", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:51:10.537454", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T05:56:10.553458", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T05:56:10.553745", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:01:10.568102", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:01:10.568415", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:06:10.584167", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:06:10.584486", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:11:10.599867", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:11:10.600154", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:16:10.616864", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:16:10.617148", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:21:10.633215", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:21:10.633504", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:26:10.649052", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:26:10.649376", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:31:10.665309", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:31:10.665599", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:36:10.681272", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:36:10.681557", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:41:10.697016", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:41:10.697334", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:46:10.712792", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:46:10.713074", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:51:10.728558", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:51:10.728838", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T06:56:10.744345", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T06:56:10.744633", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:01:10.760143", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:01:10.760457", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:06:10.775424", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:06:10.775710", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:11:10.791265", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:11:10.791547", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:16:10.806449", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:16:10.806727", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:21:10.822372", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:21:10.822654", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:26:10.849583", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:26:10.849871", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:31:10.865501", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:31:10.865789", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:36:10.881086", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:36:10.881396", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:41:10.896495", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:41:10.896778", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:46:10.911356", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:46:10.911647", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:51:10.927534", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:51:10.927798", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T07:56:10.942978", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T07:56:10.943294", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:01:10.959542", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:01:10.959828", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:06:10.976089", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:06:10.976411", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:11:10.992398", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:11:10.992692", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:16:11.008371", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:16:11.008655", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:21:11.024130", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:21:11.024437", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:26:11.039738", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:26:11.040027", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:31:11.055810", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:31:11.056079", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:36:11.071724", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:36:11.072011", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:41:11.088096", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:41:11.088413", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:46:11.104118", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:46:11.104430", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:51:11.120788", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:51:11.121075", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:56:11.136311", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T08:56:11.136596", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T08:59:12.709718", "type": "ws", "message": "WS pending auth 8c344290 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-07T08:59:12.721598", "type": "ws", "message": "WS authenticated 8c344290 from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-07T09:01:11.153107", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-07T09:01:11.153427", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-07T22:48:24.412708", "type": "ws", "message": "WS disconnected 8c344290 (1 total)", "level": "info"}
+{"time": "2026-05-07T22:49:02.716123", "type": "ws", "message": "WS pending auth 3939d771 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-07T22:49:02.757007", "type": "ws", "message": "WS authenticated 3939d771 from 100.101.143.118 (2 total)", "level": "info"}
+{"time": "2026-05-07T23:49:02.876054", "type": "ws", "message": "WS disconnected 3939d771 (0 total)", "level": "info"}
+{"time": "2026-05-08T00:01:14.064883", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:01:14.065220", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:06:14.082355", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:06:14.082686", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:11:14.099693", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:11:14.099982", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:16:14.116032", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:16:14.116374", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:21:14.132874", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:21:14.133214", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:26:14.149623", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:26:14.149935", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:31:14.166230", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:31:14.166541", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:36:14.182886", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:36:14.183225", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:41:14.199485", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:41:14.199792", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:46:14.216421", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:46:14.216727", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:51:14.232835", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:51:14.233143", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T00:56:14.249872", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T00:56:14.250175", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:01:14.266632", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:01:14.266937", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:06:14.283205", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:06:14.283517", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:11:14.299586", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:11:14.299897", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:16:14.316112", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:16:14.316445", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:21:14.333278", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:21:14.333584", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:26:14.350307", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:26:14.350601", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:31:14.367754", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:31:14.368080", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:36:14.384543", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:36:14.384828", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:41:14.401844", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:41:14.402154", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:46:14.418073", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:46:14.418412", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:51:14.434719", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:51:14.435029", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T01:56:14.451538", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T01:56:14.451840", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:01:14.467859", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:01:14.468140", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:06:14.485381", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:06:14.485690", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:11:14.502679", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:11:14.502994", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:16:14.520235", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:16:14.520545", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:21:14.536540", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:21:14.536851", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:26:14.553482", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:26:14.553791", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:31:14.570324", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:31:14.570635", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:36:14.586959", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:36:14.587300", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:41:14.604814", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:41:14.605096", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:46:14.621359", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:46:14.621663", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:51:14.638526", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:51:14.638839", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T02:56:14.655678", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T02:56:14.656000", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:01:14.672956", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:01:14.673290", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:06:14.690990", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:06:14.691328", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:11:14.706993", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:11:14.707319", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:16:14.723747", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:16:14.724057", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:21:14.741141", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:21:14.741476", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:26:14.758082", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:26:14.758386", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:31:14.774092", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:31:14.774418", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:36:14.790977", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:36:14.791308", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:41:14.808580", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:41:14.808887", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:46:14.825438", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:46:14.825747", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:51:14.842286", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:51:14.842597", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T03:56:14.858130", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T03:56:14.858420", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:01:14.875434", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:01:14.875738", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:06:14.892985", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:06:14.893311", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:11:14.910268", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:11:14.910572", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:16:14.928145", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:16:14.928473", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:21:14.945155", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:21:14.945504", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:26:14.962768", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:26:14.963071", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:31:14.979328", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:31:14.979634", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:36:14.996217", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:36:14.996527", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:41:15.013399", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:41:15.013711", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:46:15.029741", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:46:15.030051", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:51:15.047077", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:51:15.047432", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T04:56:15.063527", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T04:56:15.063833", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:01:15.080008", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:01:15.080335", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:06:15.095326", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:06:15.095618", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:11:15.112612", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:11:15.112920", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:16:15.127889", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:16:15.128218", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:21:15.148328", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:21:15.148678", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:26:15.165427", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:26:15.165733", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:31:15.182475", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:31:15.182779", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:36:15.199232", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:36:15.199541", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:41:15.216093", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:41:15.216425", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:46:15.232999", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:46:15.233352", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:51:15.249220", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:51:15.249530", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T05:56:15.266552", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T05:56:15.266865", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:01:15.282457", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:01:15.282768", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:06:15.299993", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:06:15.300323", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:11:15.317695", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:11:15.317979", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:16:15.334472", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:16:15.334789", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:21:15.351868", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:21:15.352156", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:26:15.368985", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:26:15.369325", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:31:15.384372", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:31:15.384678", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:36:15.401100", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:36:15.401411", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:41:15.417545", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:41:15.425910", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:46:15.442980", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:46:15.443310", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:51:15.459704", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:51:15.460021", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T06:56:15.476208", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T06:56:15.476518", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T07:01:15.493250", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T07:01:15.493556", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T07:06:15.510537", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T07:06:15.510849", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T07:11:15.527566", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-08T07:11:15.527890", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-08T07:12:47.512174", "type": "ws", "message": "WS pending auth 8acf8b74 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-08T07:12:47.523766", "type": "ws", "message": "WS authenticated 8acf8b74 from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-08T16:14:43.521425", "type": "ws", "message": "WS disconnected 8acf8b74 (0 total)", "level": "info"}
+{"time": "2026-05-08T16:14:56.549579", "type": "ws", "message": "WS pending auth 957493b3 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-08T16:14:56.564146", "type": "ws", "message": "WS authenticated 957493b3 from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-09T08:25:34.874464", "type": "ws", "message": "WS disconnected 957493b3 (0 total)", "level": "info"}
+{"time": "2026-05-09T08:26:32.770614", "type": "ws", "message": "WS pending auth fd48a439 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-09T08:26:32.787234", "type": "ws", "message": "WS authenticated fd48a439 from 100.101.143.118 (2 total)", "level": "info"}
+{"time": "2026-05-10T20:56:44.874638", "type": "ws", "message": "WS disconnected fd48a439 (0 total)", "level": "info"}
+{"time": "2026-05-10T21:06:27.593341", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:06:27.593635", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:11:27.610832", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:11:27.611117", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:16:27.627449", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:16:27.627755", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:21:27.643612", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:21:27.643920", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:26:27.659063", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:26:27.659406", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:31:27.676755", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:31:27.677051", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:36:27.694254", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:36:27.694548", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:41:27.710355", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:41:27.710662", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:46:27.726610", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:46:27.726914", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:51:27.743448", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:51:27.743761", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T21:56:27.760299", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T21:56:27.760615", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:01:27.776463", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:01:27.776793", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:06:27.793375", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:06:27.793687", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:11:27.810770", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:11:27.811078", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:16:27.827969", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:16:27.828298", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:21:27.844622", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:21:27.844910", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:26:27.861018", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:26:27.861351", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:31:27.877462", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:31:27.877773", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:36:27.894350", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:36:27.894656", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:41:27.911468", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:41:27.911773", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:46:27.928391", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:46:27.928702", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:51:27.946443", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-10T22:51:27.946746", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-10T22:51:47.955433", "type": "ws", "message": "WS pending auth 5058f686 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-10T22:51:47.983286", "type": "ws", "message": "WS authenticated 5058f686 from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-11T05:14:04.614692", "type": "ws", "message": "WS disconnected 5058f686 (0 total)", "level": "info"}
+{"time": "2026-05-11T05:14:35.780480", "type": "ws", "message": "WS pending auth 4f92eeee from 100.101.143.118", "level": "info"}
+{"time": "2026-05-11T05:14:35.824932", "type": "ws", "message": "WS authenticated 4f92eeee from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-11T05:17:00.367809", "type": "ws", "message": "WS disconnected 4f92eeee (1 total)", "level": "info"}
+{"time": "2026-05-11T05:18:19.507254", "type": "ws", "message": "WS pending auth 3fc405ee from 100.101.143.118", "level": "info"}
+{"time": "2026-05-11T05:18:19.721673", "type": "ws", "message": "WS authenticated 3fc405ee from 100.101.143.118 (2 total)", "level": "info"}
+{"time": "2026-05-11T05:20:28.670372", "type": "ws", "message": "WS disconnected 3fc405ee (0 total)", "level": "info"}
+{"time": "2026-05-11T05:31:29.260713", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T05:31:29.261018", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T05:36:29.278499", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T05:36:29.278810", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T05:41:29.295811", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T05:41:29.296126", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T05:46:29.313311", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T05:46:29.313625", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T05:51:29.330817", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T05:51:29.331099", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T05:56:29.349163", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T05:56:29.349478", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T06:01:29.366557", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T06:01:29.368312", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T06:06:29.384383", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T06:06:29.384691", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T06:11:29.401825", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T06:11:29.402104", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T06:15:03.802909", "type": "ws", "message": "WS pending auth dd4909db from 100.101.143.118", "level": "info"}
+{"time": "2026-05-11T06:15:03.806911", "type": "ws", "message": "WS authenticated dd4909db from 100.101.143.118 (1 total)", "level": "info"}
+{"time": "2026-05-11T06:16:29.420602", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T06:16:29.420918", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T06:46:27.899280", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T06:46:28.004480", "type": "init", "message": "UnityBrain v5.1.0 initialized as 'pinky'", "level": "info"}
+{"time": "2026-05-11T06:46:28.013492", "type": "server", "message": "Listening on 0.0.0.0:8081", "level": "info"}
+{"time": "2026-05-11T06:47:04.944953", "type": "ws", "message": "WS pending auth 7f174801 from 100.101.143.118", "level": "info"}
+{"time": "2026-05-11T06:47:04.947799", "type": "ws", "message": "WS authenticated 7f174801 from 100.101.143.118 (2 total)", "level": "info"}
+{"time": "2026-05-11T22:59:02.853635", "type": "ws", "message": "WS disconnected 7f174801 (0 total)", "level": "info"}
+{"time": "2026-05-11T23:11:31.012775", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:11:31.013048", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T23:16:31.027826", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:16:31.028123", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T23:21:31.043084", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:21:31.043399", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T23:26:31.057810", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:26:31.058103", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T23:31:31.072671", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:31:31.072991", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T23:36:31.087838", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:36:31.088108", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T23:41:31.106492", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:41:31.106738", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T23:46:31.121599", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:46:31.121892", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T23:51:31.140875", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:51:31.141352", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-11T23:56:31.156641", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-11T23:56:31.156938", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:01:31.170913", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:01:31.171236", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:06:31.185201", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:06:31.185499", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:11:31.203258", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:11:31.203526", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:16:31.218327", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:16:31.218614", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:21:31.240093", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:21:31.240572", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:26:31.254259", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:26:31.254547", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:31:31.269527", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:31:31.269818", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:36:31.284343", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:36:31.284634", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:41:31.299675", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:41:31.299960", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:46:31.314805", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:46:31.315095", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:51:31.330096", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:51:31.330424", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T00:56:31.345299", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T00:56:31.345592", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:01:31.359793", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:01:31.360088", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:06:31.374757", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:06:31.375043", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:11:31.389786", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:11:31.390077", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:16:31.404466", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:16:31.404765", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:21:31.422980", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:21:31.423311", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:26:31.438139", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:26:31.438431", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:31:31.452669", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:31:31.452963", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:36:31.467939", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:36:31.468259", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:41:31.483598", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:41:31.483888", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:46:31.499060", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:46:31.499385", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:51:31.514040", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:51:31.514362", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T01:56:31.530384", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T01:56:31.530673", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T02:01:31.545267", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T02:01:31.545540", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}
+{"time": "2026-05-12T02:06:31.563133", "type": "peer_added", "message": "Peer Bug added (100.101.143.118:8080)", "level": "info"}
+{"time": "2026-05-12T02:06:31.563479", "type": "discovery", "message": "Auto-discovered Bug", "level": "info"}

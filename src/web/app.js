@@ -833,6 +833,7 @@
         renderChatMessages();
         renderNetworkPeers();
         updateModelSelect();
+        loadModelNetworks();
 
         // Update tab buttons
         const tabBtns = $$('.tab-btn');
@@ -1118,6 +1119,281 @@
         if (diff < 86400000) return t('chat.hoursAgo', { n: Math.floor(diff / 3600000) });
         return d.toLocaleDateString(i18n.locale === 'en' ? 'en-US' : i18n.locale, { day: 'numeric', month: 'short' });
     }
+
+    // ─── Model Networks (v5.2) ──────────────────────────────
+
+    let modelNetworksData = {
+        private_networks: [],
+        model_permissions: {},
+        local_models: []
+    };
+
+    async function loadModelNetworks() {
+        try {
+            const resp = await fetch('/api/model-networks', { headers: api.authHeaders() });
+            if (!resp.ok) return;
+            modelNetworksData = await resp.json();
+            renderModelPermsTable();
+            renderPrivateNetworksTable();
+        } catch (e) {
+            console.warn('Failed to load model networks:', e);
+        }
+    }
+
+    function renderModelPermsTable() {
+        const container = $('#modelPermsContainer');
+        if (!container) return;
+
+        const models = modelNetworksData.local_models || [];
+        const networks = modelNetworksData.private_networks || [];
+        const perms = modelNetworksData.model_permissions || {};
+
+        if (models.length === 0) {
+            container.innerHTML = '<div class="no-models-msg">Aucun modèle disponible</div>';
+            return;
+        }
+
+        // Build table
+        const netHeaders = networks.map(n =>
+            `<th class="col-share-private">📤<br><span class="network-header">${UnityBrainAPI.sanitize(n.name)}</span></th>\n<th class="col-use-private">📥<br><span class="network-header">${UnityBrainAPI.sanitize(n.name)}</span></th>`
+        ).join('\n');
+
+        let rows = '';
+        for (const model of models) {
+            const p = perms[model] || {};
+            const sharePriv = p.share_private || [];
+            const usePriv = p.use_private || [];
+            const sharePub = p.share_public || false;
+            const usePub = p.use_public || false;
+
+            let netCols = '';
+            for (const net of networks) {
+                const sid = `perm-${model}-share-private-${net.id}`;
+                const uid = `perm-${model}-use-private-${net.id}`;
+                netCols += `<td><input type="checkbox" id="${sid}" ${sharePriv.includes(net.id) ? 'checked' : ''}></td>\n<td><input type="checkbox" id="${uid}" ${usePriv.includes(net.id) ? 'checked' : ''}></td>`;
+            }
+
+            rows += `<tr>
+                <td title="${UnityBrainAPI.sanitize(model)}">${UnityBrainAPI.sanitize(model)}</td>
+                ${netCols}
+                <td class="col-share-public"><input type="checkbox" id="perm-${model}-share-public" ${sharePub ? 'checked' : ''}></td>
+                <td class="col-use-public"><input type="checkbox" id="perm-${model}-use-public" ${usePub ? 'checked' : ''}></td>
+            </tr>`;
+        }
+
+        container.innerHTML = `
+            <div class="model-perms-table-wrap">
+                <table class="model-perms-table">
+                    <thead>
+                        <tr>
+                            <th>🤖 Modèle</th>
+                            ${netHeaders}
+                            <th class="col-share-public">📤<br><span class="network-header">Public</span></th>
+                            <th class="col-use-public">📥<br><span class="network-header">Public</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>`;
+    }
+
+    function renderPrivateNetworksTable() {
+        const container = $('#privateNetworksContainer');
+        if (!container) return;
+
+        const networks = modelNetworksData.private_networks || [];
+
+        if (networks.length === 0) {
+            container.innerHTML = '<div class="no-models-msg">Aucun réseau privé configuré</div>';
+            return;
+        }
+
+        let rows = '';
+        for (const net of networks) {
+            const secretDisplay = net.secret ? '<code>••••••••</code>' : '<code style="color:var(--text-muted)">Non défini</code>';
+            rows += `<tr data-network-id="${net.id}">
+                <td style="text-align:center;font-weight:600;">#${net.id}</td>
+                <td><input type="text" class="network-name-input" data-network-id="${net.id}" value="${UnityBrainAPI.sanitize(net.name)}" placeholder="Nom du réseau"></td>
+                <td>
+                    <div class="secret-field">
+                        ${secretDisplay}
+                        <button class="btn-icon" data-action="generate-secret" data-network-id="${net.id}" title="Générer une nouvelle clé">🔑</button>
+                        <button class="btn-icon" data-action="copy-secret" data-network-id="${net.id}" title="Copier la clé" style="display:none">📋</button>
+                    </div>
+                </td>
+                <td><button class="btn-icon btn-danger" data-action="remove-network" data-network-id="${net.id}" title="Supprimer ce réseau">🗑️</button></td>
+            </tr>`;
+        }
+
+        container.innerHTML = `
+            <table class="private-networks-table">
+                <thead>
+                    <tr>
+                        <th style="width:50px">#</th>
+                        <th>Nom du réseau</th>
+                        <th>Clé secrète</th>
+                        <th style="width:40px"></th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+
+        // Bind network actions
+        container.querySelectorAll('[data-action="generate-secret"]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const netId = parseInt(btn.dataset.networkId);
+                await generateNetworkSecret(netId);
+            });
+        });
+
+        container.querySelectorAll('[data-action="remove-network"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const netId = parseInt(btn.dataset.networkId);
+                removeNetwork(netId);
+            });
+        });
+    }
+
+    async function generateNetworkSecret(networkId) {
+        try {
+            const resp = await fetch(`/api/model-networks/${networkId}/generate-secret`, {
+                method: 'POST',
+                headers: api.authHeaders()
+            });
+            if (!resp.ok) {
+                showToast('Erreur lors de la génération de la clé', 'error');
+                return;
+            }
+            const data = await resp.json();
+            // Show the secret once
+            const secret = data.secret;
+            const name = data.network_name;
+            // Copy to clipboard
+            try {
+                await navigator.clipboard.writeText(secret);
+                showToast(`🔑 Nouvelle clé pour « ${name} » copiée dans le presse-papier !`, 'success');
+            } catch {
+                // Fallback: show in a prompt
+                prompt(`Clé pour le réseau « ${name} » — stockez-la en lieu sûr :`, secret);
+            }
+            // Reload to update UI
+            await loadModelNetworks();
+        } catch (e) {
+            showToast('Erreur réseau', 'error');
+        }
+    }
+
+    function removeNetwork(networkId) {
+        modelNetworksData.private_networks = modelNetworksData.private_networks.filter(n => n.id !== networkId);
+        // Also remove from model permissions
+        for (const model of Object.keys(modelNetworksData.model_permissions)) {
+            const p = modelNetworksData.model_permissions[model];
+            if (p.share_private) p.share_private = p.share_private.filter(id => id !== networkId);
+            if (p.use_private) p.use_private = p.use_private.filter(id => id !== networkId);
+        }
+        renderPrivateNetworksTable();
+        renderModelPermsTable();
+    }
+
+    function addNetwork() {
+        const ids = modelNetworksData.private_networks.map(n => n.id);
+        const nextId = ids.length > 0 ? Math.max(...ids) + 1 : 1;
+        modelNetworksData.private_networks.push({
+            id: nextId,
+            name: `Réseau ${nextId}`,
+            secret: ''
+        });
+        renderPrivateNetworksTable();
+        renderModelPermsTable();
+    }
+
+    function collectModelPermsFromUI() {
+        const models = modelNetworksData.local_models || [];
+        const networks = modelNetworksData.private_networks || [];
+        const permissions = {};
+
+        for (const model of models) {
+            const perm = {
+                share_private: [],
+                use_private: [],
+                share_public: false,
+                use_public: false
+            };
+            for (const net of networks) {
+                const shareEl = document.getElementById(`perm-${model}-share-private-${net.id}`);
+                const useEl = document.getElementById(`perm-${model}-use-private-${net.id}`);
+                if (shareEl && shareEl.checked) perm.share_private.push(net.id);
+                if (useEl && useEl.checked) perm.use_private.push(net.id);
+            }
+            const sharePubEl = document.getElementById(`perm-${model}-share-public`);
+            const usePubEl = document.getElementById(`perm-${model}-use-public`);
+            if (sharePubEl) perm.share_public = sharePubEl.checked;
+            if (usePubEl) perm.use_public = usePubEl.checked;
+            permissions[model] = perm;
+        }
+        return permissions;
+    }
+
+    function collectPrivateNetworksFromUI() {
+        const networks = [];
+        document.querySelectorAll('.network-name-input').forEach(input => {
+            const id = parseInt(input.dataset.networkId);
+            const name = input.value.trim() || `Réseau ${id}`;
+            // Find existing secret (preserve it)
+            const existing = modelNetworksData.private_networks.find(n => n.id === id);
+            networks.push({
+                id: id,
+                name: name,
+                secret: existing ? existing.secret : ''
+            });
+        });
+        return networks;
+    }
+
+    async function saveModelNetworks() {
+        const statusEl = $('#saveNetworkStatus');
+        if (statusEl) { statusEl.textContent = '⏳ Sauvegarde...'; statusEl.className = 'save-status'; }
+
+        try {
+            const networks = collectPrivateNetworksFromUI();
+            const permissions = collectModelPermsFromUI();
+
+            const resp = await fetch('/api/model-networks', {
+                method: 'POST',
+                headers: { ...api.authHeaders(), 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    private_networks: networks,
+                    model_permissions: permissions
+                })
+            });
+
+            if (!resp.ok) {
+                const err = await resp.json();
+                if (statusEl) { statusEl.textContent = `❌ ${err.error || 'Erreur'}`; statusEl.className = 'save-status error'; }
+                return;
+            }
+
+            const data = await resp.json();
+            modelNetworksData.private_networks = data.private_networks;
+            modelNetworksData.model_permissions = data.model_permissions;
+            renderModelPermsTable();
+            renderPrivateNetworksTable();
+
+            if (statusEl) { statusEl.textContent = '✅ Sauvegardé !'; statusEl.className = 'save-status success'; }
+            showToast('Configuration des réseaux sauvegardée', 'success');
+            setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
+        } catch (e) {
+            if (statusEl) { statusEl.textContent = '❌ Erreur réseau'; statusEl.className = 'save-status error'; }
+            showToast('Erreur de sauvegarde', 'error');
+        }
+    }
+
+    // Bind save button and add network button
+    document.getElementById('saveNetworkConfigBtn')?.addEventListener('click', saveModelNetworks);
+    document.getElementById('addNetworkBtn')?.addEventListener('click', addNetwork);
+
+    // Load model networks on init
+    loadModelNetworks();
 
     // ─── Close modal on overlay click ──────────────────────
 

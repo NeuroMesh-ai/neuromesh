@@ -1758,6 +1758,12 @@ def load_config(config_path: str = None) -> Dict:
         "discovery_interval": 300,
         "stealth_mode": False,
         "share_ai": False,
+        "model_networks": {
+            "private_networks": [
+                {"id": 1, "name": "Réseau Principal", "secret": ""}
+            ],
+            "model_permissions": {}
+        },
         "rate_limit": 10.0,
         "rate_burst": 20,
         "peers": [],
@@ -1822,6 +1828,11 @@ class UnityBrain:
             logger.warning("⚠️  P2P_SECRET is a known default — please change it!")
         self.stealth_mode = config.get("stealth_mode", False)
         self.share_ai = config.get("share_ai", False)
+        # v5.2: Model networks — fine-grained model sharing permissions
+        self.model_networks = config.get("model_networks", {
+            "private_networks": [{"id": 1, "name": "Réseau Principal", "secret": ""}],
+            "model_permissions": {}
+        })
         # v4.1.5: Multi-LLM providers
         self.providers: Dict[str, ProviderAdapter] = {}
         self._model_provider_map: Dict[str, str] = {}  # model_name -> provider_name
@@ -2549,6 +2560,11 @@ class UnityBrain:
         app.router.add_get('/api/network/mesh/nodes', self._auth_required(self.handle_network_mesh_nodes))
         app.router.add_post('/api/network/mesh/join', self._auth_required(self.handle_network_mesh_join))
         app.router.add_post('/api/network/mesh/leave', self._auth_required(self.handle_network_mesh_leave))
+
+        # Model Networks (v5.2)
+        app.router.add_get('/api/model-networks', self._auth_required(self.handle_model_networks_get))
+        app.router.add_post('/api/model-networks', self._auth_required(self.handle_model_networks_save))
+        app.router.add_post('/api/model-networks/{network_id}/generate-secret', self._auth_required(self.handle_model_networks_generate_secret))
 
         # Config
         app.router.add_get('/api/config', self._auth_required(self.handle_config_get))
@@ -3603,6 +3619,130 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             await self.zero_config.stop()
         self.log_event("mesh", "Left public mesh")
         return web.json_response({"status": "left", "mesh_enabled": False})
+
+    # --- Model Networks endpoints (v5.2) ---
+
+    async def handle_model_networks_get(self, request: web.Request) -> web.Response:
+        """GET /api/model-networks — Get current model network configuration.
+        Returns private networks list and model permissions matrix.
+        Secrets are masked for security.
+        """
+        networks = self.model_networks.get("private_networks", [])
+        permissions = self.model_networks.get("model_permissions", {})
+
+        # Mask secrets in response
+        masked_networks = []
+        for net in networks:
+            masked_net = {"id": net["id"], "name": net["name"], "secret": "***" if net.get("secret") else ""}
+            masked_networks.append(masked_net)
+
+        return web.json_response({
+            "private_networks": masked_networks,
+            "model_permissions": permissions,
+            "local_models": self.local_models
+        })
+
+    async def handle_model_networks_save(self, request: web.Request) -> web.Response:
+        """POST /api/model-networks — Save model network configuration.
+        Accepts: private_networks (list of {id, name, secret}),
+             model_permissions (dict of model_name -> {share_private: [ids], use_private: [ids], share_public: bool, use_public: bool})
+        """
+        data = await request.json()
+
+        # Validate private_networks
+        private_networks = data.get("private_networks")
+        if private_networks is not None:
+            if not isinstance(private_networks, list):
+                return web.json_response({"error": "private_networks must be a list"}, status=400)
+            for net in private_networks:
+                if not isinstance(net, dict) or "id" not in net or "name" not in net:
+                    return web.json_response({"error": "Each network must have id and name"}, status=400)
+                net["id"] = int(net["id"])
+                net["name"] = str(net["name"])[:64]  # max 64 chars
+                # Generate secret if empty
+                if not net.get("secret") or net["secret"] == "***":
+                    # Keep existing secret if we're just updating name
+                    existing = [n for n in self.model_networks.get("private_networks", []) if n["id"] == net["id"]]
+                    if existing and existing[0].get("secret"):
+                        net["secret"] = existing[0]["secret"]
+                    else:
+                        import secrets as _secrets
+                        net["secret"] = _secrets.token_hex(32)
+                net["secret"] = str(net["secret"])[:128]  # max 128 chars
+            self.model_networks["private_networks"] = private_networks
+
+        # Validate model_permissions
+        model_permissions = data.get("model_permissions")
+        if model_permissions is not None:
+            if not isinstance(model_permissions, dict):
+                return web.json_response({"error": "model_permissions must be a dict"}, status=400)
+            # Validate each model's permissions
+            valid_network_ids = {n["id"] for n in self.model_networks.get("private_networks", [])}
+            cleaned = {}
+            for model_name, perms in model_permissions.items():
+                if not ALLOWED_MODEL_PATTERN.match(model_name):
+                    continue  # skip invalid model names
+                if not isinstance(perms, dict):
+                    continue
+                cleaned_perms = {}
+                for key in ("share_private", "use_private", "share_public", "use_public"):
+                    if key in perms:
+                        if key.endswith("_public"):
+                            cleaned_perms[key] = bool(perms[key])
+                        else:
+                            # List of network IDs
+                            val = perms[key]
+                            if isinstance(val, list):
+                                cleaned_perms[key] = [int(v) for v in val if int(v) in valid_network_ids]
+                            else:
+                                cleaned_perms[key] = []
+                cleaned[model_name] = cleaned_perms
+            self.model_networks["model_permissions"] = cleaned
+
+        self.config["model_networks"] = self.model_networks
+        self._persist_config()
+        self.log_event("model_networks", "Model network configuration saved")
+
+        # Return masked version
+        masked_networks = []
+        for net in self.model_networks.get("private_networks", []):
+            masked_networks.append({"id": net["id"], "name": net["name"], "secret": "***" if net.get("secret") else ""})
+
+        return web.json_response({
+            "status": "saved",
+            "private_networks": masked_networks,
+            "model_permissions": self.model_networks.get("model_permissions", {})
+        })
+
+    async def handle_model_networks_generate_secret(self, request: web.Request) -> web.Response:
+        """POST /api/model-networks/{network_id}/generate-secret — Generate a new secret for a private network.
+        Returns the new secret (shown once). The stored version is masked.
+        """
+        network_id = int(request.match_info['network_id'])
+        networks = self.model_networks.get("private_networks", [])
+        target = None
+        for net in networks:
+            if net["id"] == network_id:
+                target = net
+                break
+        if not target:
+            return web.json_response({"error": f"Network {network_id} not found"}, status=404)
+
+        import secrets as _secrets
+        new_secret = _secrets.token_hex(32)
+        target["secret"] = new_secret
+        self.model_networks["private_networks"] = networks
+        self.config["model_networks"] = self.model_networks
+        self._persist_config()
+        self.log_event("model_networks", f"Generated new secret for network '{target['name']}' (id={network_id})")
+
+        # Return the secret ONCE — it will be masked in subsequent GETs
+        return web.json_response({
+            "network_id": network_id,
+            "network_name": target["name"],
+            "secret": new_secret,
+            "warning": "Store this secret securely — it will not be shown again via API"
+        })
 
     # --- Config endpoints ---
 

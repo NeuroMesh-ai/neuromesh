@@ -191,6 +191,23 @@
                         </section>
 
                         <section class="share-section">
+                            <h3>🔐 Permissions des Modèles</h3>
+                            <p class="section-hint" data-i18n="network.modelPermsHint">Choisissez quels modèles partager ou utiliser sur chaque réseau.</p>
+                            <div class="model-perms-container" id="modelPermsContainer">
+                                <!-- Populated by JS -->
+                            </div>
+                        </section>
+
+                        <section class="share-section">
+                            <h3>🔒 Réseaux Privés</h3>
+                            <p class="section-hint" data-i18n="network.privateNetworksHint">Gérez vos réseaux privés. Chaque réseau a sa propre clé secrète.</p>
+                            <div class="private-networks-container" id="privateNetworksContainer">
+                                <!-- Populated by JS -->
+                            </div>
+                            <button class="btn btn-sm btn-secondary" id="addNetworkBtn" data-i18n="network.addNetwork">+ Ajouter un réseau</button>
+                        </section>
+
+                        <section class="share-section">
                             <h3>📈 Statistiques</h3>
                             <div class="stats-grid">
                                 <div class="stat-card">
@@ -215,6 +232,11 @@
                                 <button class="btn btn-sm btn-primary" id="resumeShareBtn">Reprendre le partage</button>
                             </div>
                         </section>
+
+                        <div class="save-bar" id="networkSaveBar">
+                            <button class="btn btn-primary btn-lg" id="saveNetworkConfigBtn" data-i18n="network.saveConfig">💾 Sauvegarder</button>
+                            <span class="save-status" id="saveNetworkStatus"></span>
+                        </div>
                     </div>
                 </div>
 

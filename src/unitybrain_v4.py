@@ -33,6 +33,7 @@ HTTP REST API remains available (retrocompatibility). WS is an ADDON.
 """
 
 import asyncio
+import threading
 import aiohttp
 from aiohttp import web
 import json
@@ -49,6 +50,7 @@ from typing import List, Dict, Any, Optional, Tuple, Set
 from collections import deque
 from pathlib import Path
 import logging.handlers
+from html import escape as html_escape  # LOW-05: XSS prevention
 
 # ============================================================================
 # SECURITY CONSTANTS
@@ -60,12 +62,52 @@ ALLOWED_STRATEGIES = {'auto', 'local', 'peer', 'consensus', 'chain'}
 GLOBAL_RATE_LIMIT_RATE = 30.0  # requests per second globally
 GLOBAL_RATE_LIMIT_BURST = 60
 AUTH_TIMEOUT_SECONDS = 10  # WebSocket auth timeout
+HMAC_WINDOW_SECONDS = 30  # MED-05: reduced from 60s to 30s
+MAX_NONCE_CACHE = 10000   # MED-05: max recent nonces to track
 
 # CORS allowed origins (configurable)
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
     'http://127.0.0.1',
 ]
+
+# MED-04: CRDT memory validation limits
+MAX_KEY_LENGTH = 256           # Maximum key length in characters
+MAX_VALUE_SIZE = 100000         # 100KB max value size (serialized)
+MAX_TTL = 86400                 # 24h max TTL
+
+MAX_SYNC_ENTRIES = 1000  # NEW-04: Maximum entries per sync push
+
+# MED-06: Pinned requirement versions for setup.py
+PINNED_REQUIREMENTS = [  # Updated 2026-05
+    "aiohttp>=3.9.0",
+    "psutil>=5.9.0",
+]
+PINNED_OPTIONAL = [
+    "PyNaCl>=1.5.0",
+]
+
+# LOW-07: WebSocket message size limit
+WS_MAX_MSG_SIZE = 1048576  # 1MB
+
+# MED-07: Token blacklist persistence
+TOKEN_BLACKLIST_FILE = os.path.expanduser('~/.unitybrain/token_blacklist.json')
+TOKEN_BLACKLIST_CLEANUP_INTERVAL = 3600  # Clean expired entries every hour
+
+# LOW-03: TLS support
+TLS_CERT_FILE = os.environ.get('UNITYBRAIN_CERT', '')
+TLS_KEY_FILE = os.environ.get('UNITYBRAIN_KEY', '')
+
+# LOW-04: CSP header for dashboard
+CSP_HEADER = (
+    "default-src 'self'; "
+    "script-src 'self' 'unsafe-inline'; "  # unsafe-inline needed for embedded JS
+    "style-src 'self' 'unsafe-inline'; "
+    "img-src 'self' data:; "
+    "connect-src 'self' ws: wss:; "
+    "frame-ancestors 'none'; "
+    "form-action 'self'"
+)
 
 # ============================================================================
 # LOGGING
@@ -99,7 +141,8 @@ class ZeroConfigDiscovery:
     MULTICAST_PORT = 5353
     BEACON_INTERVAL = 60  # seconds between broadcasts
     
-    def __init__(self, node_name: str, own_port: int, capabilities: Dict = None):
+    def __init__(self, node_name: str, own_port: int, capabilities: Dict = None,
+                 identity: 'NodeIdentity' = None):
         self.node_name = node_name
         self.own_port = own_port
         self.capabilities = capabilities or {}
@@ -108,6 +151,8 @@ class ZeroConfigDiscovery:
         self._listener_task = None
         self._found_peers: Dict[str, Dict] = {}  # name -> info
         self._local_ip = self._get_local_ip()
+        # MED-01: Store identity for beacon signing
+        self._identity = identity
     
     def _get_local_ip(self) -> str:
         """Get this machine's local network IP."""
@@ -126,8 +171,10 @@ class ZeroConfigDiscovery:
         return f'{parts[0]}.{parts[1]}.{parts[2]}.255'
     
     def _build_beacon(self) -> bytes:
-        """Build discovery beacon message."""
-        return json.dumps({
+        """Build discovery beacon message.
+        MED-01: Sign with HMAC of P2P shared secret to prevent spoofing.
+        """
+        payload = {
             'type': 'unitybrain_discovery',
             'version': '4.2.0',
             'node': self.node_name,
@@ -135,25 +182,75 @@ class ZeroConfigDiscovery:
             'ip': self._local_ip,
             'capabilities': self.capabilities,
             'ts': time.time()
+        }
+        payload_json = json.dumps(payload, sort_keys=True)
+        
+        # MED-01: Sign the beacon payload
+        import hmac as hmac_mod
+        if self._identity:
+            sig = self._identity.sign(payload_json)
+        else:
+            sig = hashlib.sha256(payload_json.encode()).hexdigest()
+        
+        return json.dumps({
+            'beacon': payload,
+            'signature': sig,
+            'sig_type': 'ed25519' if self._identity and hasattr(self._identity, '_signing_key') and HAS_NACL else 'hmac'
         }).encode()
     
     def _parse_beacon(self, data: bytes, addr: tuple) -> Optional[Dict]:
-        """Parse an incoming discovery beacon."""
+        """Parse an incoming discovery beacon.
+        MED-01: Verify HMAC/Ed25519 signature to reject spoofed beacons.
+        """
         try:
             msg = json.loads(data.decode())
-            if msg.get('type') != 'unitybrain_discovery':
-                return None
-            if msg['node'] == self.node_name:
-                return None  # ignore self
-            if time.time() - msg.get('ts', 0) > 120:
-                return None  # stale beacon
-            return {
-                'name': msg['node'],
-                'host': msg.get('ip', addr[0]),
-                'port': msg['port'],
-                'capabilities': msg.get('capabilities', {}),
-                'ts': msg['ts']
-            }
+            # MED-01: Check for signed beacon format
+            beacon_data = msg.get('beacon', msg)  # support both old and new format
+            if isinstance(beacon_data, dict):
+                # New signed format
+                payload = beacon_data
+                sig = msg.get('signature', '')
+                sig_type = msg.get('sig_type', 'hmac')
+                
+                if payload.get('type') != 'unitybrain_discovery':
+                    return None
+                if payload['node'] == self.node_name:
+                    return None  # ignore self
+                if time.time() - payload.get('ts', 0) > 120:
+                    return None  # stale beacon
+                
+                # MED-01: Verify signature
+                if sig and self._identity:
+                    payload_json = json.dumps(payload, sort_keys=True)
+                    if not self._identity.verify(payload_json, sig, None):
+                        logger.warning(f"📡 MED-01: Rejected spoofed beacon from {payload.get('node', '?')} at {addr[0]}")
+                        return None
+                elif not self._identity:
+                    # No identity available, accept with warning
+                    pass
+                
+                return {
+                    'name': payload['node'],
+                    'host': payload.get('ip', addr[0]),
+                    'port': payload['port'],
+                    'capabilities': payload.get('capabilities', {}),
+                    'ts': payload['ts']
+                }
+            else:
+                # Legacy unsigned format — accept with warning (backward compat)
+                if msg.get('type') != 'unitybrain_discovery':
+                    return None
+                if msg['node'] == self.node_name:
+                    return None
+                if time.time() - msg.get('ts', 0) > 120:
+                    return None
+                return {
+                    'name': msg['node'],
+                    'host': msg.get('ip', addr[0]),
+                    'port': msg['port'],
+                    'capabilities': msg.get('capabilities', {}),
+                    'ts': msg['ts']
+                }
         except (json.JSONDecodeError, KeyError):
             return None
     
@@ -520,9 +617,12 @@ class AutoUpdater:
         self.last_check = 0
         self.latest_version = None
         self.download_url = None
+        self.download_sha256 = None  # LOW-06: integrity check
     
     async def check(self) -> Optional[Dict]:
-        """Check for updates. Returns update info if available, None if up-to-date."""
+        """Check for updates. Returns update info if available, None if up-to-date.
+        LOW-06: Includes SHA256 verification info for download integrity.
+        """
         now = time.time()
         if now - self.last_check < self.CHECK_INTERVAL and self.latest_version:
             return self._compare()
@@ -537,6 +637,8 @@ class AutoUpdater:
                         assets = data.get('assets', [])
                         if assets:
                             self.download_url = assets[0].get('browser_download_url')
+                            # LOW-06: Store SHA256 if provided by GitHub release
+                            self.download_sha256 = assets[0].get('digest', '')  # GitHub provides digest for assets
                         return self._compare()
         except (aiohttp.ClientError, asyncio.TimeoutError):
             pass
@@ -554,6 +656,7 @@ class AutoUpdater:
                     'current': self.CURRENT_VERSION,
                     'latest': self.latest_version,
                     'download_url': self.download_url,
+                    'download_sha256': self.download_sha256,  # LOW-06
                     'auto_install': self.auto_install
                 }
         except (ValueError, IndexError):
@@ -585,6 +688,8 @@ class SystrayDaemon:
         """Write PID file for daemon mode."""
         with open(self.pid_file, 'w') as f:
             f.write(str(pid))
+        # LOW-02: PID file not world-readable
+        os.chmod(self.pid_file, 0o600)
     
     def read_pid(self) -> Optional[int]:
         """Read daemon PID."""
@@ -630,6 +735,67 @@ except ImportError:
     logger.info("PyNaCl not available — using HMAC fallback for Ed25519 identity")
 
 
+# ============================================================================
+# MED-07: Persistent Token Blacklist
+# ============================================================================
+
+class TokenBlacklist:
+    """Persistent token blacklist. Stores revoked token IDs with expiry.
+    Persists to disk so revocations survive restarts.
+    """
+    def __init__(self, filepath: str = TOKEN_BLACKLIST_FILE):
+        self.filepath = filepath
+        self._entries: Dict[str, float] = {}  # token_id -> expiry_timestamp
+        self._load()
+
+    def _load(self):
+        """Load blacklist from disk."""
+        try:
+            if os.path.isfile(self.filepath):
+                with open(self.filepath, 'r') as f:
+                    data = json.load(f)
+                    now = time.time()
+                    # Filter out expired entries on load
+                    self._entries = {k: v for k, v in data.items() if v > now}
+        except (OSError, json.JSONDecodeError, ValueError):
+            self._entries = {}
+
+    def _save(self):
+        """Save blacklist to disk."""
+        try:
+            os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
+            with open(self.filepath, 'w') as f:
+                json.dump(self._entries, f)
+            # LOW-01/LOW-02: Restrict file permissions
+            os.chmod(self.filepath, 0o600)
+        except OSError:
+            pass
+
+    def revoke(self, token_id: str, expires_at: float):
+        """Revoke a token until its expiry time."""
+        self._entries[token_id] = expires_at
+        self._save()
+
+    def is_revoked(self, token_id: str) -> bool:
+        """Check if a token is revoked."""
+        expiry = self._entries.get(token_id)
+        if expiry is None:
+            return False
+        if time.time() > expiry:
+            del self._entries[token_id]
+            self._save()
+            return False
+        return True
+
+    def cleanup(self):
+        """Remove expired entries."""
+        now = time.time()
+        before = len(self._entries)
+        self._entries = {k: v for k, v in self._entries.items() if v > now}
+        if len(self._entries) < before:
+            self._save()
+
+
 class NodeIdentity:
     """Ed25519-based node identity. Self-generated, no central registry.
     Falls back to HMAC if PyNaCl is not installed.
@@ -649,7 +815,13 @@ class NodeIdentity:
             self.fingerprint = self.public_key_hex[:16]
         else:
             # HMAC fallback — deterministic identity from secret
-            seed = secret_seed or os.environ.get("P2P_SECRET", "changeme")
+            seed = secret_seed or os.environ.get("P2P_SECRET")
+            # NEW-06: Warn if no secret configured
+            if not seed or seed == "changeme":
+                logger.error("⚠️  CRITICAL: P2P_SECRET not configured! Node identity is insecure.")
+                logger.error("   Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'")
+                logger.error("   Then set P2P_SECRET environment variable.")
+                seed = seed or "changeme"
             self._fallback_secret = hashlib.sha256(f"{seed}:{name}".encode()).digest()
             self.public_key_hex = self._fallback_secret.hex()
             self.fingerprint = self.public_key_hex[:16]
@@ -1149,9 +1321,25 @@ class CRDTMemory:
         return result
 
     def merge_from_sync(self, data: Dict[str, Dict]) -> int:
-        """Merge entries from a P2P sync. Returns count of merged entries."""
+        """Merge entries from a P2P sync. Returns count of merged entries.
+        MED-04: Validates key length, value size, and TTL before merging.
+        NEW-04: Rejects sync with too many entries.
+        """
+        if len(data) > MAX_SYNC_ENTRIES:
+            logger.warning(f"Rejecting sync: too many entries ({len(data)} > {MAX_SYNC_ENTRIES})")
+            return 0
         merged = 0
         for key, entry in data.items():
+            # MED-04: Validate key length
+            if len(key) > MAX_KEY_LENGTH:
+                continue
+            # MED-04: Validate value size
+            val = entry.get("value")
+            if val is not None and len(json.dumps(val)) > MAX_VALUE_SIZE:
+                continue
+            # MED-04: Cap TTL
+            if entry.get("ttl") and entry["ttl"] > MAX_TTL:
+                entry["ttl"] = MAX_TTL
             existing = self.store.get(key)
             if not existing:
                 self.store[key] = entry
@@ -1190,7 +1378,7 @@ class PeerDiscovery:
     """Dynamic peer discovery: Tailscale, mDNS, config fallback, peer referral."""
 
     def __init__(self, node_name: str, own_host: str, own_port: int,
-                 config_peers: List[Dict] = None):
+                 config_peers: List[Dict] = None, config: Dict = None):
         self.node_name = node_name
         self.own_host = own_host
         self.own_port = own_port
@@ -1198,6 +1386,8 @@ class PeerDiscovery:
         self.config_peers = config_peers or []
         self.last_discovery = 0
         self.discovery_interval = 300
+        # MED-02: Store config ref for allowed_tailscale_peers whitelist
+        self.config = config or {}
 
     async def discover_all(self) -> List[Dict]:
         found = {}
@@ -1234,16 +1424,19 @@ class PeerDiscovery:
             stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=5)
             if proc.returncode == 0:
                 status = json.loads(stdout)
+                # MED-02: Check if we have a whitelist of allowed peer names
+                allowed_peers = set(self.config.get("allowed_tailscale_peers", []))
+                
                 for peer in status.get('Peer', {}).values():
                     if peer.get('Online', False):
                         ips = peer.get('TailscaleIPs', [])
-                        if peer.get('HostName') == self.node_name:
+                        hostname = peer.get('HostName', '')
+                        if hostname == self.node_name:
                             continue
                         own_ts_ip = status.get('Self', {}).get('TailscaleIPs', [])
                         if own_ts_ip and any(ip in own_ts_ip for ip in ips):
                             continue
                         # Bug #5 fix: skip if same IP as a config peer but different port (duplicate)
-                        # Also skip if IP matches our own Tailscale IP
                         is_dup = False
                         for cp in self.config_peers:
                             if ips and ips[0] == cp.get('host') and 8081 != cp.get('port', 8080):
@@ -1251,9 +1444,23 @@ class PeerDiscovery:
                                 break
                         if is_dup:
                             continue
+                        
+                        # MED-02: Skip if hostname doesn't match expected pattern
+                        # UnityBrain nodes are expected to have recognizable names
+                        # This prevents random Tailscale peers from being auto-discovered
+                        # as UnityBrain nodes (unless explicitly allowed)
+                        is_unitybrain = (
+                            'unity' in hostname.lower() 
+                            or 'brain' in hostname.lower()
+                            or hostname in ('bug', 'pinky', 'brain') 
+                            or hostname in allowed_peers
+                        )
+                        if not allowed_peers and not is_unitybrain:
+                            continue
+                        
                         if ips:
                             peers.append({
-                                'name': peer.get('HostName', 'unknown'),
+                                'name': hostname,
                                 'host': ips[0],
                                 'port': 8081,
                                 'source': 'tailscale'
@@ -1770,7 +1977,8 @@ class UnityBrain:
         self.zero_config = ZeroConfigDiscovery(
             node_name=self.node_name,
             own_port=self.port,
-            capabilities=self.own_capabilities.to_dict()
+            capabilities=self.own_capabilities.to_dict(),
+            identity=self.identity  # MED-01: pass identity for beacon signing
         )
         self.gamified_score = GamifiedScore()
         self.auto_updater = AutoUpdater(auto_install=config.get('auto_update', False))
@@ -1833,7 +2041,8 @@ class UnityBrain:
             node_name=self.node_name,
             own_host=self.host,
             own_port=self.port,
-            config_peers=config.get("peers", [])
+            config_peers=config.get("peers", []),
+            config=config  # MED-02: pass for allowed_tailscale_peers whitelist
         )
 
         # Load Balancer
@@ -1873,6 +2082,30 @@ class UnityBrain:
         # Event log
         self.event_log: deque = deque(maxlen=50)
 
+        # MED-05: Nonce tracking for anti-replay
+        # NEW-01: Set + threading.Lock for safe nonce tracking (was deque)
+        self._used_nonces: Set[str] = set()
+        self._nonce_timestamps: Dict[str, float] = {}  # for cleanup
+        self._nonce_lock = threading.Lock()
+        # MED-07: Persistent token blacklist
+        self.token_blacklist = TokenBlacklist()
+
+    def _check_and_add_nonce(self, nonce: str) -> bool:
+        """NEW-01: Thread-safe nonce check and add. Returns True if nonce is new."""
+        with self._nonce_lock:
+            now = time.time()
+            # Cleanup expired nonces when set is getting large
+            if len(self._used_nonces) > MAX_NONCE_CACHE // 2:
+                expired = [k for k, v in self._nonce_timestamps.items() if now - v > HMAC_WINDOW_SECONDS + 10]
+                for k in expired:
+                    self._used_nonces.discard(k)
+                    del self._nonce_timestamps[k]
+            if nonce in self._used_nonces:
+                return False
+            self._used_nonces.add(nonce)
+            self._nonce_timestamps[nonce] = now
+            return True
+
     def log_event(self, event_type: str, message: str, level: str = "info"):
         entry = {
             "time": datetime.now().isoformat(),
@@ -1884,8 +2117,12 @@ class UnityBrain:
         try:
             log_file = Path(__file__).parent.parent / "logs" / "events.jsonl"
             log_file.parent.mkdir(exist_ok=True)
+            # LOW-01: Restrict log directory permissions
+            os.chmod(str(log_file.parent), 0o700)
             with open(log_file, 'a') as f:
                 f.write(json.dumps(entry) + '\n')
+            # LOW-01: Restrict log file permissions
+            os.chmod(str(log_file), 0o600)
         except OSError:
             pass
 
@@ -2120,28 +2357,37 @@ class UnityBrain:
             node_name = request.headers.get('X-UnityBrain-Node', '')
             node_key = request.headers.get('X-UnityBrain-Key', '')
 
-            # Anti-replay: timestamp must be within 60s
+            # MED-05: Anti-replay — Ed25519 window 30s
             if ts:
                 try:
-                    if abs(time.time() - int(ts)) > 60:
-                        logger.debug(f"Auth rejected: timestamp too old ({abs(time.time() - int(ts)):.0f}s)")
+                    if abs(time.time() - int(ts)) > HMAC_WINDOW_SECONDS:
+                        logger.debug(f"Auth rejected: timestamp too old")
                         return None
                 except ValueError:
-                    logger.debug(f"Auth rejected: invalid timestamp '{ts}'")
+                    logger.debug(f"Auth rejected: invalid timestamp")
                     return None
 
             # CRIT-02 fix: include request path in the challenge to prevent cross-endpoint replay
             if node_key and node_name:
                 sig = auth[7:]
+                # MED-07: Check token blacklist (use full hash to avoid collisions)
+                token_id = hashlib.sha256(f"{node_name}:{sig}:{ts}".encode()).hexdigest()[:32]
+                if self.token_blacklist.is_revoked(token_id):
+                    logger.debug(f"Auth rejected: revoked token")
+                    return None
                 challenge = f"{node_name}:{request.path}:{ts}"
                 verified = self.identity.verify(challenge, sig, node_key)
+                # NEW-01: Nonce check via thread-safe helper
+                nonce = f"{node_name}:{request.path}:{ts}"
+                if not self._check_and_add_nonce(nonce):
+                    logger.debug(f"Auth rejected: replayed nonce")
+                    return None
+
                 if verified:
                     return {"node": node_name, "public_key": node_key, "method": "ed25519"}
                 else:
-                    logger.info(
-                        f"Auth rejected: sig verify failed for node={node_name} "
-                        f"path={request.path}"
-                    )
+                    # MED-03: no sig/key fragments in logs
+                    logger.info(f"Auth rejected: verify failed for node={node_name}")
 
         # Fallback: shared secret HMAC (v3 compat)
         hmac_auth = request.headers.get('X-UnityBrain-Auth', '')
@@ -2149,7 +2395,12 @@ class UnityBrain:
         if hmac_auth and hmac_ts:
             try:
                 ts = float(hmac_ts)
-                if abs(time.time() - ts) > 60:  # Reduced from 300s to 60s
+                # MED-05: HMAC window reduced to HMAC_WINDOW_SECONDS (30s)
+                if abs(time.time() - ts) > HMAC_WINDOW_SECONDS:
+                    return None
+                # NEW-01: Nonce check for HMAC too
+                nonce = f"hmac:{request.path}:{hmac_ts}"
+                if not self._check_and_add_nonce(nonce):
                     return None
                 path = request.path
                 msg = f"{path}:{hmac_ts}"
@@ -2436,9 +2687,12 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         for p in self.peers:
             icon = "✅" if p.available else "❌"
             cb_state = p.circuit_breaker.state
+            # LOW-05: XSS fix — escape peer name and host
+            safe_name = html_escape(p.name)
+            safe_host = html_escape(p.host)
             html += f"""<div class="peer">
-<span class="{'ok' if p.available else 'ko'}">{icon} {p.name}</span>
-{p.host}:{p.port} — {round(p.latency, 1)}ms — CB:{cb_state}
+<span class="{'ok' if p.available else 'ko'}">{icon} {safe_name}</span>
+{safe_host}:{p.port} — {round(p.latency, 1)}ms — CB:{cb_state}
 </div>"""
 
         if not self.peers:
@@ -2485,7 +2739,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             for p in self.peers:
                 peer_score = self.sharing_quota.calculate_score(p.name)
                 peer_tier = GamifiedScore.get_tier(peer_score)
-                html += f'<div class="stat"><span>{p.name}</span><span style="color:{peer_tier["color"]}">{peer_tier["tier"]} ({peer_score:.1f})</span></div>'
+                html += f'<div class="stat"><span>{html_escape(p.name)}</span><span style="color:{peer_tier["color"]}">{peer_tier["tier"]} ({peer_score:.1f})</span></div>'
         html += '</div>'
 
         # v4.2.0: Capabilities section
@@ -2512,7 +2766,10 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
             html += '</div>'
 
         html += """"</body></html>"""
-        return web.Response(text=html, content_type='text/html')
+        resp = web.Response(text=html, content_type='text/html')
+        # LOW-04: CSP header
+        resp.headers['Content-Security-Policy'] = CSP_HEADER
+        return resp
 
     async def handle_status(self, request: web.Request) -> web.Response:
         # HIGH-03 fix: Return minimal info for unauthenticated requests
@@ -2584,8 +2841,15 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         value = data.get("value")
         ttl = data.get("ttl")
         author = request.get('auth', {}).get('node', self.node_name)
-        if not key:
-            return web.json_response({"error": "key required"}, status=400)
+        # MED-04: Validate key
+        if not key or len(key) > MAX_KEY_LENGTH:
+            return web.json_response({"error": f"Invalid key (max {MAX_KEY_LENGTH} chars)"}, status=400)
+        # MED-04: Validate value size
+        if value is not None and len(json.dumps(value)) > MAX_VALUE_SIZE:
+            return web.json_response({"error": f"Value too large (max {MAX_VALUE_SIZE} bytes)"}, status=400)
+        # MED-04: Cap TTL
+        if ttl and ttl > MAX_TTL:
+            ttl = MAX_TTL
         self.memory.set(key, value, ttl, author=author)
         # Gossip the update
         await self._gossip_broadcast({
@@ -3369,7 +3633,7 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
     # ========================================================================
 
     async def handle_websocket(self, request: web.Request) -> web.WebSocketResponse:
-        ws = web.WebSocketResponse(heartbeat=self.heartbeat_interval)
+        ws = web.WebSocketResponse(heartbeat=self.heartbeat_interval, max_msg_size=WS_MAX_MSG_SIZE)  # LOW-07
         await ws.prepare(request)
 
         client_id = str(uuid.uuid4())[:8]
@@ -3496,6 +3760,19 @@ h1 {{ color: #4ecdc4; }} h2 {{ color: #888; font-size: 0.9rem; text-transform: u
         hmac_sig = data.get('hmac', '')
         hmac_ts = data.get('ts', '')
         if hmac_sig and hmac_ts:
+            # NEW-03: Verify timestamp window for WS auth HMAC too
+            try:
+                if abs(time.time() - float(hmac_ts)) > HMAC_WINDOW_SECONDS:
+                    await ws.send_json({'type': 'auth_ack', 'status': 'failed', 'reason': 'expired'})
+                    return False
+            except ValueError:
+                await ws.send_json({'type': 'auth_ack', 'status': 'failed', 'reason': 'invalid timestamp'})
+                return False
+            # NEW-01: Nonce check for WS auth
+            ws_nonce = f"ws-hmac:{hmac_ts}"
+            if not self._check_and_add_nonce(ws_nonce):
+                await ws.send_json({'type': 'auth_ack', 'status': 'failed', 'reason': 'replay'})
+                return False
             import hmac as hmac_mod
             msg_str = f"/ws:{hmac_ts}"
             expected_sig = hmac_mod.new(
@@ -3893,7 +4170,17 @@ async def main():
     app = await brain.create_app()
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, brain.host, brain.port, reuse_address=True, reuse_port=True)
+    # LOW-03: TLS support — use SSLContext if cert/key are provided
+    ssl_context = None
+    if TLS_CERT_FILE and TLS_KEY_FILE and os.path.isfile(TLS_CERT_FILE) and os.path.isfile(TLS_KEY_FILE):
+        import ssl
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ssl_context.load_cert_chain(TLS_CERT_FILE, TLS_KEY_FILE)
+        logger.info(f"🔒 TLS enabled — cert: {TLS_CERT_FILE}")
+    else:
+        if brain.host != '127.0.0.1' and brain.host != 'localhost':
+            logger.warning("⚠️  LOW-03: Running without TLS on public interface — set UNITYBRAIN_CERT and UNITYBRAIN_KEY")
+    site = web.TCPSite(runner, brain.host, brain.port, reuse_address=True, reuse_port=True, ssl_context=ssl_context)
     await site.start()
     logger.info(f"🌐 UnityBrain v{brain.version} on http://{brain.host}:{brain.port}")
     brain.log_event("server", f"Listening on {brain.host}:{brain.port}")

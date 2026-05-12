@@ -153,7 +153,10 @@ class UnityBrainShell:
     def _load_history(self):
         try:
             if os.path.exists(HISTORY_FILE):
+                # LOW-08: Restrict history file permissions
+                os.chmod(HISTORY_FILE, 0o600)
                 with open(HISTORY_FILE) as f:
+                    # LOW-08: Only load truncated prompts (no full content stored)
                     self.history = json.load(f)
         except:
             self.history = []
@@ -161,7 +164,19 @@ class UnityBrainShell:
     def _save_history(self):
         try:
             with open(HISTORY_FILE, "w") as f:
-                json.dump(self.history[-100:], f, indent=2)
+                # LOW-08: Truncate prompts in history to 80 chars
+                safe_history = []
+                for entry in self.history[-100:]:
+                    if isinstance(entry, dict):
+                        safe_entry = dict(entry)
+                        prompt = safe_entry.get('prompt', '')
+                        if len(prompt) > 80:
+                            safe_entry['prompt'] = prompt[:77] + '...'
+                        safe_history.append(safe_entry)
+                    else:
+                        safe_history.append(entry)
+                json.dump(safe_history, f, indent=2)
+            os.chmod(HISTORY_FILE, 0o600)  # LOW-08
         except:
             pass
 

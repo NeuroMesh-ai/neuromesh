@@ -1316,3 +1316,174 @@ body.light-theme {
     --border: #d0d0e0;
     --border-light: #e0e0ee;
 }
+/* ============================================================
+   MODEL NETWORKS — Permissions Table & Private Networks
+   ============================================================ */
+
+.section-hint {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.model-perms-table-wrap {
+    overflow-x: auto;
+    margin-top: 8px;
+}
+
+.model-perms-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+.model-perms-table th,
+.model-perms-table td {
+    padding: 8px 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-light);
+    white-space: nowrap;
+}
+
+.model-perms-table th {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.model-perms-table th:first-child,
+.model-perms-table td:first-child {
+    text-align: left;
+    font-weight: 500;
+    min-width: 140px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.model-perms-table td input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+.model-perms-table .col-share-private { color: #4ecdc4; }
+.model-perms-table .col-use-private { color: #45b7d1; }
+.model-perms-table .col-share-public { color: #f9ca24; }
+.model-perms-table .col-use-public { color: #f0932b; }
+
+.model-perms-table .network-header {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: block;
+}
+
+.private-networks-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+
+.private-networks-table th,
+.private-networks-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-light);
+    text-align: left;
+}
+
+.private-networks-table th {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.private-networks-table input[type="text"] {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    width: 100%;
+    font-size: 0.85rem;
+}
+
+.private-networks-table .secret-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.private-networks-table .secret-field code {
+    background: var(--bg-tertiary);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.private-networks-table .btn-icon {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.private-networks-table .btn-icon:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--accent);
+}
+
+.private-networks-table .btn-icon.btn-danger:hover {
+    color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.save-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0 8px 0;
+    margin-top: 8px;
+    border-top: 1px solid var(--border-light);
+}
+
+.save-bar .btn-lg {
+    padding: 10px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.save-status {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.save-status.success {
+    color: #2ecc71;
+}
+
+.save-status.error {
+    color: #e74c3c;
+}
+
+.no-models-msg {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 24px 0;
+}
